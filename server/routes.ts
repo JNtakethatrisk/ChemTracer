@@ -45,7 +45,8 @@ export async function registerRoutes(app: Express): Promise<Server> {
   // Get all microplastic entries
   app.get("/api/microplastic-entries", async (req, res) => {
     try {
-      const entries = await storage.getMicroplasticEntries();
+      const userIp = req.ip || req.connection.remoteAddress || '127.0.0.1';
+      const entries = await storage.getMicroplasticEntries(userIp);
       res.json(entries);
     } catch (error) {
       res.status(500).json({ message: "Failed to fetch entries" });
@@ -60,7 +61,9 @@ export async function registerRoutes(app: Express): Promise<Server> {
         return res.status(400).json({ message: "Start date and end date are required" });
       }
       
+      const userIp = req.ip || req.connection.remoteAddress || '127.0.0.1';
       const entries = await storage.getMicroplasticEntriesByDateRange(
+        userIp,
         startDate as string, 
         endDate as string
       );
@@ -78,7 +81,8 @@ export async function registerRoutes(app: Express): Promise<Server> {
       const totalParticles = calculateTotalParticles(validatedData);
       const riskLevel = getRiskLevel(totalParticles);
       
-      const entry = await storage.createMicroplasticEntry({
+      const userIp = req.ip || req.connection.remoteAddress || '127.0.0.1';
+      const entry = await storage.createMicroplasticEntry(userIp, {
         ...validatedData,
         totalParticles,
         riskLevel,
@@ -103,7 +107,8 @@ export async function registerRoutes(app: Express): Promise<Server> {
       const totalParticles = calculateTotalParticles(validatedData);
       const riskLevel = getRiskLevel(totalParticles);
       
-      const entry = await storage.updateMicroplasticEntry(id, {
+      const userIp = req.ip || req.connection.remoteAddress || '127.0.0.1';
+      const entry = await storage.updateMicroplasticEntry(id, userIp, {
         ...validatedData,
         totalParticles,
         riskLevel,
@@ -127,7 +132,8 @@ export async function registerRoutes(app: Express): Promise<Server> {
   app.delete("/api/microplastic-entries/:id", async (req, res) => {
     try {
       const { id } = req.params;
-      const deleted = await storage.deleteMicroplasticEntry(id);
+      const userIp = req.ip || req.connection.remoteAddress || '127.0.0.1';
+      const deleted = await storage.deleteMicroplasticEntry(id, userIp);
       
       if (!deleted) {
         return res.status(404).json({ message: "Entry not found" });
@@ -142,7 +148,8 @@ export async function registerRoutes(app: Express): Promise<Server> {
   // Get dashboard statistics
   app.get("/api/dashboard-stats", async (req, res) => {
     try {
-      const entries = await storage.getMicroplasticEntries();
+      const userIp = req.ip || req.connection.remoteAddress || '127.0.0.1';
+      const entries = await storage.getMicroplasticEntries(userIp);
       
       if (entries.length === 0) {
         return res.json({

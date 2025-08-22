@@ -5,6 +5,7 @@ import { z } from "zod";
 
 export const microplasticEntries = pgTable("microplastic_entries", {
   id: varchar("id").primaryKey().default(sql`gen_random_uuid()`),
+  userIp: text("user_ip").notNull(),
   weekStart: text("week_start").notNull(),
   bottledWater: integer("bottled_water").default(0),
   seafood: integer("seafood").default(0),
@@ -23,6 +24,7 @@ export const microplasticEntries = pgTable("microplastic_entries", {
 
 export const insertMicroplasticEntrySchema = createInsertSchema(microplasticEntries).omit({
   id: true,
+  userIp: true,
   totalParticles: true,
   riskLevel: true,
   createdAt: true,
