@@ -33,7 +33,7 @@ export default function Landing() {
           </h1>
           
           <p className="text-xl md:text-2xl text-gray-700 font-medium">
-            Track Microplastics in Your Body –<br />
+            Track Microplastics in Your Body,<br />
             Take Control of Your Health Today
           </p>
         </div>
@@ -60,8 +60,8 @@ export default function Landing() {
                   <Hand className="w-6 h-6 text-primary" />
                 </div>
                 <div className="text-left">
-                  <p className="font-semibold text-gray-900">Get Started</p>
-                  <p className="text-sm text-gray-600">Swipe to access calculator</p>
+                  <p className="font-semibold text-gray-900">Click to access calculator</p>
+                  <p className="text-sm text-gray-600">Start tracking your exposure</p>
                 </div>
               </div>
               <ChevronRight className="w-6 h-6 text-gray-400" />
@@ -69,16 +69,6 @@ export default function Landing() {
           </CardContent>
         </Card>
 
-        {/* Alternative Button */}
-        <div className="pt-4">
-          <Button 
-            onClick={() => setLocation("/dashboard")}
-            className="bg-primary hover:bg-primary/90 text-white px-8 py-3 text-lg"
-            data-testid="button-enter-dashboard"
-          >
-            Enter Dashboard
-          </Button>
-        </div>
 
         {/* Features Preview */}
         <div className="grid grid-cols-1 md:grid-cols-3 gap-6 pt-8 max-w-4xl mx-auto">
