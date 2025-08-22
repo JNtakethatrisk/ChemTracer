@@ -94,6 +94,13 @@ export default function Dashboard() {
         <div className="mt-8">
           <InsightsSection />
         </div>
+
+        {/* FDA Disclaimer */}
+        <div className="mt-12 pt-8 border-t border-gray-200">
+          <p className="text-xs text-gray-500 text-center">
+            These statements have not been evaluated by the FDA nor are we medical professionals.
+          </p>
+        </div>
       </div>
     </div>
   );
