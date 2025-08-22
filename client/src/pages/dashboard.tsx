@@ -8,6 +8,7 @@ import WeeklyInputForm from "@/components/dashboard/weekly-input-form";
 import ChartsSection from "@/components/dashboard/charts-section";
 import HistoricalTable from "@/components/dashboard/historical-table";
 import InsightsSection from "@/components/dashboard/insights-section";
+import HighRiskWarning from "@/components/dashboard/high-risk-warning";
 import { MicroplasticEntry } from "@shared/schema";
 
 export default function Dashboard() {
@@ -39,6 +40,9 @@ export default function Dashboard() {
 
   return (
     <div className="min-h-screen bg-background">
+      {/* High Risk Warning Modal */}
+      <HighRiskWarning />
+      
       {/* Header */}
       <header className="bg-white shadow-sm border-b border-gray-200">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">

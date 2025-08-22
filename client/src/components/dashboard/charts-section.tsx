@@ -1,3 +1,4 @@
+import { useState } from "react";
 import { useQuery } from "@tanstack/react-query";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
@@ -6,6 +7,7 @@ import { MicroplasticEntry, RISK_LEVELS } from "@shared/schema";
 import { getSourceBreakdown, getWeekLabel } from "@/lib/calculations";
 
 export default function ChartsSection() {
+  const [timePeriod, setTimePeriod] = useState<'3M' | '6M' | '1Y'>('3M');
   const { data: entries = [], isLoading } = useQuery<MicroplasticEntry[]>({
     queryKey: ["/api/microplastic-entries"],
   });
@@ -27,7 +29,16 @@ export default function ChartsSection() {
     );
   }
 
-  const chartData = entries.slice(0, 12).reverse().map(entry => ({
+  const getDataLimit = () => {
+    switch (timePeriod) {
+      case '3M': return 12;
+      case '6M': return 24;
+      case '1Y': return 52;
+      default: return 12;
+    }
+  };
+
+  const chartData = entries.slice(0, getDataLimit()).reverse().map(entry => ({
     week: getWeekLabel(entry.weekStart),
     particles: entry.totalParticles,
     riskLevel: entry.riskLevel,
@@ -57,9 +68,30 @@ export default function ChartsSection() {
           <div className="flex items-center justify-between">
             <CardTitle className="text-lg font-semibold text-gray-900">Monthly Trend</CardTitle>
             <div className="flex space-x-2">
-              <Button variant="default" size="sm" className="px-3 py-1 text-xs">3M</Button>
-              <Button variant="outline" size="sm" className="px-3 py-1 text-xs">6M</Button>
-              <Button variant="outline" size="sm" className="px-3 py-1 text-xs">1Y</Button>
+              <Button 
+                variant={timePeriod === '3M' ? 'default' : 'outline'} 
+                size="sm" 
+                className="px-3 py-1 text-xs"
+                onClick={() => setTimePeriod('3M')}
+              >
+                3M
+              </Button>
+              <Button 
+                variant={timePeriod === '6M' ? 'default' : 'outline'} 
+                size="sm" 
+                className="px-3 py-1 text-xs"
+                onClick={() => setTimePeriod('6M')}
+              >
+                6M
+              </Button>
+              <Button 
+                variant={timePeriod === '1Y' ? 'default' : 'outline'} 
+                size="sm" 
+                className="px-3 py-1 text-xs"
+                onClick={() => setTimePeriod('1Y')}
+              >
+                1Y
+              </Button>
             </div>
           </div>
         </CardHeader>

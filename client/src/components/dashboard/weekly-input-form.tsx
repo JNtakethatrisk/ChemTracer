@@ -95,9 +95,8 @@ export default function WeeklyInputForm() {
             <Input
               type="number"
               placeholder="0"
-              {...field}
-              onChange={(e) => field.onChange(Number(e.target.value) || 0)}
               value={field.value || 0}
+              onChange={(e) => field.onChange(Number(e.target.value) || 0)}
               data-testid={`input-${source.key}`}
             />
           </FormControl>
