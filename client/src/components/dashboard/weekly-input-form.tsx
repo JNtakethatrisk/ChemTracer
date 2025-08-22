@@ -95,8 +95,20 @@ export default function WeeklyInputForm() {
             <Input
               type="number"
               placeholder="0"
-              value={field.value || 0}
-              onChange={(e) => field.onChange(Number(e.target.value) || 0)}
+              value={field.value === 0 ? "" : field.value}
+              onChange={(e) => {
+                const value = e.target.value;
+                if (value === "") {
+                  field.onChange("");
+                } else {
+                  field.onChange(Number(value) || 0);
+                }
+              }}
+              onBlur={(e) => {
+                if (e.target.value === "") {
+                  field.onChange(0);
+                }
+              }}
               data-testid={`input-${source.key}`}
             />
           </FormControl>
