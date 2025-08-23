@@ -16,39 +16,20 @@ interface DashboardStats {
 
 export default function SafeLevelNotification() {
   const [showNotification, setShowNotification] = useState(false);
-  const previousRiskLevelRef = useRef<string | null>(null);
+  const [dismissed, setDismissed] = useState(false);
   
   const { data: stats } = useQuery<DashboardStats>({
     queryKey: ["/api/dashboard-stats"],
   });
 
   useEffect(() => {
-    if (stats?.currentRiskLevel === "Low" && stats?.currentParticleCount > 0) {
-      // Create a unique key for this notification based on risk level and particle count range
-      const particleRange = Math.floor(stats.currentParticleCount / 0.1) * 0.1; // Group by 0.1 ranges for low levels
-      const notificationKey = `safe-level-notification-seen-${particleRange}`;
-      
-      // Check if user has already seen this notification
-      const hasSeenNotification = localStorage.getItem(notificationKey) === 'true';
-      
-      // Show notification if:
-      // 1. They haven't seen it for this particle range, OR
-      // 2. Their risk level just changed to Low (different from previous)
-      const riskLevelChanged = previousRiskLevelRef.current !== null && 
-                              previousRiskLevelRef.current !== "Low";
-      
-      if (!hasSeenNotification || riskLevelChanged) {
-        setShowNotification(true);
-      }
-      
-      previousRiskLevelRef.current = stats.currentRiskLevel;
+    // Only show if user has low risk, has data, and hasn't dismissed it this session
+    if (stats?.currentRiskLevel === "Low" && stats?.currentParticleCount > 0 && !dismissed) {
+      setShowNotification(true);
     } else {
       setShowNotification(false);
-      if (stats?.currentRiskLevel) {
-        previousRiskLevelRef.current = stats.currentRiskLevel;
-      }
     }
-  }, [stats?.currentRiskLevel, stats?.currentParticleCount]);
+  }, [stats?.currentRiskLevel, stats?.currentParticleCount, dismissed]);
 
   if (!showNotification || stats?.currentRiskLevel !== "Low" || !stats?.currentParticleCount || stats.currentParticleCount <= 0) {
     return null;
@@ -100,10 +81,7 @@ export default function SafeLevelNotification() {
                 variant="outline" 
                 className="w-full border-green-500 text-green-700 hover:bg-green-50"
                 onClick={() => {
-                  // Mark this notification as seen for this particle range
-                  const particleRange = Math.floor(stats!.currentParticleCount / 0.1) * 0.1;
-                  const notificationKey = `safe-level-notification-seen-${particleRange}`;
-                  localStorage.setItem(notificationKey, 'true');
+                  setDismissed(true);
                   setShowNotification(false);
                 }}
                 data-testid="button-close-safe-notification"
