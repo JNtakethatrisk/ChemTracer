@@ -29,20 +29,35 @@ export default function ChartsSection() {
     );
   }
 
-  const getDataLimit = () => {
+  const getTimeRangeData = () => {
+    const now = new Date();
+    let startDate: Date;
+    
     switch (timePeriod) {
-      case '3M': return 12;
-      case '6M': return 24;
-      case '1Y': return 52;
-      default: return 12;
+      case '3M':
+        startDate = new Date(now.getFullYear(), now.getMonth() - 3, now.getDate());
+        break;
+      case '6M':
+        startDate = new Date(now.getFullYear(), now.getMonth() - 6, now.getDate());
+        break;
+      case '1Y':
+        startDate = new Date(now.getFullYear() - 1, now.getMonth(), now.getDate());
+        break;
+      default:
+        startDate = new Date(now.getFullYear(), now.getMonth() - 3, now.getDate());
     }
+
+    return entries
+      .filter(entry => new Date(entry.weekStart) >= startDate)
+      .reverse()
+      .map(entry => ({
+        week: getWeekLabel(entry.weekStart),
+        particles: entry.totalParticles,
+        riskLevel: entry.riskLevel,
+      }));
   };
 
-  const chartData = entries.slice(0, getDataLimit()).reverse().map(entry => ({
-    week: getWeekLabel(entry.weekStart),
-    particles: entry.totalParticles,
-    riskLevel: entry.riskLevel,
-  }));
+  const chartData = getTimeRangeData();
 
   const latestEntry = entries[0];
   const topSources = latestEntry ? getSourceBreakdown({
@@ -107,6 +122,7 @@ export default function ChartsSection() {
                     angle={-45}
                     textAnchor="end"
                     height={60}
+                    interval={timePeriod === '1Y' ? 3 : timePeriod === '6M' ? 1 : 0}
                   />
                   <YAxis 
                     tick={{ fontSize: 12 }}
