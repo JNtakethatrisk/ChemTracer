@@ -42,6 +42,16 @@ function getRiskLevel(totalParticles: number): string {
 }
 
 export async function registerRoutes(app: Express): Promise<Server> {
+  // Health check endpoint for deployment systems
+  app.get("/health", (req, res) => {
+    res.status(200).json({ status: "ok", timestamp: new Date().toISOString() });
+  });
+
+  // API health check endpoint
+  app.get("/api/health", (req, res) => {
+    res.status(200).json({ status: "ok", message: "Microplastic Tracker API" });
+  });
+
   // Get all microplastic entries
   app.get("/api/microplastic-entries", async (req, res) => {
     try {
