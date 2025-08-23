@@ -50,7 +50,7 @@ export default function Dashboard() {
           <div className="flex justify-between items-center h-16">
             <div className="flex items-center">
               <Microscope className="text-primary text-2xl mr-3 h-6 w-6" />
-              <h1 className="text-xl font-semibold text-gray-900">MicroPlastic Tracker</h1>
+              <h1 className="text-xl font-semibold text-gray-900">MicroPlastic Tracker™</h1>
             </div>
             <div className="flex items-center space-x-4">
               <Link href="/about">
