@@ -29,7 +29,7 @@ export default function Landing() {
         <div className="space-y-4">
           <h1 className="text-4xl md:text-5xl font-bold text-gray-900 leading-tight">
             Welcome to<br />
-            <span className="text-primary">Micro Plastics Tracker</span>
+            <span className="text-primary">MicroPlastic Tracker</span>
           </h1>
           
           <p className="text-xl md:text-2xl text-gray-700 font-medium">
