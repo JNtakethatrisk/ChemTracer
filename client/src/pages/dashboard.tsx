@@ -10,6 +10,7 @@ import ChartsSection from "@/components/dashboard/charts-section";
 import HistoricalTable from "@/components/dashboard/historical-table";
 import InsightsSection from "@/components/dashboard/insights-section";
 import HighRiskWarning from "@/components/dashboard/high-risk-warning";
+import SafeLevelNotification from "@/components/dashboard/safe-level-notification";
 import { MicroplasticEntry } from "@shared/schema";
 
 export default function Dashboard() {
@@ -43,6 +44,9 @@ export default function Dashboard() {
     <div className="min-h-screen bg-background">
       {/* High Risk Warning Modal */}
       <HighRiskWarning />
+      
+      {/* Safe Level Notification */}
+      <SafeLevelNotification />
       
       {/* Header */}
       <header className="bg-white shadow-sm border-b border-gray-200">
