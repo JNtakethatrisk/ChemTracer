@@ -70,9 +70,6 @@ export default function Dashboard() {
                 <Download className="mr-2 h-4 w-4" />
                 Export Data
               </Button>
-              <div className="w-8 h-8 bg-gray-300 rounded-full flex items-center justify-center">
-                <User className="h-4 w-4" />
-              </div>
             </div>
           </div>
         </div>
