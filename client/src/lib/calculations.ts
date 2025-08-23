@@ -39,11 +39,11 @@ export const MICROPLASTIC_SOURCES = [
   },
   {
     key: "teaBags",
-    label: "Plastic Tea Bags",
+    label: "Tea Bags/Keurig Capsules",
     unit: "cups/week",
     icon: "fas fa-mug-hot", 
     color: "text-green-600",
-    description: "Plastic-sealed bags only",
+    description: "Plastic-sealed bags and capsules",
     conversionFactor: 0.15,
   },
   {
