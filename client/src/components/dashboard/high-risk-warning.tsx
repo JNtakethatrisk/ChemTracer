@@ -22,12 +22,14 @@ export default function HighRiskWarning() {
   });
 
   useEffect(() => {
-    if (stats?.currentRiskLevel === "High") {
+    if (stats?.currentRiskLevel === "High" && stats?.currentParticleCount > 0) {
       setShowWarning(true);
+    } else {
+      setShowWarning(false);
     }
-  }, [stats?.currentRiskLevel]);
+  }, [stats?.currentRiskLevel, stats?.currentParticleCount]);
 
-  if (!showWarning || stats?.currentRiskLevel !== "High") {
+  if (!showWarning || stats?.currentRiskLevel !== "High" || !stats?.currentParticleCount || stats.currentParticleCount <= 0) {
     return null;
   }
 
