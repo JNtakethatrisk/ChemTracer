@@ -4,7 +4,7 @@ import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { LineChart, Line, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer, ReferenceLine } from "recharts";
 import { MicroplasticEntry, RISK_LEVELS } from "@shared/schema";
-import { getSourceBreakdown, getWeekLabel } from "@/lib/calculations";
+import { getSourceBreakdown, getWeekLabel, getSubmissionDateLabel } from "@/lib/calculations";
 
 export default function ChartsSection() {
   const [timePeriod, setTimePeriod] = useState<'3M' | '6M' | '1Y'>('3M');
@@ -48,12 +48,13 @@ export default function ChartsSection() {
     }
 
     return entries
-      .filter(entry => new Date(entry.weekStart) >= startDate)
+      .filter(entry => new Date(entry.createdAt) >= startDate)
       .reverse()
       .map(entry => ({
-        week: getWeekLabel(entry.weekStart),
+        submissionDate: getSubmissionDateLabel(entry.createdAt),
         particles: entry.totalParticles,
         riskLevel: entry.riskLevel,
+        createdAt: entry.createdAt,
       }));
   };
 
@@ -117,7 +118,7 @@ export default function ChartsSection() {
                 <LineChart data={chartData}>
                   <CartesianGrid strokeDasharray="3 3" stroke="#f0f0f0" />
                   <XAxis 
-                    dataKey="week" 
+                    dataKey="submissionDate" 
                     tick={{ fontSize: 12 }}
                     angle={-45}
                     textAnchor="end"

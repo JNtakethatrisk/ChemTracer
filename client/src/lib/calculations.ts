@@ -149,3 +149,13 @@ export function getWeekLabel(weekStart: string): string {
   
   return `${start.toLocaleDateString('en-US', { month: 'short', day: 'numeric' })} - ${end.toLocaleDateString('en-US', { month: 'short', day: 'numeric' })}`;
 }
+
+export function getSubmissionDateLabel(createdAt: string): string {
+  const date = new Date(createdAt);
+  return date.toLocaleDateString('en-US', { 
+    month: 'short', 
+    day: 'numeric',
+    hour: 'numeric',
+    minute: '2-digit'
+  });
+}
