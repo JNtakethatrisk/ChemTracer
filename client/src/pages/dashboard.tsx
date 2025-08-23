@@ -55,9 +55,8 @@ export default function Dashboard() {
             <div className="flex items-center space-x-4">
               <Link href="/about">
                 <Button 
-                  variant="outline"
                   data-testid="button-about-us"
-                  className="gap-2"
+                  className="gap-2 bg-slate-700 hover:bg-slate-800 text-white"
                 >
                   <Info className="h-4 w-4" />
                   About Us
