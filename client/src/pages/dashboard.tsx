@@ -1,8 +1,9 @@
 import { useState } from "react";
 import { useQuery } from "@tanstack/react-query";
-import { Download, Microscope, User } from "lucide-react";
+import { Download, Microscope, User, Info } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
+import { Link } from "wouter";
 import OverviewCards from "@/components/dashboard/overview-cards";
 import WeeklyInputForm from "@/components/dashboard/weekly-input-form";
 import ChartsSection from "@/components/dashboard/charts-section";
@@ -52,6 +53,16 @@ export default function Dashboard() {
               <h1 className="text-xl font-semibold text-gray-900">MicroPlastic Tracker</h1>
             </div>
             <div className="flex items-center space-x-4">
+              <Link href="/about">
+                <Button 
+                  variant="outline"
+                  data-testid="button-about-us"
+                  className="gap-2"
+                >
+                  <Info className="h-4 w-4" />
+                  About Us
+                </Button>
+              </Link>
               <Button 
                 onClick={handleExportData}
                 data-testid="button-export-data"
