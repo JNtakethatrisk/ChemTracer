@@ -1,4 +1,4 @@
-import { useState, useEffect } from "react";
+import { useState, useEffect, useRef } from "react";
 import { useQuery } from "@tanstack/react-query";
 import { AlertTriangle, ExternalLink } from "lucide-react";
 import { Alert, AlertDescription } from "@/components/ui/alert";
@@ -16,6 +16,7 @@ interface DashboardStats {
 
 export default function HighRiskWarning() {
   const [showWarning, setShowWarning] = useState(false);
+  const previousRiskLevelRef = useRef<string | null>(null);
   
   const { data: stats } = useQuery<DashboardStats>({
     queryKey: ["/api/dashboard-stats"],
@@ -23,9 +24,29 @@ export default function HighRiskWarning() {
 
   useEffect(() => {
     if (stats?.currentRiskLevel === "High" && stats?.currentParticleCount > 0) {
-      setShowWarning(true);
+      // Create a unique key for this warning based on risk level and particle count range
+      const particleRange = Math.floor(stats.currentParticleCount / 0.5) * 0.5; // Group by 0.5 ranges
+      const warningKey = `high-risk-warning-seen-${particleRange}`;
+      
+      // Check if user has already seen this warning
+      const hasSeenWarning = localStorage.getItem(warningKey) === 'true';
+      
+      // Show warning if:
+      // 1. They haven't seen it for this particle range, OR
+      // 2. Their risk level just changed to High (different from previous)
+      const riskLevelChanged = previousRiskLevelRef.current !== null && 
+                              previousRiskLevelRef.current !== "High";
+      
+      if (!hasSeenWarning || riskLevelChanged) {
+        setShowWarning(true);
+      }
+      
+      previousRiskLevelRef.current = stats.currentRiskLevel;
     } else {
       setShowWarning(false);
+      if (stats?.currentRiskLevel) {
+        previousRiskLevelRef.current = stats.currentRiskLevel;
+      }
     }
   }, [stats?.currentRiskLevel, stats?.currentParticleCount]);
 
@@ -77,7 +98,13 @@ export default function HighRiskWarning() {
               <Button 
                 variant="outline" 
                 className="w-full"
-                onClick={() => setShowWarning(false)}
+                onClick={() => {
+                  // Mark this warning as seen for this particle range
+                  const particleRange = Math.floor(stats!.currentParticleCount / 0.5) * 0.5;
+                  const warningKey = `high-risk-warning-seen-${particleRange}`;
+                  localStorage.setItem(warningKey, 'true');
+                  setShowWarning(false);
+                }}
                 data-testid="button-close-warning"
               >
                 I Understand the Risk
