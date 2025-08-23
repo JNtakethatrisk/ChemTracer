@@ -8,7 +8,7 @@ import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Form, FormControl, FormField, FormItem, FormLabel, FormMessage } from "@/components/ui/form";
 import { Input } from "@/components/ui/input";
 import { useToast } from "@/hooks/use-toast";
-import { insertMicroplasticEntrySchema, type InsertMicroplasticEntry } from "@shared/schema";
+import { insertMicroplasticEntrySchema, type InsertMicroplasticEntry, type MicroplasticEntry } from "@shared/schema";
 import { MICROPLASTIC_SOURCES, getWeekStart, getWeekLabel } from "@/lib/calculations";
 import { apiRequest } from "@/lib/queryClient";
 
@@ -25,7 +25,11 @@ const formSchema = insertMicroplasticEntrySchema.extend({
   plasticKitchenware: insertMicroplasticEntrySchema.shape.plasticKitchenware.default(0),
 });
 
-export default function WeeklyInputForm() {
+interface WeeklyInputFormProps {
+  onSuccess?: (entry: MicroplasticEntry) => void;
+}
+
+export default function WeeklyInputForm({ onSuccess }: WeeklyInputFormProps) {
   const [showExpanded, setShowExpanded] = useState(false);
   const { toast } = useToast();
   const queryClient = useQueryClient();
@@ -55,7 +59,7 @@ export default function WeeklyInputForm() {
       const response = await apiRequest("POST", "/api/microplastic-entries", data);
       return response.json();
     },
-    onSuccess: () => {
+    onSuccess: (data: MicroplasticEntry) => {
       queryClient.invalidateQueries({ queryKey: ["/api/microplastic-entries"] });
       queryClient.invalidateQueries({ queryKey: ["/api/dashboard-stats"] });
       toast({
@@ -63,6 +67,10 @@ export default function WeeklyInputForm() {
         description: "Weekly data saved successfully",
       });
       form.reset();
+      // Trigger popup based on risk level
+      if (onSuccess) {
+        onSuccess(data);
+      }
     },
     onError: (error) => {
       toast({
@@ -80,7 +88,7 @@ export default function WeeklyInputForm() {
   const primarySources = MICROPLASTIC_SOURCES.slice(0, 5);
   const expandedSources = MICROPLASTIC_SOURCES.slice(5);
 
-  const renderSourceInput = (source: typeof MICROPLASTIC_SOURCES[0]) => (
+  const renderSourceInput = (source: any) => (
     <FormField
       key={source.key}
       control={form.control}
@@ -95,7 +103,7 @@ export default function WeeklyInputForm() {
             <Input
               type="number"
               placeholder="0"
-              value={field.value === 0 ? "" : field.value}
+              value={field.value === 0 ? "" : field.value || ""}
               onChange={(e) => {
                 const value = e.target.value;
                 if (value === "") {

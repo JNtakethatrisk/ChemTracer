@@ -14,24 +14,15 @@ interface DashboardStats {
   weeklyChange: number;
 }
 
-export default function SafeLevelNotification() {
-  const [showNotification, setShowNotification] = useState(false);
-  const [dismissed, setDismissed] = useState(false);
-  
-  const { data: stats } = useQuery<DashboardStats>({
-    queryKey: ["/api/dashboard-stats"],
-  });
+interface SafeLevelNotificationProps {
+  show: boolean;
+  particleCount: number;
+  onClose: () => void;
+}
 
-  useEffect(() => {
-    // Only show if user has low risk, has data, and hasn't dismissed it this session
-    if (stats?.currentRiskLevel === "Low" && stats?.currentParticleCount > 0 && !dismissed) {
-      setShowNotification(true);
-    } else {
-      setShowNotification(false);
-    }
-  }, [stats?.currentRiskLevel, stats?.currentParticleCount, dismissed]);
+export default function SafeLevelNotification({ show, particleCount, onClose }: SafeLevelNotificationProps) {
 
-  if (!showNotification || stats?.currentRiskLevel !== "Low" || !stats?.currentParticleCount || stats.currentParticleCount <= 0) {
+  if (!show) {
     return null;
   }
 
@@ -62,7 +53,7 @@ export default function SafeLevelNotification() {
               <CheckCircle className="h-4 w-4 text-green-600" />
               <AlertDescription className="text-sm text-green-800">
                 Your microplastic exposure is in the LOW RISK category with{" "}
-                <span className="font-bold">{stats.currentParticleCount.toFixed(1)} particles/mL</span>{" "}
+                <span className="font-bold">{particleCount.toFixed(1)} particles/mL</span>{" "}
                 in your bloodstream. Keep up the great work!
               </AlertDescription>
             </Alert>
@@ -80,10 +71,7 @@ export default function SafeLevelNotification() {
               <Button 
                 variant="outline" 
                 className="w-full border-green-500 text-green-700 hover:bg-green-50"
-                onClick={() => {
-                  setDismissed(true);
-                  setShowNotification(false);
-                }}
+                onClick={onClose}
                 data-testid="button-close-safe-notification"
               >
                 Continue Tracking

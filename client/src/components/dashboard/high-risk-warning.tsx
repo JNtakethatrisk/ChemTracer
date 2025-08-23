@@ -14,24 +14,15 @@ interface DashboardStats {
   weeklyChange: number;
 }
 
-export default function HighRiskWarning() {
-  const [showWarning, setShowWarning] = useState(false);
-  const [dismissed, setDismissed] = useState(false);
-  
-  const { data: stats } = useQuery<DashboardStats>({
-    queryKey: ["/api/dashboard-stats"],
-  });
+interface HighRiskWarningProps {
+  show: boolean;
+  particleCount: number;
+  onClose: () => void;
+}
 
-  useEffect(() => {
-    // Only show if user has high risk, has data, and hasn't dismissed it this session
-    if (stats?.currentRiskLevel === "High" && stats?.currentParticleCount > 0 && !dismissed) {
-      setShowWarning(true);
-    } else {
-      setShowWarning(false);
-    }
-  }, [stats?.currentRiskLevel, stats?.currentParticleCount, dismissed]);
+export default function HighRiskWarning({ show, particleCount, onClose }: HighRiskWarningProps) {
 
-  if (!showWarning || stats?.currentRiskLevel !== "High" || !stats?.currentParticleCount || stats.currentParticleCount <= 0) {
+  if (!show) {
     return null;
   }
 
@@ -61,7 +52,7 @@ export default function HighRiskWarning() {
             <Alert className="border-red-200 bg-red-50">
               <AlertDescription className="text-sm text-red-800">
                 Your microplastic exposure level is in the HIGH RISK category with{" "}
-                <span className="font-bold">{stats.currentParticleCount.toFixed(1)} particles/mL</span>{" "}
+                <span className="font-bold">{particleCount.toFixed(1)} particles/mL</span>{" "}
                 in your bloodstream. Immediate action is recommended to reduce exposure.
               </AlertDescription>
             </Alert>
@@ -79,10 +70,7 @@ export default function HighRiskWarning() {
               <Button 
                 variant="outline" 
                 className="w-full"
-                onClick={() => {
-                  setDismissed(true);
-                  setShowWarning(false);
-                }}
+                onClick={onClose}
                 data-testid="button-close-warning"
               >
                 I Understand the Risk

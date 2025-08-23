@@ -14,9 +14,23 @@ import SafeLevelNotification from "@/components/dashboard/safe-level-notificatio
 import { MicroplasticEntry } from "@shared/schema";
 
 export default function Dashboard() {
+  const [showHighRiskWarning, setShowHighRiskWarning] = useState(false);
+  const [showSafeLevelNotification, setShowSafeLevelNotification] = useState(false);
+  const [currentParticleCount, setCurrentParticleCount] = useState(0);
+
   const { data: entries = [] } = useQuery<MicroplasticEntry[]>({
     queryKey: ["/api/microplastic-entries"],
   });
+
+  const handleFormSuccess = (entry: MicroplasticEntry) => {
+    if (entry.riskLevel === "High") {
+      setCurrentParticleCount(entry.totalParticles);
+      setShowHighRiskWarning(true);
+    } else if (entry.riskLevel === "Low") {
+      setCurrentParticleCount(entry.totalParticles);
+      setShowSafeLevelNotification(true);
+    }
+  };
 
   const handleExportData = () => {
     if (entries.length === 0) {
@@ -43,10 +57,18 @@ export default function Dashboard() {
   return (
     <div className="min-h-screen bg-background">
       {/* High Risk Warning Modal */}
-      <HighRiskWarning />
+      <HighRiskWarning
+        show={showHighRiskWarning}
+        particleCount={currentParticleCount}
+        onClose={() => setShowHighRiskWarning(false)}
+      />
       
       {/* Safe Level Notification */}
-      <SafeLevelNotification />
+      <SafeLevelNotification
+        show={showSafeLevelNotification}
+        particleCount={currentParticleCount}
+        onClose={() => setShowSafeLevelNotification(false)}
+      />
       
       {/* Header */}
       <header className="bg-white shadow-sm border-b border-gray-200">
@@ -87,7 +109,7 @@ export default function Dashboard() {
         <div className="grid grid-cols-1 xl:grid-cols-3 gap-6 mt-8">
           {/* Weekly Input Form */}
           <div className="xl:col-span-1">
-            <WeeklyInputForm />
+            <WeeklyInputForm onSuccess={handleFormSuccess} />
           </div>
 
           {/* Charts Section */}
