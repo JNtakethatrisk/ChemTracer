@@ -1,0 +1,88 @@
+Title
+
+Fix time-series “Monthly Trend” chart: correct aggregation + granular views (Week / Month / Year)
+
+Summary
+
+The “Monthly Trend” chart should accurately summarize Microplastic Intake (p/mL) over different time ranges with consistent aggregation, labels, and tooltips. Today the plot shows misleading zeros and uneven scaling. Implement week/month/year granular views with clear rules for aggregation and missing data.
+
+Environment
+
+Frontend: React (Recharts or equivalent)
+
+Data: time-stamped samples { timestamp, intakePml }
+
+Time zone: user local (PST/PDT) unless specified
+
+Current Behavior (buggy)
+
+Points at 0.0 p/mL appear where no sample exists (nulls treated as 0).
+
+Axis labels don’t reflect the selected range (3M/6M/1Y) consistently.
+
+Tooltips sometimes show a single timestamp even when the point represents a period aggregate.
+
+Dotted threshold lines don’t scale with y-axis domain, making the plot look flat.
+
+Expected Behavior
+
+When the user selects a granularity…
+
+Week view: show last 8 full weeks, daily resolution; each point = daily mean of intake (p/mL).
+
+Month view (default): show last 6 full months, weekly resolution; each point = weekly mean (Mon–Sun).
+
+Year view: show last 12 months, monthly resolution; each point = calendar-month mean.
+
+Aggregation & Data Rules
+
+Aggregation function: arithmetic mean of all samples in the bucket (p/mL).
+(If you prefer median, specify it; I’m fine with mean.)
+
+Missing buckets: display gaps (no point/line) or a dashed line segment—do not coerce to 0.
+
+Single sample bucket: still render (with correct tooltip).
+
+Outliers: no clipping; autoscale y-axis but always include threshold lines.
+
+Units: always “p/mL”.
+
+Time zone: bucket boundaries in user local time.
+
+UI/UX Requirements
+
+Toggle buttons: Week / Month / Year (active state shown).
+
+X-axis ticks:
+
+Week view: Mon 8/19, Tue 8/20, … (or every 2–3 days if dense).
+
+Month view: Week of Aug 19.
+
+Year view: Aug 2025, Sep 2025, ….
+
+Y-axis: nice ticks, autoscale with 10–15% headroom above max(data, thresholds).
+
+Threshold lines: keep the two dashed lines; label them at right edge (e.g., “Caution 3 p/mL”, “Goal 2 p/mL”).
+
+Tooltips:
+
+Week view: Aug 22 — 3.4 p/mL (exact day)
+
+Month view: Week of Aug 19 — 2.1 p/mL
+
+Year view: August 2025 — 2.8 p/mL
+
+Legend: “Microplastic Intake (mean)”.
+
+Acceptance Criteria (what to verify)
+
+Switching Week/Month/Year changes bucket size and x-axis labels accordingly.
+
+Buckets with no samples produce no point (or a visible gap), not 0.0.
+
+Tooltips show the period label that matches the bucket (day, week range, or month name) and the mean in p/mL.
+
+Threshold lines and y-axis scale remain visible and sensible for sparse/high-variance data.
+
+Visual regression: with a dataset containing (a) gaps, (b) a spike, (c) steady values, the chart remains readable in all three modes

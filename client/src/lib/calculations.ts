@@ -159,3 +159,149 @@ export function getSubmissionDateLabel(createdAt: string): string {
     minute: '2-digit'
   });
 }
+
+// Time bucketing and aggregation functions for chart granularities
+export type ChartGranularity = 'Week' | 'Month' | 'Year';
+
+export interface TimeBucket {
+  key: string;
+  label: string;
+  startDate: Date;
+  endDate: Date;
+  samples: { timestamp: Date; intakePml: number }[];
+  mean: number | null;
+}
+
+// Get time buckets for different granularities
+export function getTimeBuckets(granularity: ChartGranularity): TimeBucket[] {
+  const now = new Date();
+  const buckets: TimeBucket[] = [];
+
+  switch (granularity) {
+    case 'Week': {
+      // Last 8 full weeks, daily resolution
+      for (let i = 7; i >= 0; i--) {
+        const date = new Date(now);
+        date.setDate(now.getDate() - i);
+        date.setHours(0, 0, 0, 0);
+        
+        const endDate = new Date(date);
+        endDate.setDate(date.getDate() + 1);
+        endDate.setMilliseconds(-1);
+        
+        buckets.push({
+          key: `day-${date.getTime()}`,
+          label: date.toLocaleDateString('en-US', { 
+            weekday: 'short',
+            month: 'numeric',
+            day: 'numeric'
+          }),
+          startDate: date,
+          endDate: endDate,
+          samples: [],
+          mean: null
+        });
+      }
+      break;
+    }
+    
+    case 'Month': {
+      // Last 6 full months, weekly resolution
+      for (let i = 5; i >= 0; i--) {
+        const startOfWeek = new Date(now);
+        startOfWeek.setDate(now.getDate() - (i * 7) - now.getDay());
+        startOfWeek.setHours(0, 0, 0, 0);
+        
+        const endOfWeek = new Date(startOfWeek);
+        endOfWeek.setDate(startOfWeek.getDate() + 6);
+        endOfWeek.setHours(23, 59, 59, 999);
+        
+        buckets.push({
+          key: `week-${startOfWeek.getTime()}`,
+          label: `Week of ${startOfWeek.toLocaleDateString('en-US', { month: 'short', day: 'numeric' })}`,
+          startDate: startOfWeek,
+          endDate: endOfWeek,
+          samples: [],
+          mean: null
+        });
+      }
+      break;
+    }
+    
+    case 'Year': {
+      // Last 12 months, monthly resolution
+      for (let i = 11; i >= 0; i--) {
+        const startOfMonth = new Date(now.getFullYear(), now.getMonth() - i, 1);
+        const endOfMonth = new Date(now.getFullYear(), now.getMonth() - i + 1, 0, 23, 59, 59, 999);
+        
+        buckets.push({
+          key: `month-${startOfMonth.getTime()}`,
+          label: startOfMonth.toLocaleDateString('en-US', { 
+            month: 'short', 
+            year: 'numeric' 
+          }),
+          startDate: startOfMonth,
+          endDate: endOfMonth,
+          samples: [],
+          mean: null
+        });
+      }
+      break;
+    }
+  }
+
+  return buckets;
+}
+
+// Aggregate samples into time buckets
+export function aggregateDataIntoBuckets(entries: any[], granularity: ChartGranularity) {
+  const buckets = getTimeBuckets(granularity);
+  
+  // Convert entries to samples
+  const samples = entries.map(entry => ({
+    timestamp: new Date(entry.createdAt),
+    intakePml: entry.totalParticles
+  }));
+
+  // Distribute samples into buckets
+  samples.forEach(sample => {
+    const bucket = buckets.find(b => 
+      sample.timestamp >= b.startDate && sample.timestamp <= b.endDate
+    );
+    if (bucket) {
+      bucket.samples.push(sample);
+    }
+  });
+
+  // Calculate means for buckets with samples
+  buckets.forEach(bucket => {
+    if (bucket.samples.length > 0) {
+      bucket.mean = bucket.samples.reduce((sum, sample) => sum + sample.intakePml, 0) / bucket.samples.length;
+    }
+  });
+
+  // Return only buckets with data (no fake zeros)
+  return buckets
+    .filter(bucket => bucket.mean !== null)
+    .map(bucket => ({
+      key: bucket.key,
+      label: bucket.label,
+      particles: bucket.mean!,
+      sampleCount: bucket.samples.length
+    }));
+}
+
+// Calculate Y-axis domain with headroom
+export function calculateYAxisDomain(data: number[], thresholds: number[]): [number, number] {
+  if (data.length === 0) {
+    const maxThreshold = Math.max(...thresholds);
+    return [0, maxThreshold * 1.15];
+  }
+  
+  const maxData = Math.max(...data);
+  const maxThreshold = Math.max(...thresholds);
+  const maxValue = Math.max(maxData, maxThreshold);
+  
+  // Add 15% headroom above the max value
+  return [0, maxValue * 1.15];
+}
