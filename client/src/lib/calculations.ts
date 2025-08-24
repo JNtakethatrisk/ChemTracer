@@ -179,8 +179,8 @@ export function getTimeBuckets(granularity: ChartGranularity): TimeBucket[] {
 
   switch (granularity) {
     case 'Week': {
-      // Last 8 full weeks, daily resolution
-      for (let i = 7; i >= 0; i--) {
+      // Last 7 days, daily resolution
+      for (let i = 6; i >= 0; i--) {
         const date = new Date(now);
         date.setDate(now.getDate() - i);
         date.setHours(0, 0, 0, 0);
@@ -206,8 +206,8 @@ export function getTimeBuckets(granularity: ChartGranularity): TimeBucket[] {
     }
     
     case 'Month': {
-      // Last 6 full months, weekly resolution
-      for (let i = 5; i >= 0; i--) {
+      // Last 4 weeks, weekly resolution
+      for (let i = 3; i >= 0; i--) {
         const startOfWeek = new Date(now);
         startOfWeek.setDate(now.getDate() - (i * 7) - now.getDay());
         startOfWeek.setHours(0, 0, 0, 0);

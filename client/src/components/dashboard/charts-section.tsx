@@ -95,8 +95,8 @@ export default function ChartsSection() {
                 Microplastic Intake Trend
               </CardTitle>
               <p className="text-sm text-gray-500 mt-1">
-                {granularity === 'Week' && 'Daily averages over last 8 days'}
-                {granularity === 'Month' && 'Weekly averages over last 6 weeks'}
+                {granularity === 'Week' && 'Daily averages over last 7 days'}
+                {granularity === 'Month' && 'Weekly averages over last 4 weeks'}
                 {granularity === 'Year' && 'Monthly averages over last 12 months'}
               </p>
             </div>
