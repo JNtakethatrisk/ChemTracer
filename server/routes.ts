@@ -52,6 +52,12 @@ export async function registerRoutes(app: Express): Promise<Server> {
     res.status(200).json({ status: "ok", message: "Microplastic Tracker API" });
   });
 
+  // Get current user IP (for cache invalidation)
+  app.get("/api/user-ip", (req, res) => {
+    const userIp = req.ip || req.connection.remoteAddress || '127.0.0.1';
+    res.json({ ip: userIp });
+  });
+
   // Get all microplastic entries
   app.get("/api/microplastic-entries", async (req, res) => {
     try {
