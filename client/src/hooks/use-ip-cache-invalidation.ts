@@ -2,32 +2,51 @@ import { useEffect } from 'react';
 import { useQuery } from '@tanstack/react-query';
 import { queryClient } from '@/lib/queryClient';
 
-interface IPResponse {
+interface SessionResponse {
   ip: string;
+  sessionId: string;
+  isNewSession: boolean;
 }
 
-export function useIPCacheInvalidation() {
-  // Fetch current IP
-  const { data: ipData } = useQuery<IPResponse>({
-    queryKey: ['/api/user-ip'],
+export function useSessionCacheInvalidation() {
+  // Fetch current session info
+  const { data: sessionData } = useQuery<SessionResponse>({
+    queryKey: ['/api/user-session'],
     staleTime: 0, // Always fresh check
     refetchOnWindowFocus: false,
   });
 
   useEffect(() => {
-    if (!ipData?.ip) return;
+    if (!sessionData?.sessionId) return;
 
-    const currentIp = ipData.ip;
-    const storedIp = localStorage.getItem('microplastic-tracker-ip');
+    const currentSessionId = sessionData.sessionId;
+    const storedSessionId = localStorage.getItem('microplastic-tracker-session');
 
-    // If this is a new IP, clear all cached data
-    if (storedIp && storedIp !== currentIp) {
-      console.log('New IP detected, clearing cache for fresh slate');
+    console.log('Session Check:', { 
+      currentSessionId, 
+      storedSessionId, 
+      isNewSession: !storedSessionId || storedSessionId !== currentSessionId 
+    });
+
+    // Clear cache for any new session (including first visit)
+    if (!storedSessionId || storedSessionId !== currentSessionId) {
+      console.log('New session detected, clearing cache for fresh slate');
+      
+      // Clear all React Query cache
       queryClient.clear();
+      
+      // Clear all localStorage except for theme preferences
+      const theme = localStorage.getItem('theme');
       localStorage.clear();
+      if (theme) {
+        localStorage.setItem('theme', theme);
+      }
+      
+      // Force refetch all queries
+      queryClient.invalidateQueries();
     }
 
-    // Store the current IP
-    localStorage.setItem('microplastic-tracker-ip', currentIp);
-  }, [ipData?.ip]);
+    // Store the current session ID
+    localStorage.setItem('microplastic-tracker-session', currentSessionId);
+  }, [sessionData?.sessionId]);
 }

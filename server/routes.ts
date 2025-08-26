@@ -52,10 +52,19 @@ export async function registerRoutes(app: Express): Promise<Server> {
     res.status(200).json({ status: "ok", message: "Microplastic Tracker API" });
   });
 
-  // Get current user IP (for cache invalidation)
-  app.get("/api/user-ip", (req, res) => {
+  // Get current user session (for cache invalidation)
+  app.get("/api/user-session", (req, res) => {
     const userIp = req.ip || req.connection.remoteAddress || '127.0.0.1';
-    res.json({ ip: userIp });
+    const userAgent = req.headers['user-agent'] || 'unknown';
+    
+    // Create a more unique identifier combining IP, user agent, and timestamp
+    const sessionId = Buffer.from(`${userIp}-${userAgent}-${Date.now()}`).toString('base64').substring(0, 16);
+    
+    res.json({ 
+      ip: userIp,
+      sessionId: sessionId,
+      isNewSession: true
+    });
   });
 
   // Get all microplastic entries
