@@ -19,7 +19,7 @@ interface WeeklyInputFormProps {}
 const formSchema = z.object({
   bottledWater: z.number().int().min(0).default(0),
   seafood: z.number().int().min(0).default(0),
-  salt: z.number().int().min(0).default(0),
+  salt: z.number().min(0).default(0),
   plasticPackaged: z.number().int().min(0).default(0),
   teaBags: z.number().int().min(0).default(0),
   householdDust: z.number().int().min(0).default(0),

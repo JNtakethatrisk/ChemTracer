@@ -144,6 +144,9 @@ export async function registerRoutes(app: Express): Promise<Server> {
 
   // Create new microplastic entry
   app.post("/api/microplastic-entries", async (req, res) => {
+    console.log("POST /api/microplastic-entries - Request body:", req.body);
+    console.log("POST /api/microplastic-entries - Headers:", req.headers);
+    
     try {
       const validatedData = insertMicroplasticEntrySchema.parse(req.body);
       
@@ -151,18 +154,23 @@ export async function registerRoutes(app: Express): Promise<Server> {
       const riskLevel = getRiskLevel(totalParticles);
       
       const userIp = getUserIp(req);
+      console.log("Creating entry for IP:", userIp);
+      
       const entry = await storage.createMicroplasticEntry(userIp, {
         ...validatedData,
         totalParticles,
         riskLevel,
       });
       
+      console.log("Entry created successfully:", entry);
       res.status(201).json(entry);
     } catch (error) {
+      console.error("Error creating microplastic entry:", error);
       if (error instanceof z.ZodError) {
+        console.error("Validation errors:", error.errors);
         res.status(400).json({ message: "Validation error", errors: error.errors });
       } else {
-        res.status(500).json({ message: "Failed to create entry" });
+        res.status(500).json({ message: "Failed to create entry", error: error.message });
       }
     }
   });
@@ -323,6 +331,9 @@ export async function registerRoutes(app: Express): Promise<Server> {
 
   // Create new PFA entry
   app.post("/api/pfa-entries", async (req, res) => {
+    console.log("POST /api/pfa-entries - Request body:", req.body);
+    console.log("POST /api/pfa-entries - Headers:", req.headers);
+    
     try {
       const validatedData = insertPfaEntrySchema.parse(req.body);
       
@@ -330,18 +341,23 @@ export async function registerRoutes(app: Express): Promise<Server> {
       const riskLevel = getPfaRiskLevel(totalPfas);
       
       const userIp = getUserIp(req);
+      console.log("Creating PFA entry for IP:", userIp);
+      
       const entry = await storage.createPfaEntry(userIp, {
         ...validatedData,
         totalPfas,
         riskLevel,
       });
       
+      console.log("PFA entry created successfully:", entry);
       res.status(201).json(entry);
     } catch (error) {
+      console.error("Error creating PFA entry:", error);
       if (error instanceof z.ZodError) {
+        console.error("PFA validation errors:", error.errors);
         res.status(400).json({ message: "Validation error", errors: error.errors });
       } else {
-        res.status(500).json({ message: "Failed to create PFA entry" });
+        res.status(500).json({ message: "Failed to create PFA entry", error: error.message });
       }
     }
   });
