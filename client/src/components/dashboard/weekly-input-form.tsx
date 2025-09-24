@@ -2,45 +2,41 @@ import { useState } from "react";
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { useMutation, useQueryClient } from "@tanstack/react-query";
-import { ChevronDown, ChevronUp } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Form, FormControl, FormField, FormItem, FormLabel, FormMessage } from "@/components/ui/form";
 import { Input } from "@/components/ui/input";
 import { useToast } from "@/hooks/use-toast";
 import { insertMicroplasticEntrySchema, type InsertMicroplasticEntry, type MicroplasticEntry } from "@shared/schema";
-import { MICROPLASTIC_SOURCES, getWeekStart, getWeekLabel } from "@/lib/calculations";
+import { getWeekStart, getWeekLabel } from "@/lib/calculations";
 import { apiRequest } from "@/lib/queryClient";
+import { z } from "zod";
+import { MICROPLASTIC_SOURCES, calculateTotalParticles } from "@/lib/microplastic-sources";
 
-const formSchema = insertMicroplasticEntrySchema.extend({
-  bottledWater: insertMicroplasticEntrySchema.shape.bottledWater.default(0),
-  seafood: insertMicroplasticEntrySchema.shape.seafood.default(0),
-  salt: insertMicroplasticEntrySchema.shape.salt.default(0),
-  plasticPackaged: insertMicroplasticEntrySchema.shape.plasticPackaged.default(0),
-  teaBags: insertMicroplasticEntrySchema.shape.teaBags.default(0),
-  householdDust: insertMicroplasticEntrySchema.shape.householdDust.default(0),
-  syntheticClothing: insertMicroplasticEntrySchema.shape.syntheticClothing.default(0),
-  cannedFood: insertMicroplasticEntrySchema.shape.cannedFood.default(0),
-  cosmetics: insertMicroplasticEntrySchema.shape.cosmetics.default(0),
-  plasticKitchenware: insertMicroplasticEntrySchema.shape.plasticKitchenware.default(0),
+interface WeeklyInputFormProps {}
+
+// Define the form schema with all the new sources - only whole numbers
+const formSchema = z.object({
+  bottledWater: z.number().int().min(0).default(0),
+  seafood: z.number().int().min(0).default(0),
+  salt: z.number().int().min(0).default(0),
+  plasticPackaged: z.number().int().min(0).default(0),
+  teaBags: z.number().int().min(0).default(0),
+  householdDust: z.number().int().min(0).default(0),
+  syntheticClothing: z.number().int().min(0).default(0),
+  cannedFood: z.number().int().min(0).default(0),
+  plasticKitchenware: z.number().int().min(0).default(0),
+  coffeeCups: z.number().int().min(0).default(0),
+  takeoutContainers: z.number().int().min(0).default(0),
 });
 
-interface WeeklyInputFormProps {
-  onSuccess?: (entry: MicroplasticEntry) => void;
-}
-
-export default function WeeklyInputForm({ onSuccess }: WeeklyInputFormProps) {
-  const [showExpanded, setShowExpanded] = useState(false);
+export function WeeklyInputForm({}: WeeklyInputFormProps) {
   const { toast } = useToast();
   const queryClient = useQueryClient();
 
-  const currentWeekStart = getWeekStart(new Date());
-  const weekLabel = getWeekLabel(currentWeekStart);
-
-  const form = useForm<InsertMicroplasticEntry>({
+  const form = useForm<z.infer<typeof formSchema>>({
     resolver: zodResolver(formSchema),
     defaultValues: {
-      weekStart: currentWeekStart,
       bottledWater: 0,
       seafood: 0,
       salt: 0,
@@ -49,135 +45,139 @@ export default function WeeklyInputForm({ onSuccess }: WeeklyInputFormProps) {
       householdDust: 0,
       syntheticClothing: 0,
       cannedFood: 0,
-      cosmetics: 0,
       plasticKitchenware: 0,
+      coffeeCups: 0,
+      takeoutContainers: 0,
     },
   });
 
   const createEntryMutation = useMutation({
-    mutationFn: async (data: InsertMicroplasticEntry) => {
-      const response = await apiRequest("POST", "/api/microplastic-entries", data);
-      return response.json();
+    mutationFn: async (data: z.infer<typeof formSchema>) => {
+      // Calculate total particles
+      const totalParticles = calculateTotalParticles(data, MICROPLASTIC_SOURCES);
+      
+      // Create entry data with all fields
+      const entryData: InsertMicroplasticEntry = {
+        weekStart: getWeekStart(new Date()),
+        bottledWater: data.bottledWater || 0,
+        seafood: data.seafood || 0,
+        salt: data.salt || 0,
+        plasticPackaged: data.plasticPackaged || 0,
+        teaBags: data.teaBags || 0,
+        householdDust: data.householdDust || 0,
+        syntheticClothing: data.syntheticClothing || 0,
+        cannedFood: data.cannedFood || 0,
+        plasticKitchenware: data.plasticKitchenware || 0,
+        coffeeCups: data.coffeeCups || 0,
+        takeoutContainers: data.takeoutContainers || 0,
+      };
+
+      const response = await apiRequest("POST", "/api/microplastic-entries", entryData);
+      const result = await response.json();
+      return result as MicroplasticEntry;
     },
-    onSuccess: (data: MicroplasticEntry) => {
+    onSuccess: (data) => {
+      toast({
+        title: "Entry created successfully",
+        description: `Week of ${getWeekLabel(new Date().toISOString())} recorded`,
+      });
       queryClient.invalidateQueries({ queryKey: ["/api/microplastic-entries"] });
       queryClient.invalidateQueries({ queryKey: ["/api/dashboard-stats"] });
-      toast({
-        title: "Success",
-        description: "Weekly data saved successfully",
-      });
-      form.reset();
-      // Trigger popup based on risk level
-      if (onSuccess) {
-        onSuccess(data);
-      }
     },
     onError: (error) => {
       toast({
-        title: "Error",
-        description: error.message || "Failed to save weekly data",
+        title: "Error creating entry",
+        description: error instanceof Error ? error.message : "Unknown error",
         variant: "destructive",
       });
     },
   });
 
-  const onSubmit = (data: InsertMicroplasticEntry) => {
+  const onSubmit = (data: z.infer<typeof formSchema>) => {
     createEntryMutation.mutate(data);
   };
 
-  const primarySources = MICROPLASTIC_SOURCES.slice(0, 5);
-  const expandedSources = MICROPLASTIC_SOURCES.slice(5);
+  const handleInputChange = (e: React.ChangeEvent<HTMLInputElement>, field: any) => {
+    const value = e.target.value;
+    // Allow empty string for clearing, but prevent negative values and decimals
+    if (value === '' || value === '0') {
+      field.onChange(0);
+    } else {
+      const numValue = parseInt(value, 10);
+      if (!isNaN(numValue) && numValue >= 0 && Number.isInteger(numValue)) {
+        field.onChange(numValue);
+      }
+    }
+  };
 
-  const renderSourceInput = (source: any) => (
-    <FormField
-      key={source.key}
-      control={form.control}
-      name={source.key as keyof InsertMicroplasticEntry}
-      render={({ field }) => (
-        <FormItem className="space-y-2">
-          <FormLabel className="block text-sm font-medium text-gray-700">
-            <i className={`${source.icon} ${source.color} mr-2`}></i>
-            {source.label} ({source.unit})
-          </FormLabel>
-          <FormControl>
-            <Input
-              type="number"
-              placeholder="0"
-              value={field.value === 0 ? "" : field.value || ""}
-              onChange={(e) => {
-                const value = e.target.value;
-                if (value === "") {
-                  field.onChange("");
-                } else {
-                  field.onChange(Number(value) || 0);
-                }
-              }}
-              onBlur={(e) => {
-                if (e.target.value === "") {
-                  field.onChange(0);
-                }
-              }}
-              data-testid={`input-${source.key}`}
-            />
-          </FormControl>
-          <p className="text-xs text-gray-500">{source.description}</p>
-          <FormMessage />
-        </FormItem>
-      )}
-    />
-  );
+  const handleKeyDown = (e: React.KeyboardEvent<HTMLInputElement>) => {
+    // Prevent negative signs, decimal points, and scientific notation
+    if (e.key === '-' || e.key === 'e' || e.key === 'E' || e.key === '.' || e.key === '+') {
+      e.preventDefault();
+    }
+  };
+
+  const handleBlur = (e: React.FocusEvent<HTMLInputElement>, field: any) => {
+    const value = e.target.value;
+    const numValue = parseInt(value, 10);
+    if (value === '' || isNaN(numValue) || numValue < 0 || !Number.isInteger(numValue)) {
+      field.onChange(0);
+      e.target.value = "0";
+    }
+  };
 
   return (
-    <Card>
+    <Card className="border-blue-200 bg-blue-50">
       <CardHeader>
-        <div className="flex items-center justify-between">
-          <CardTitle className="text-lg font-semibold text-gray-900">Weekly Input</CardTitle>
-          <span className="text-sm text-gray-500" data-testid="text-current-week">
-            Week of {weekLabel}
-          </span>
-        </div>
+        <CardTitle className="text-lg font-semibold text-blue-800">Weekly Microplastic Input</CardTitle>
+        <p className="text-sm text-blue-600">
+          Enter your weekly consumption for each source. Only whole numbers allowed (no decimals).
+        </p>
       </CardHeader>
+      
       <CardContent>
         <Form {...form}>
-          <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-4">
-            {/* Primary Sources */}
-            {primarySources.map((source) => renderSourceInput(source))}
-
-            {/* Expand Toggle */}
-            <div className="pt-2">
-              <Button
-                type="button"
-                variant="ghost"
-                onClick={() => setShowExpanded(!showExpanded)}
-                className="text-primary hover:text-primary/90 p-0 h-auto"
-                data-testid="button-toggle-sources"
-              >
-                {showExpanded ? (
-                  <>
-                    <ChevronUp className="mr-2 h-4 w-4" />
-                    Show fewer sources
-                  </>
-                ) : (
-                  <>
-                    <ChevronDown className="mr-2 h-4 w-4" />
-                    Show {expandedSources.length} more sources
-                  </>
-                )}
-              </Button>
+          <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-6">
+            {/* Scrollable container for all sources */}
+            <div className="max-h-96 overflow-y-auto scrollbar-thin space-y-4 pr-2">
+              {MICROPLASTIC_SOURCES.map((source) => (
+                <FormField
+                  key={source.key}
+                  control={form.control}
+                  name={source.key as keyof z.infer<typeof formSchema>}
+                  render={({ field }) => (
+                    <FormItem>
+                      <FormLabel className="flex items-center gap-2">
+                        <span className="text-lg">{source.icon}</span>
+                        <span className="font-medium text-blue-800">{source.label}</span>
+                        <span className="text-sm text-blue-600">({source.unit})</span>
+                      </FormLabel>
+                      <FormControl>
+                        <Input
+                          {...field}
+                          type="number"
+                          min="0"
+                          step="1"
+                          placeholder="0"
+                          value={field.value || ''}
+                          onChange={(e) => handleInputChange(e, field)}
+                          onKeyDown={handleKeyDown}
+                          onBlur={(e) => handleBlur(e, field)}
+                          className="w-full border-blue-300 focus:border-blue-500 focus:ring-blue-500"
+                        />
+                      </FormControl>
+                      <FormMessage />
+                    </FormItem>
+                  )}
+                />
+              ))}
             </div>
 
-            {/* Expanded Sources */}
-            {showExpanded && (
-              <div className="space-y-4 pt-4 border-t border-gray-200">
-                {expandedSources.map((source) => renderSourceInput(source))}
-              </div>
-            )}
-
-            {/* Submit Buttons */}
+            {/* Submit Button */}
             <div className="pt-4 space-y-3">
               <Button
                 type="submit"
-                className="w-full bg-primary hover:bg-primary/90"
+                className="w-full bg-blue-600 hover:bg-blue-700 text-white"
                 disabled={createEntryMutation.isPending}
                 data-testid="button-calculate-week"
               >
@@ -190,3 +190,5 @@ export default function WeeklyInputForm({ onSuccess }: WeeklyInputFormProps) {
     </Card>
   );
 }
+
+export default WeeklyInputForm;

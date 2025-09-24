@@ -3,7 +3,7 @@ import { Lightbulb, Target } from "lucide-react";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Progress } from "@/components/ui/progress";
 import { MicroplasticEntry, RISK_LEVELS } from "@shared/schema";
-import { getSourceBreakdown } from "@/lib/calculations";
+import { getSourceBreakdown } from "@/lib/microplastic-sources";
 
 interface DashboardStats {
   currentRiskLevel: string;
@@ -109,7 +109,7 @@ export default function InsightsSection() {
     // Risk level reduction goal
     if (stats.currentParticleCount > RISK_LEVELS.LOW.max) {
       const targetReduction = stats.currentParticleCount - RISK_LEVELS.LOW.max;
-      const currentProgress = Math.max(0, (RISK_LEVELS.MEDIUM.max - stats.currentParticleCount) / (RISK_LEVELS.MEDIUM.max - RISK_LEVELS.LOW.max) * 100);
+      const currentProgress = Math.max(0, (RISK_LEVELS.NORMAL.max - stats.currentParticleCount) / (RISK_LEVELS.NORMAL.max - RISK_LEVELS.LOW.max) * 100);
       
       goals.push({
         title: "Reduce to Low Risk",

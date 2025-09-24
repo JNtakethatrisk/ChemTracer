@@ -1,135 +1,31 @@
 import { RISK_LEVELS } from "@shared/schema";
 
-export const MICROPLASTIC_SOURCES = [
-  {
-    key: "bottledWater",
-    label: "Bottled Water",
-    unit: "bottles/week",
-    icon: "fas fa-bottle-water",
-    color: "text-blue-500",
-    description: "High microplastic content",
-    conversionFactor: 0.12,
-  },
-  {
-    key: "seafood", 
-    label: "Seafood",
-    unit: "servings/week",
-    icon: "fas fa-fish",
-    color: "text-blue-600",
-    description: "Especially shellfish",
-    conversionFactor: 0.08,
-  },
-  {
-    key: "salt",
-    label: "Salt Usage", 
-    unit: "tsp/week",
-    icon: "fas fa-cube",
-    color: "text-gray-600",
-    description: "Sea salt & table salt",
-    conversionFactor: 0.02,
-  },
-  {
-    key: "plasticPackaged",
-    label: "Plastic-packaged Foods",
-    unit: "meals/week", 
-    icon: "fas fa-box",
-    color: "text-orange-500",
-    description: "Heat increases leaching",
-    conversionFactor: 0.06,
-  },
-  {
-    key: "teaBags",
-    label: "Tea Bags/Keurig Capsules",
-    unit: "cups/week",
-    icon: "fas fa-mug-hot", 
-    color: "text-green-600",
-    description: "Plastic-sealed bags and capsules",
-    conversionFactor: 0.15,
-  },
-  {
-    key: "householdDust",
-    label: "Household Dust Exposure",
-    unit: "hours indoors/day",
-    icon: "fas fa-home",
-    color: "text-gray-500", 
-    description: "Microfibers from synthetic materials",
-    conversionFactor: 0.001,
-  },
-  {
-    key: "syntheticClothing",
-    label: "Synthetic Clothing",
-    unit: "wears/week",
-    icon: "fas fa-tshirt",
-    color: "text-purple-500",
-    description: "Polyester, nylon, acrylic fibers",
-    conversionFactor: 0.03,
-  },
-  {
-    key: "cannedFood",
-    label: "Canned Foods", 
-    unit: "cans/week",
-    icon: "fas fa-can-food",
-    color: "text-red-500",
-    description: "Plastic resin linings",
-    conversionFactor: 0.04,
-  },
-  {
-    key: "cosmetics",
-    label: "Cosmetics Usage",
-    unit: "applications/week",
-    icon: "fas fa-palette",
-    color: "text-pink-500",
-    description: "Exfoliating scrubs, makeup",
-    conversionFactor: 0.01,
-  },
-  {
-    key: "plasticKitchenware", 
-    label: "Plastic Kitchenware",
-    unit: "uses/week",
-    icon: "fas fa-utensils",
-    color: "text-gray-700",
-    description: "Cutting boards, containers",
-    conversionFactor: 0.05,
-  },
-] as const;
+// MICROPLASTIC_SOURCES moved to microplastic-sources.ts
 
-export function calculateTotalParticles(data: Record<string, number>): number {
-  let total = 0;
-  
-  MICROPLASTIC_SOURCES.forEach(source => {
-    const value = data[source.key] || 0;
-    total += value * source.conversionFactor;
-  });
-  
-  return Math.round(total * 100) / 100;
-}
+// calculateTotalParticles moved to microplastic-sources.ts
 
 export function getRiskLevel(totalParticles: number): keyof typeof RISK_LEVELS {
   if (totalParticles < RISK_LEVELS.LOW.max) return "LOW";
-  if (totalParticles < RISK_LEVELS.MEDIUM.max) return "MEDIUM"; 
-  return "HIGH";
+  if (totalParticles < RISK_LEVELS.NORMAL.max) return "NORMAL";
+  if (totalParticles < RISK_LEVELS.HIGH.max) return "HIGH";
+  return "EXTREME";
 }
 
 export function getRiskLevelInfo(level: string) {
   switch (level) {
-    case "Low":
+    case "LOW":
       return RISK_LEVELS.LOW;
-    case "Medium":
-      return RISK_LEVELS.MEDIUM;
-    case "High":
+    case "NORMAL":
+      return RISK_LEVELS.NORMAL;
+    case "HIGH":
       return RISK_LEVELS.HIGH;
+    case "EXTREME":
+      return RISK_LEVELS.EXTREME;
     default:
       return RISK_LEVELS.LOW;
   }
 }
 
-export function getSourceBreakdown(data: Record<string, number>) {
-  return MICROPLASTIC_SOURCES.map(source => ({
-    ...source,
-    value: data[source.key] || 0,
-    particles: (data[source.key] || 0) * source.conversionFactor,
-  })).sort((a, b) => b.particles - a.particles);
-}
 
 export function formatDate(date: Date): string {
   return date.toISOString().split('T')[0];
@@ -138,8 +34,13 @@ export function formatDate(date: Date): string {
 export function getWeekStart(date: Date): string {
   const d = new Date(date);
   const day = d.getDay();
-  const diff = d.getDate() - day; 
-  return formatDate(new Date(d.setDate(diff)));
+  // Calculate days to subtract to get to Monday (start of week)
+  // Sunday = 0, Monday = 1, Tuesday = 2, etc.
+  // We want Monday to be the start of the week
+  const daysToSubtract = day === 0 ? 6 : day - 1; // Sunday goes back 6 days to Monday
+  const weekStart = new Date(d);
+  weekStart.setDate(d.getDate() - daysToSubtract);
+  return formatDate(weekStart);
 }
 
 export function getWeekLabel(weekStart: string): string {
@@ -193,7 +94,7 @@ export function getTimeBuckets(granularity: ChartGranularity): TimeBucket[] {
           key: `day-${date.getTime()}`,
           label: date.toLocaleDateString('en-US', { 
             weekday: 'short',
-            month: 'numeric',
+            month: 'short',
             day: 'numeric'
           }),
           startDate: date,
@@ -209,7 +110,9 @@ export function getTimeBuckets(granularity: ChartGranularity): TimeBucket[] {
       // Last 4 weeks, weekly resolution
       for (let i = 3; i >= 0; i--) {
         const startOfWeek = new Date(now);
-        startOfWeek.setDate(now.getDate() - (i * 7) - now.getDay());
+        // Calculate the start of the week (Monday) for each of the last 4 weeks
+        const daysToSubtract = startOfWeek.getDay() === 0 ? 6 : startOfWeek.getDay() - 1; // Get to Monday
+        startOfWeek.setDate(startOfWeek.getDate() - daysToSubtract - (i * 7));
         startOfWeek.setHours(0, 0, 0, 0);
         
         const endOfWeek = new Date(startOfWeek);
@@ -218,7 +121,7 @@ export function getTimeBuckets(granularity: ChartGranularity): TimeBucket[] {
         
         buckets.push({
           key: `week-${startOfWeek.getTime()}`,
-          label: `Week of ${startOfWeek.toLocaleDateString('en-US', { month: 'short', day: 'numeric' })}`,
+          label: `${startOfWeek.toLocaleDateString('en-US', { month: 'short', day: 'numeric' })} - ${endOfWeek.toLocaleDateString('en-US', { month: 'short', day: 'numeric' })}`,
           startDate: startOfWeek,
           endDate: endOfWeek,
           samples: [],
@@ -238,7 +141,7 @@ export function getTimeBuckets(granularity: ChartGranularity): TimeBucket[] {
           key: `month-${startOfMonth.getTime()}`,
           label: startOfMonth.toLocaleDateString('en-US', { 
             month: 'short', 
-            year: 'numeric' 
+            year: '2-digit' 
           }),
           startDate: startOfMonth,
           endDate: endOfMonth,
@@ -257,11 +160,23 @@ export function getTimeBuckets(granularity: ChartGranularity): TimeBucket[] {
 export function aggregateDataIntoBuckets(entries: any[], granularity: ChartGranularity) {
   const buckets = getTimeBuckets(granularity);
   
-  // Convert entries to samples
-  const samples = entries.map(entry => ({
-    timestamp: new Date(entry.createdAt),
-    intakePml: entry.totalParticles
-  }));
+  // Convert entries to samples - use weekStart for proper time bucketing
+  const samples = entries.map(entry => {
+    const particles = entry.totalParticles;
+    
+    // Only filter out truly invalid values, preserve extreme but valid data
+    const validatedParticles = typeof particles === 'number' && 
+      !isNaN(particles) && 
+      isFinite(particles) && 
+      particles >= 0 ? 
+      particles : // Keep the actual value, even if extreme
+      0;
+    
+    return {
+      timestamp: new Date(entry.weekStart),
+      intakePml: validatedParticles
+    };
+  });
 
   // Distribute samples into buckets
   samples.forEach(sample => {
@@ -291,17 +206,65 @@ export function aggregateDataIntoBuckets(entries: any[], granularity: ChartGranu
     }));
 }
 
-// Calculate Y-axis domain with headroom
+// Calculate Y-axis domain that shows accurate data while being readable
 export function calculateYAxisDomain(data: number[], thresholds: number[]): [number, number] {
-  if (data.length === 0) {
+  // Filter out only truly invalid values (NaN, Infinity, negative)
+  const validData = data.filter(value => 
+    typeof value === 'number' && 
+    !isNaN(value) && 
+    isFinite(value) && 
+    value >= 0
+  );
+  
+  if (validData.length === 0) {
     const maxThreshold = Math.max(...thresholds);
-    return [0, maxThreshold * 1.15];
+    return [0, Math.max(maxThreshold * 1.15, 5)]; // Minimum range of 5
   }
   
-  const maxData = Math.max(...data);
+  const maxData = Math.max(...validData);
   const maxThreshold = Math.max(...thresholds);
-  const maxValue = Math.max(maxData, maxThreshold);
+  const actualMax = Math.max(maxData, maxThreshold);
   
-  // Add 15% headroom above the max value
-  return [0, maxValue * 1.15];
+  // Add 15% headroom above the actual maximum
+  // This shows the true data while providing some visual breathing room
+  const upperBound = actualMax * 1.15;
+  
+  // For very small values, ensure minimum scale for readability
+  if (actualMax < 1) {
+    return [0, Math.max(upperBound, 2)];
+  }
+  
+  return [0, upperBound];
+}
+
+// Calculate linear regression line for trend analysis
+export function calculateRegressionLine(data: { particles: number; label: string }[]): { x: number; y: number }[] {
+  if (data.length === 0) return [];
+  
+  // If only one data point, create a horizontal line
+  if (data.length === 1) {
+    return [
+      { x: 0, y: data[0].particles },
+      { x: 1, y: data[0].particles }
+    ];
+  }
+  
+  // Convert data to numeric points (x = index, y = particles)
+  const points = data.map((item, index) => ({ x: index, y: item.particles }));
+  
+  const n = points.length;
+  const sumX = points.reduce((sum, p) => sum + p.x, 0);
+  const sumY = points.reduce((sum, p) => sum + p.y, 0);
+  const sumXY = points.reduce((sum, p) => sum + p.x * p.y, 0);
+  const sumXX = points.reduce((sum, p) => sum + p.x * p.x, 0);
+  
+  // Calculate slope (m) and intercept (b) for y = mx + b
+  const slope = (n * sumXY - sumX * sumY) / (n * sumXX - sumX * sumX);
+  const intercept = (sumY - slope * sumX) / n;
+  
+  // Generate regression line points
+  return points.map(point => ({
+    x: point.x,
+    y: slope * point.x + intercept
+  }));
 }

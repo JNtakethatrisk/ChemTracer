@@ -21,15 +21,17 @@ export function useSessionCacheInvalidation() {
 
     const currentSessionId = sessionData.sessionId;
     const storedSessionId = localStorage.getItem('microplastic-tracker-session');
+    const isNewSession = !storedSessionId || storedSessionId !== currentSessionId;
 
     console.log('Session Check:', { 
       currentSessionId, 
       storedSessionId, 
-      isNewSession: !storedSessionId || storedSessionId !== currentSessionId 
+      isNewSession,
+      userIp: sessionData.ip
     });
 
     // Clear cache for any new session (including first visit)
-    if (!storedSessionId || storedSessionId !== currentSessionId) {
+    if (isNewSession) {
       console.log('New session detected, clearing cache for fresh slate');
       
       // Clear all React Query cache
@@ -44,6 +46,8 @@ export function useSessionCacheInvalidation() {
       
       // Force refetch all queries
       queryClient.invalidateQueries();
+    } else {
+      console.log('Returning user detected, keeping existing data');
     }
 
     // Store the current session ID

@@ -1,16 +1,20 @@
 import { useState } from "react";
 import { useQuery } from "@tanstack/react-query";
-import { Eye, Filter, Search } from "lucide-react";
+import { Filter, Search, X } from "lucide-react";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Badge } from "@/components/ui/badge";
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table";
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { MicroplasticEntry } from "@shared/schema";
-import { getWeekLabel, getSourceBreakdown } from "@/lib/calculations";
+import { getWeekLabel } from "@/lib/calculations";
+import { getSourceBreakdown } from "@/lib/microplastic-sources";
 
 export default function HistoricalTable() {
   const [searchTerm, setSearchTerm] = useState("");
+  const [riskLevelFilter, setRiskLevelFilter] = useState<string>("all");
+  const [showFilters, setShowFilters] = useState(false);
   const [currentPage, setCurrentPage] = useState(1);
   const itemsPerPage = 10;
 
@@ -20,9 +24,22 @@ export default function HistoricalTable() {
 
   const filteredEntries = entries.filter(entry => {
     const weekLabel = getWeekLabel(entry.weekStart);
-    return weekLabel.toLowerCase().includes(searchTerm.toLowerCase()) ||
-           entry.riskLevel.toLowerCase().includes(searchTerm.toLowerCase());
+    const matchesSearch = weekLabel.toLowerCase().includes(searchTerm.toLowerCase()) ||
+                         entry.riskLevel.toLowerCase().includes(searchTerm.toLowerCase());
+    const matchesRiskLevel = riskLevelFilter === "all" || entry.riskLevel === riskLevelFilter;
+    return matchesSearch && matchesRiskLevel;
   });
+
+  // Reset to first page when filters change
+  const handleFilterChange = (newFilter: string) => {
+    setRiskLevelFilter(newFilter);
+    setCurrentPage(1);
+  };
+
+  const handleSearchChange = (newSearch: string) => {
+    setSearchTerm(newSearch);
+    setCurrentPage(1);
+  };
 
   const totalPages = Math.ceil(filteredEntries.length / itemsPerPage);
   const startIndex = (currentPage - 1) * itemsPerPage;
@@ -57,9 +74,11 @@ export default function HistoricalTable() {
     switch (riskLevel) {
       case "Low":
         return "default";
-      case "Medium":
+      case "Normal":
         return "secondary";
       case "High":
+        return "destructive";
+      case "Extreme":
         return "destructive";
       default:
         return "outline";
@@ -90,19 +109,67 @@ export default function HistoricalTable() {
             <div className="relative">
               <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 h-4 w-4 text-gray-400" />
               <Input
-                placeholder="Search..."
+                placeholder="Search weeks or risk levels..."
                 value={searchTerm}
-                onChange={(e) => setSearchTerm(e.target.value)}
-                className="pl-10 w-48"
+                onChange={(e) => handleSearchChange(e.target.value)}
+                className="pl-10 w-64"
                 data-testid="input-search"
               />
             </div>
-            <Button variant="outline" size="sm">
+            <Button 
+              variant="outline" 
+              size="sm"
+              onClick={() => setShowFilters(!showFilters)}
+            >
               <Filter className="mr-2 h-4 w-4" />
               Filter
             </Button>
           </div>
         </div>
+        
+        {/* Filter Bar */}
+        {showFilters && (
+          <div className="mt-4 p-4 bg-gray-50 rounded-lg border">
+            <div className="flex items-center justify-between mb-3">
+              <h3 className="text-sm font-medium text-gray-900">Filters</h3>
+              <Button
+                variant="ghost"
+                size="sm"
+                onClick={() => setShowFilters(false)}
+              >
+                <X className="h-4 w-4" />
+              </Button>
+            </div>
+            <div className="flex items-center space-x-4">
+              <div className="flex items-center space-x-2">
+                <label className="text-sm text-gray-700">Risk Level:</label>
+                <Select value={riskLevelFilter} onValueChange={handleFilterChange}>
+                  <SelectTrigger className="w-32">
+                    <SelectValue />
+                  </SelectTrigger>
+                  <SelectContent>
+                    <SelectItem value="all">All</SelectItem>
+                    <SelectItem value="Low">Low</SelectItem>
+                    <SelectItem value="Normal">Normal</SelectItem>
+                    <SelectItem value="High">High</SelectItem>
+                    <SelectItem value="Extreme">Extreme</SelectItem>
+                  </SelectContent>
+                </Select>
+              </div>
+              <Button
+                variant="outline"
+                size="sm"
+                onClick={() => {
+                  setSearchTerm("");
+                  setRiskLevelFilter("all");
+                  setCurrentPage(1);
+                }}
+              >
+                Clear Filters
+              </Button>
+            </div>
+          </div>
+        )}
       </CardHeader>
       <CardContent>
         {paginatedEntries.length === 0 ? (
@@ -122,7 +189,6 @@ export default function HistoricalTable() {
                     <TableHead>Risk Level</TableHead>
                     <TableHead>Top Source</TableHead>
                     <TableHead>Change</TableHead>
-                    <TableHead>Action</TableHead>
                   </TableRow>
                 </TableHeader>
                 <TableBody>
@@ -157,11 +223,6 @@ export default function HistoricalTable() {
                           ) : (
                             <span className="text-gray-400">-</span>
                           )}
-                        </TableCell>
-                        <TableCell>
-                          <Button variant="ghost" size="sm" data-testid={`button-view-${entry.id}`}>
-                            <Eye className="h-4 w-4" />
-                          </Button>
                         </TableCell>
                       </TableRow>
                     );

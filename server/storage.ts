@@ -1,6 +1,6 @@
-import { microplasticEntries, type MicroplasticEntry, type InsertMicroplasticEntry } from "@shared/schema";
+import { microplasticEntries, userProfiles, pfaEntries, type MicroplasticEntry, type InsertMicroplasticEntry, type UserProfile, type InsertUserProfile, type PfaEntry, type InsertPfaEntry } from "@shared/schema";
 import { db } from "./db";
-import { eq, and, gte, lte, desc } from "drizzle-orm";
+import { eq, and, gte, lte, desc, sql } from "drizzle-orm";
 
 export interface IStorage {
   getMicroplasticEntries(userIp: string): Promise<MicroplasticEntry[]>;
@@ -9,6 +9,21 @@ export interface IStorage {
   createMicroplasticEntry(userIp: string, entry: InsertMicroplasticEntry & { totalParticles: number; riskLevel: string }): Promise<MicroplasticEntry>;
   updateMicroplasticEntry(id: string, userIp: string, entry: Partial<MicroplasticEntry>): Promise<MicroplasticEntry | undefined>;
   deleteMicroplasticEntry(id: string, userIp: string): Promise<boolean>;
+  
+  // PFA methods
+  getPfaEntries(userIp: string): Promise<PfaEntry[]>;
+  getPfaEntry(id: string, userIp: string): Promise<PfaEntry | undefined>;
+  getPfaEntriesByDateRange(userIp: string, startDate: string, endDate: string): Promise<PfaEntry[]>;
+  createPfaEntry(userIp: string, entry: InsertPfaEntry & { totalPfas: number; riskLevel: string }): Promise<PfaEntry>;
+  updatePfaEntry(id: string, userIp: string, entry: Partial<PfaEntry>): Promise<PfaEntry | undefined>;
+  deletePfaEntry(id: string, userIp: string): Promise<boolean>;
+  
+  // User profile methods
+  getUserProfile(userIp: string): Promise<UserProfile | undefined>;
+  createOrUpdateUserProfile(userIp: string, profile: InsertUserProfile): Promise<UserProfile>;
+  
+  // Percentile calculation methods
+  getPercentileData(ageGroup?: string): Promise<{ totalParticles: number; count: number }[]>;
 }
 
 export class DatabaseStorage implements IStorage {
@@ -50,8 +65,9 @@ export class DatabaseStorage implements IStorage {
         householdDust: insertEntry.householdDust ?? 0,
         syntheticClothing: insertEntry.syntheticClothing ?? 0,
         cannedFood: insertEntry.cannedFood ?? 0,
-        cosmetics: insertEntry.cosmetics ?? 0,
         plasticKitchenware: insertEntry.plasticKitchenware ?? 0,
+        coffeeCups: insertEntry.coffeeCups ?? 0,
+        takeoutContainers: insertEntry.takeoutContainers ?? 0,
         totalParticles: insertEntry.totalParticles,
         riskLevel: insertEntry.riskLevel,
       })
@@ -73,6 +89,115 @@ export class DatabaseStorage implements IStorage {
       .delete(microplasticEntries)
       .where(and(eq(microplasticEntries.id, id), eq(microplasticEntries.userIp, userIp)));
     return result.rowCount !== null && result.rowCount > 0;
+  }
+
+  // PFA methods
+  async getPfaEntries(userIp: string): Promise<PfaEntry[]> {
+    const entries = await db.select().from(pfaEntries)
+      .where(eq(pfaEntries.userIp, userIp))
+      .orderBy(desc(pfaEntries.createdAt));
+    return entries;
+  }
+
+  async getPfaEntry(id: string, userIp: string): Promise<PfaEntry | undefined> {
+    const [entry] = await db.select().from(pfaEntries)
+      .where(and(eq(pfaEntries.id, id), eq(pfaEntries.userIp, userIp)));
+    return entry || undefined;
+  }
+
+  async getPfaEntriesByDateRange(userIp: string, startDate: string, endDate: string): Promise<PfaEntry[]> {
+    const entries = await db.select().from(pfaEntries)
+      .where(and(
+        eq(pfaEntries.userIp, userIp),
+        gte(pfaEntries.weekStart, startDate),
+        lte(pfaEntries.weekStart, endDate)
+      ))
+      .orderBy(desc(pfaEntries.createdAt));
+    return entries;
+  }
+
+  async createPfaEntry(userIp: string, insertEntry: InsertPfaEntry & { totalPfas: number; riskLevel: string }): Promise<PfaEntry> {
+    const [entry] = await db
+      .insert(pfaEntries)
+      .values({
+        userIp,
+        weekStart: insertEntry.weekStart,
+        dentalFloss: insertEntry.dentalFloss ?? 0,
+        toiletPaper: insertEntry.toiletPaper ?? 0,
+        yogaPants: insertEntry.yogaPants ?? 0,
+        sportsBras: insertEntry.sportsBras ?? 0,
+        tapWater: insertEntry.tapWater ?? 0,
+        nonStickPans: insertEntry.nonStickPans ?? 0,
+        totalPfas: insertEntry.totalPfas,
+        riskLevel: insertEntry.riskLevel,
+      })
+      .returning();
+    return entry;
+  }
+
+  async updatePfaEntry(id: string, userIp: string, updateEntry: Partial<PfaEntry>): Promise<PfaEntry | undefined> {
+    const [entry] = await db
+      .update(pfaEntries)
+      .set(updateEntry)
+      .where(and(eq(pfaEntries.id, id), eq(pfaEntries.userIp, userIp)))
+      .returning();
+    return entry || undefined;
+  }
+
+  async deletePfaEntry(id: string, userIp: string): Promise<boolean> {
+    const result = await db
+      .delete(pfaEntries)
+      .where(and(eq(pfaEntries.id, id), eq(pfaEntries.userIp, userIp)));
+    return result.rowCount !== null && result.rowCount > 0;
+  }
+
+  // User profile methods
+  async getUserProfile(userIp: string): Promise<UserProfile | undefined> {
+    const [profile] = await db.select().from(userProfiles)
+      .where(eq(userProfiles.userIp, userIp));
+    return profile || undefined;
+  }
+
+  async createOrUpdateUserProfile(userIp: string, profileData: InsertUserProfile): Promise<UserProfile> {
+    const existingProfile = await this.getUserProfile(userIp);
+    
+    if (existingProfile) {
+      const [updatedProfile] = await db
+        .update(userProfiles)
+        .set({ ...profileData, updatedAt: new Date() })
+        .where(eq(userProfiles.userIp, userIp))
+        .returning();
+      return updatedProfile;
+    } else {
+      const [newProfile] = await db
+        .insert(userProfiles)
+        .values({ userIp, ...profileData })
+        .returning();
+      return newProfile;
+    }
+  }
+
+  // Percentile calculation methods
+  async getPercentileData(ageGroup?: string): Promise<{ totalParticles: number; count: number }[]> {
+    let query = db
+      .select({
+        totalParticles: microplasticEntries.totalParticles,
+        count: sql<number>`count(*)`.as('count')
+      })
+      .from(microplasticEntries);
+
+    if (ageGroup) {
+      // Join with user profiles to filter by age group
+      query = query
+        .innerJoin(userProfiles, eq(microplasticEntries.userIp, userProfiles.userIp))
+        .where(sql`${userProfiles.age} >= ${ageGroup.split('-')[0]} AND ${userProfiles.age} <= ${ageGroup.split('-')[1]}`);
+    }
+
+    const results = await query
+      .groupBy(microplasticEntries.totalParticles)
+      .orderBy(microplasticEntries.totalParticles);
+
+    return results;
   }
 }
 

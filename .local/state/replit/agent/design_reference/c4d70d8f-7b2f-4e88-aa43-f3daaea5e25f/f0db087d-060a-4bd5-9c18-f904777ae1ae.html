@@ -1,0 +1,586 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>MicroPlastic Tracker - CRM Dashboard</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script>
+    tailwind.config = {
+        theme: {
+            extend: {
+                colors: {
+                    primary: '#1976D2',
+                    secondary: '#388E3C',
+                    warning: '#F57C00',
+                    error: '#D32F2F',
+                    surface: '#FFFFFF',
+                    background: '#FAFAFA'
+                },
+                fontFamily: {
+                    'inter': ['Inter', 'sans-serif']
+                }
+            }
+        }
+    };
+    </script>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" rel="stylesheet">
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+</head>
+<body class="bg-background font-inter">
+    <!-- @COMPONENT: AppHeader -->
+    <header class="bg-white shadow-sm border-b border-gray-200">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+            <div class="flex justify-between items-center h-16">
+                <div class="flex items-center">
+                    <i class="fas fa-microscope text-primary text-2xl mr-3"></i>
+                    <h1 class="text-xl font-semibold text-gray-900">MicroPlastic Tracker</h1>
+                </div>
+                <div class="flex items-center space-x-4">
+                    <button class="bg-primary text-white px-4 py-2 rounded-lg hover:bg-blue-700 transition-colors">
+                        <i class="fas fa-download mr-2"></i>Export Data
+                    </button>
+                    <div class="w-8 h-8 bg-gray-300 rounded-full"></div>
+                </div>
+            </div>
+        </div>
+    </header>
+    <!-- @END_COMPONENT: AppHeader -->
+
+    <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-6">
+        <!-- @COMPONENT: DashboardOverview -->
+        <div class="grid grid-cols-1 lg:grid-cols-4 gap-6 mb-8">
+            <!-- Current Risk Level Card -->
+            <div class="bg-white rounded-xl shadow-sm border border-gray-200 p-6">
+                <div class="flex items-center">
+                    <div class="w-3 h-3 bg-warning rounded-full mr-3"></div>
+                    <h3 class="text-sm font-medium text-gray-700">Current Risk Level</h3>
+                </div>
+                <p class="text-2xl font-bold text-gray-900 mt-2" data-bind="currentRiskLevel">Medium</p>
+                <p class="text-sm text-gray-500 mt-1" data-bind="currentParticleCount">2.4 particles/mL</p>
+            </div>
+
+            <!-- This Week's Intake -->
+            <div class="bg-white rounded-xl shadow-sm border border-gray-200 p-6">
+                <div class="flex items-center">
+                    <i class="fas fa-calendar-week text-primary mr-3"></i>
+                    <h3 class="text-sm font-medium text-gray-700">This Week's Intake</h3>
+                </div>
+                <p class="text-2xl font-bold text-gray-900 mt-2" data-bind="weeklyIntake">1.8 particles/mL</p>
+                <p class="text-sm text-green-600 mt-1">
+                    <i class="fas fa-arrow-down mr-1"></i>
+                    <span data-bind="weeklyChange">-12% from last week</span>
+                </p>
+            </div>
+
+            <!-- Monthly Average -->
+            <div class="bg-white rounded-xl shadow-sm border border-gray-200 p-6">
+                <div class="flex items-center">
+                    <i class="fas fa-chart-line text-secondary mr-3"></i>
+                    <h3 class="text-sm font-medium text-gray-700">Monthly Average</h3>
+                </div>
+                <p class="text-2xl font-bold text-gray-900 mt-2" data-bind="monthlyAverage">2.1 particles/mL</p>
+                <p class="text-sm text-gray-500 mt-1">Based on 4 weeks</p>
+            </div>
+
+            <!-- Data Completeness -->
+            <div class="bg-white rounded-xl shadow-sm border border-gray-200 p-6">
+                <div class="flex items-center">
+                    <i class="fas fa-check-circle text-secondary mr-3"></i>
+                    <h3 class="text-sm font-medium text-gray-700">Data Completeness</h3>
+                </div>
+                <p class="text-2xl font-bold text-gray-900 mt-2" data-bind="dataCompleteness">85%</p>
+                <div class="w-full bg-gray-200 rounded-full h-2 mt-3">
+                    <div class="bg-secondary h-2 rounded-full" style="width: 85%"></div>
+                </div>
+            </div>
+        </div>
+        <!-- @END_COMPONENT: DashboardOverview -->
+
+        <div class="grid grid-cols-1 xl:grid-cols-3 gap-6">
+            <!-- @COMPONENT: WeeklyInputForm -->
+            <div class="xl:col-span-1 bg-white rounded-xl shadow-sm border border-gray-200 p-6">
+                <div class="flex items-center justify-between mb-6">
+                    <h2 class="text-lg font-semibold text-gray-900">Weekly Input</h2>
+                    <span class="text-sm text-gray-500">Week of Dec 9, 2024</span>
+                </div>
+
+                <form class="space-y-4">
+                    <!-- @STATE: formData:object = {} -->
+                    
+                    <!-- Bottled Water -->
+                    <div class="space-y-2">
+                        <label class="block text-sm font-medium text-gray-700">
+                            <i class="fas fa-bottle-water text-blue-500 mr-2"></i>
+                            Bottled Water (bottles/week)
+                        </label>
+                        <input type="number" 
+                               class="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-primary focus:border-transparent"
+                               placeholder="0" data-bind="bottledWater" data-mock="true">
+                        <p class="text-xs text-gray-500">High microplastic content</p>
+                    </div>
+
+                    <!-- Seafood -->
+                    <div class="space-y-2">
+                        <label class="block text-sm font-medium text-gray-700">
+                            <i class="fas fa-fish text-blue-600 mr-2"></i>
+                            Seafood (servings/week)
+                        </label>
+                        <input type="number" 
+                               class="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-primary focus:border-transparent"
+                               placeholder="0" data-bind="seafood" data-mock="true">
+                        <p class="text-xs text-gray-500">Especially shellfish</p>
+                    </div>
+
+                    <!-- Salt -->
+                    <div class="space-y-2">
+                        <label class="block text-sm font-medium text-gray-700">
+                            <i class="fas fa-cube text-gray-600 mr-2"></i>
+                            Salt Usage (tsp/week)
+                        </label>
+                        <input type="number" 
+                               class="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-primary focus:border-transparent"
+                               placeholder="0" data-bind="salt" data-mock="true">
+                        <p class="text-xs text-gray-500">Sea salt & table salt</p>
+                    </div>
+
+                    <!-- Plastic-packaged Foods -->
+                    <div class="space-y-2">
+                        <label class="block text-sm font-medium text-gray-700">
+                            <i class="fas fa-box text-orange-500 mr-2"></i>
+                            Plastic-packaged Foods (meals/week)
+                        </label>
+                        <input type="number" 
+                               class="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-primary focus:border-transparent"
+                               placeholder="0" data-bind="plasticPackaged" data-mock="true">
+                        <p class="text-xs text-gray-500">Heat increases leaching</p>
+                    </div>
+
+                    <!-- Tea Bags -->
+                    <div class="space-y-2">
+                        <label class="block text-sm font-medium text-gray-700">
+                            <i class="fas fa-mug-hot text-green-600 mr-2"></i>
+                            Plastic Tea Bags (cups/week)
+                        </label>
+                        <input type="number" 
+                               class="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-primary focus:border-transparent"
+                               placeholder="0" data-bind="teaBags" data-mock="true">
+                        <p class="text-xs text-gray-500">Plastic-sealed bags only</p>
+                    </div>
+
+                    <!-- Expand for more inputs -->
+                    <div class="pt-2">
+                        <button type="button" class="text-primary text-sm hover:text-blue-700 transition-colors" 
+                                data-event="click:toggleExpandedInputs">
+                            <i class="fas fa-chevron-down mr-2"></i>
+                            Show 5 more sources
+                        </button>
+                    </div>
+
+                    <!-- Hidden expanded inputs -->
+                    <div class="space-y-4 hidden" data-component="expandedInputs">
+                        <!-- Household Dust -->
+                        <div class="space-y-2">
+                            <label class="block text-sm font-medium text-gray-700">
+                                <i class="fas fa-home text-gray-500 mr-2"></i>
+                                Household Dust Exposure (hours indoors/day)
+                            </label>
+                            <input type="number" 
+                                   class="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-primary focus:border-transparent"
+                                   placeholder="0" data-bind="householdDust" data-mock="true">
+                        </div>
+
+                        <!-- Synthetic Clothing -->
+                        <div class="space-y-2">
+                            <label class="block text-sm font-medium text-gray-700">
+                                <i class="fas fa-tshirt text-purple-500 mr-2"></i>
+                                Synthetic Clothing (wears/week)
+                            </label>
+                            <input type="number" 
+                                   class="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-primary focus:border-transparent"
+                                   placeholder="0" data-bind="syntheticClothing" data-mock="true">
+                        </div>
+
+                        <!-- Canned Food -->
+                        <div class="space-y-2">
+                            <label class="block text-sm font-medium text-gray-700">
+                                <i class="fas fa-can-food text-red-500 mr-2"></i>
+                                Canned Foods (cans/week)
+                            </label>
+                            <input type="number" 
+                                   class="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-primary focus:border-transparent"
+                                   placeholder="0" data-bind="cannedFood" data-mock="true">
+                        </div>
+
+                        <!-- Cosmetics -->
+                        <div class="space-y-2">
+                            <label class="block text-sm font-medium text-gray-700">
+                                <i class="fas fa-palette text-pink-500 mr-2"></i>
+                                Cosmetics Usage (applications/week)
+                            </label>
+                            <input type="number" 
+                                   class="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-primary focus:border-transparent"
+                                   placeholder="0" data-bind="cosmetics" data-mock="true">
+                        </div>
+
+                        <!-- Plastic Kitchenware -->
+                        <div class="space-y-2">
+                            <label class="block text-sm font-medium text-gray-700">
+                                <i class="fas fa-utensils text-gray-700 mr-2"></i>
+                                Plastic Kitchenware (uses/week)
+                            </label>
+                            <input type="number" 
+                                   class="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-primary focus:border-transparent"
+                                   placeholder="0" data-bind="plasticKitchenware" data-mock="true">
+                        </div>
+                    </div>
+
+                    <div class="pt-4 space-y-3">
+                        <button type="submit" 
+                                class="w-full bg-primary text-white py-3 rounded-lg hover:bg-blue-700 transition-colors font-medium"
+                                data-event="click:calculateMicroplastics">
+                            Calculate This Week
+                        </button>
+                        <button type="button" 
+                                class="w-full bg-gray-100 text-gray-700 py-2 rounded-lg hover:bg-gray-200 transition-colors text-sm"
+                                data-event="click:saveDraft">
+                            Save Draft
+                        </button>
+                    </div>
+                </form>
+            </div>
+            <!-- @END_COMPONENT: WeeklyInputForm -->
+
+            <!-- @COMPONENT: ChartsAndTrends -->
+            <div class="xl:col-span-2 space-y-6">
+                <!-- Monthly Trend Chart -->
+                <div class="bg-white rounded-xl shadow-sm border border-gray-200 p-6">
+                    <div class="flex items-center justify-between mb-6">
+                        <h2 class="text-lg font-semibold text-gray-900">Monthly Trend</h2>
+                        <div class="flex space-x-2">
+                            <button class="px-3 py-1 text-sm bg-primary text-white rounded-full">3M</button>
+                            <button class="px-3 py-1 text-sm text-gray-600 rounded-full hover:bg-gray-100">6M</button>
+                            <button class="px-3 py-1 text-sm text-gray-600 rounded-full hover:bg-gray-100">1Y</button>
+                        </div>
+                    </div>
+                    <div class="h-64">
+                        <canvas id="trendChart"></canvas>
+                    </div>
+                </div>
+
+                <!-- Risk Level Distribution -->
+                <div class="bg-white rounded-xl shadow-sm border border-gray-200 p-6">
+                    <h2 class="text-lg font-semibold text-gray-900 mb-6">Risk Level Distribution</h2>
+                    <div class="grid grid-cols-3 gap-4">
+                        <div class="text-center p-4 bg-green-50 rounded-lg">
+                            <div class="w-4 h-4 bg-secondary rounded-full mx-auto mb-2"></div>
+                            <p class="text-sm font-medium text-gray-700">Low Risk</p>
+                            <p class="text-lg font-bold text-secondary">< 1.5</p>
+                            <p class="text-xs text-gray-500">particles/mL</p>
+                        </div>
+                        <div class="text-center p-4 bg-orange-50 rounded-lg">
+                            <div class="w-4 h-4 bg-warning rounded-full mx-auto mb-2"></div>
+                            <p class="text-sm font-medium text-gray-700">Medium Risk</p>
+                            <p class="text-lg font-bold text-warning">1.5 - 3.0</p>
+                            <p class="text-xs text-gray-500">particles/mL</p>
+                        </div>
+                        <div class="text-center p-4 bg-red-50 rounded-lg">
+                            <div class="w-4 h-4 bg-error rounded-full mx-auto mb-2"></div>
+                            <p class="text-sm font-medium text-gray-700">High Risk</p>
+                            <p class="text-lg font-bold text-error">> 3.0</p>
+                            <p class="text-xs text-gray-500">particles/mL</p>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Source Breakdown Chart -->
+                <div class="bg-white rounded-xl shadow-sm border border-gray-200 p-6">
+                    <h2 class="text-lg font-semibold text-gray-900 mb-6">Top Contributing Sources</h2>
+                    <div class="space-y-4">
+                        <!-- @MAP: topSources.map(source => ( -->
+                        <div class="flex items-center justify-between p-3 bg-gray-50 rounded-lg">
+                            <div class="flex items-center">
+                                <i class="fas fa-bottle-water text-blue-500 mr-3"></i>
+                                <span class="font-medium text-gray-900" data-bind="source.name">Bottled Water</span>
+                            </div>
+                            <div class="flex items-center">
+                                <div class="w-20 bg-gray-200 rounded-full h-2 mr-3">
+                                    <div class="bg-primary h-2 rounded-full" style="width: 75%" data-bind="source.percentage"></div>
+                                </div>
+                                <span class="text-sm font-medium text-gray-700" data-bind="source.value">1.2 p/mL</span>
+                            </div>
+                        </div>
+                        <div class="flex items-center justify-between p-3 bg-gray-50 rounded-lg">
+                            <div class="flex items-center">
+                                <i class="fas fa-fish text-blue-600 mr-3"></i>
+                                <span class="font-medium text-gray-900">Seafood</span>
+                            </div>
+                            <div class="flex items-center">
+                                <div class="w-20 bg-gray-200 rounded-full h-2 mr-3">
+                                    <div class="bg-primary h-2 rounded-full" style="width: 45%"></div>
+                                </div>
+                                <span class="text-sm font-medium text-gray-700">0.7 p/mL</span>
+                            </div>
+                        </div>
+                        <div class="flex items-center justify-between p-3 bg-gray-50 rounded-lg">
+                            <div class="flex items-center">
+                                <i class="fas fa-box text-orange-500 mr-3"></i>
+                                <span class="font-medium text-gray-900">Plastic-packaged Foods</span>
+                            </div>
+                            <div class="flex items-center">
+                                <div class="w-20 bg-gray-200 rounded-full h-2 mr-3">
+                                    <div class="bg-primary h-2 rounded-full" style="width: 30%"></div>
+                                </div>
+                                <span class="text-sm font-medium text-gray-700">0.5 p/mL</span>
+                            </div>
+                        </div>
+                        <!-- @END_MAP )) -->
+                    </div>
+                </div>
+            </div>
+            <!-- @END_COMPONENT: ChartsAndTrends -->
+        </div>
+
+        <!-- @COMPONENT: HistoricalDataTable -->
+        <div class="mt-8 bg-white rounded-xl shadow-sm border border-gray-200 p-6">
+            <div class="flex items-center justify-between mb-6">
+                <h2 class="text-lg font-semibold text-gray-900">Historical Data</h2>
+                <div class="flex items-center space-x-3">
+                    <input type="text" placeholder="Search..." 
+                           class="px-3 py-2 border border-gray-300 rounded-lg text-sm focus:ring-2 focus:ring-primary focus:border-transparent">
+                    <button class="px-4 py-2 bg-gray-100 text-gray-700 rounded-lg hover:bg-gray-200 transition-colors text-sm">
+                        <i class="fas fa-filter mr-2"></i>Filter
+                    </button>
+                </div>
+            </div>
+
+            <div class="overflow-x-auto">
+                <table class="w-full">
+                    <thead class="bg-gray-50">
+                        <tr>
+                            <th class="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Week</th>
+                            <th class="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Total Intake</th>
+                            <th class="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Risk Level</th>
+                            <th class="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Top Source</th>
+                            <th class="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Change</th>
+                            <th class="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Action</th>
+                        </tr>
+                    </thead>
+                    <tbody class="bg-white divide-y divide-gray-200">
+                        <!-- @MAP: historicalData.map(week => ( -->
+                        <tr class="hover:bg-gray-50">
+                            <td class="px-4 py-4 text-sm text-gray-900" data-bind="week.date">Dec 2-8, 2024</td>
+                            <td class="px-4 py-4 text-sm font-medium text-gray-900" data-bind="week.totalIntake">2.4 p/mL</td>
+                            <td class="px-4 py-4 text-sm">
+                                <span class="inline-flex px-2 py-1 text-xs font-semibold rounded-full bg-orange-100 text-orange-800" 
+                                      data-bind="week.riskLevel">Medium</span>
+                            </td>
+                            <td class="px-4 py-4 text-sm text-gray-900" data-bind="week.topSource">Bottled Water</td>
+                            <td class="px-4 py-4 text-sm">
+                                <span class="text-red-600" data-bind="week.change">+15%</span>
+                            </td>
+                            <td class="px-4 py-4 text-sm">
+                                <button class="text-primary hover:text-blue-700" data-event="click:viewWeekDetails">
+                                    <i class="fas fa-eye"></i>
+                                </button>
+                            </td>
+                        </tr>
+                        <tr class="hover:bg-gray-50">
+                            <td class="px-4 py-4 text-sm text-gray-900">Nov 25-Dec 1, 2024</td>
+                            <td class="px-4 py-4 text-sm font-medium text-gray-900">2.1 p/mL</td>
+                            <td class="px-4 py-4 text-sm">
+                                <span class="inline-flex px-2 py-1 text-xs font-semibold rounded-full bg-orange-100 text-orange-800">Medium</span>
+                            </td>
+                            <td class="px-4 py-4 text-sm text-gray-900">Seafood</td>
+                            <td class="px-4 py-4 text-sm">
+                                <span class="text-green-600">-8%</span>
+                            </td>
+                            <td class="px-4 py-4 text-sm">
+                                <button class="text-primary hover:text-blue-700">
+                                    <i class="fas fa-eye"></i>
+                                </button>
+                            </td>
+                        </tr>
+                        <tr class="hover:bg-gray-50">
+                            <td class="px-4 py-4 text-sm text-gray-900">Nov 18-24, 2024</td>
+                            <td class="px-4 py-4 text-sm font-medium text-gray-900">1.8 p/mL</td>
+                            <td class="px-4 py-4 text-sm">
+                                <span class="inline-flex px-2 py-1 text-xs font-semibold rounded-full bg-orange-100 text-orange-800">Medium</span>
+                            </td>
+                            <td class="px-4 py-4 text-sm text-gray-900">Salt</td>
+                            <td class="px-4 py-4 text-sm">
+                                <span class="text-green-600">-5%</span>
+                            </td>
+                            <td class="px-4 py-4 text-sm">
+                                <button class="text-primary hover:text-blue-700">
+                                    <i class="fas fa-eye"></i>
+                                </button>
+                            </td>
+                        </tr>
+                        <!-- @END_MAP )) -->
+                    </tbody>
+                </table>
+            </div>
+
+            <div class="flex items-center justify-between mt-6">
+                <p class="text-sm text-gray-700">
+                    Showing <span class="font-medium">1</span> to <span class="font-medium">3</span> of <span class="font-medium">12</span> results
+                </p>
+                <div class="flex space-x-2">
+                    <button class="px-3 py-2 text-sm border border-gray-300 rounded-lg hover:bg-gray-50">Previous</button>
+                    <button class="px-3 py-2 text-sm bg-primary text-white rounded-lg">1</button>
+                    <button class="px-3 py-2 text-sm border border-gray-300 rounded-lg hover:bg-gray-50">2</button>
+                    <button class="px-3 py-2 text-sm border border-gray-300 rounded-lg hover:bg-gray-50">3</button>
+                    <button class="px-3 py-2 text-sm border border-gray-300 rounded-lg hover:bg-gray-50">Next</button>
+                </div>
+            </div>
+        </div>
+        <!-- @END_COMPONENT: HistoricalDataTable -->
+
+        <!-- @COMPONENT: InsightsAndRecommendations -->
+        <div class="mt-8 grid grid-cols-1 lg:grid-cols-2 gap-6">
+            <div class="bg-white rounded-xl shadow-sm border border-gray-200 p-6">
+                <h3 class="text-lg font-semibold text-gray-900 mb-4">
+                    <i class="fas fa-lightbulb text-yellow-500 mr-2"></i>
+                    Insights & Recommendations
+                </h3>
+                <div class="space-y-4">
+                    <div class="p-3 bg-blue-50 border-l-4 border-blue-500 rounded">
+                        <p class="text-sm text-blue-800 font-medium">Reduce Bottled Water</p>
+                        <p class="text-xs text-blue-700 mt-1">Your biggest contributor. Switch to filtered tap water to reduce intake by 50%.</p>
+                    </div>
+                    <div class="p-3 bg-green-50 border-l-4 border-green-500 rounded">
+                        <p class="text-sm text-green-800 font-medium">Good Progress</p>
+                        <p class="text-xs text-green-700 mt-1">You've reduced synthetic clothing exposure by 20% this month.</p>
+                    </div>
+                    <div class="p-3 bg-orange-50 border-l-4 border-orange-500 rounded">
+                        <p class="text-sm text-orange-800 font-medium">Watch Seafood Intake</p>
+                        <p class="text-xs text-orange-700 mt-1">Consider varying seafood types and choosing smaller fish species.</p>
+                    </div>
+                </div>
+            </div>
+
+            <div class="bg-white rounded-xl shadow-sm border border-gray-200 p-6">
+                <h3 class="text-lg font-semibold text-gray-900 mb-4">
+                    <i class="fas fa-target text-primary mr-2"></i>
+                    Monthly Goals
+                </h3>
+                <div class="space-y-4">
+                    <div>
+                        <div class="flex justify-between mb-2">
+                            <span class="text-sm font-medium text-gray-700">Reduce to Low Risk</span>
+                            <span class="text-sm text-gray-500">Target: < 1.5 p/mL</span>
+                        </div>
+                        <div class="w-full bg-gray-200 rounded-full h-2">
+                            <div class="bg-primary h-2 rounded-full" style="width: 60%"></div>
+                        </div>
+                        <p class="text-xs text-gray-500 mt-1">60% progress • Need to reduce by 0.9 p/mL</p>
+                    </div>
+                    
+                    <div>
+                        <div class="flex justify-between mb-2">
+                            <span class="text-sm font-medium text-gray-700">Complete Weekly Tracking</span>
+                            <span class="text-sm text-gray-500">Target: 100%</span>
+                        </div>
+                        <div class="w-full bg-gray-200 rounded-full h-2">
+                            <div class="bg-secondary h-2 rounded-full" style="width: 85%"></div>
+                        </div>
+                        <p class="text-xs text-gray-500 mt-1">85% completion this month</p>
+                    </div>
+
+                    <div>
+                        <div class="flex justify-between mb-2">
+                            <span class="text-sm font-medium text-gray-700">Bottled Water Reduction</span>
+                            <span class="text-sm text-gray-500">Target: -50%</span>
+                        </div>
+                        <div class="w-full bg-gray-200 rounded-full h-2">
+                            <div class="bg-warning h-2 rounded-full" style="width: 30%"></div>
+                        </div>
+                        <p class="text-xs text-gray-500 mt-1">30% reduction achieved</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <!-- @END_COMPONENT: InsightsAndRecommendations -->
+    </div>
+
+    <script>
+        // TODO: Implement business logic, API calls, and state management
+        
+        (function() {
+            // Chart initialization
+            const ctx = document.getElementById('trendChart').getContext('2d');
+            const trendChart = new Chart(ctx, {
+                type: 'line',
+                data: {
+                    labels: ['Oct', 'Nov', 'Dec'],
+                    datasets: [{
+                        label: 'Microplastic Intake (p/mL)',
+                        data: [1.9, 2.2, 2.4],
+                        borderColor: '#1976D2',
+                        backgroundColor: 'rgba(25, 118, 210, 0.1)',
+                        tension: 0.4,
+                        fill: true
+                    }, {
+                        label: 'Target Level',
+                        data: [1.5, 1.5, 1.5],
+                        borderColor: '#388E3C',
+                        borderDash: [5, 5],
+                        backgroundColor: 'transparent'
+                    }]
+                },
+                options: {
+                    responsive: true,
+                    maintainAspectRatio: false,
+                    scales: {
+                        y: {
+                            beginAtZero: false,
+                            min: 0,
+                            max: 4,
+                            grid: {
+                                color: 'rgba(0, 0, 0, 0.1)'
+                            }
+                        },
+                        x: {
+                            grid: {
+                                display: false
+                            }
+                        }
+                    },
+                    plugins: {
+                        legend: {
+                            position: 'bottom',
+                            labels: {
+                                usePointStyle: true,
+                                padding: 20
+                            }
+                        }
+                    }
+                }
+            });
+
+            // Form interactions
+            document.addEventListener('click', function(e) {
+                if (e.target.closest('[data-event*="toggleExpandedInputs"]')) {
+                    const expandedSection = document.querySelector('[data-component="expandedInputs"]');
+                    const button = e.target.closest('button');
+                    
+                    expandedSection.classList.toggle('hidden');
+                    const isExpanded = !expandedSection.classList.contains('hidden');
+                    
+                    button.innerHTML = isExpanded 
+                        ? '<i class="fas fa-chevron-up mr-2"></i>Show fewer sources'
+                        : '<i class="fas fa-chevron-down mr-2"></i>Show 5 more sources';
+                }
+            });
+
+            // TODO: Implement form submission logic
+            // TODO: Implement data validation
+            // TODO: Implement API integration for data persistence
+            // TODO: Implement export functionality
+            // TODO: Implement real-time calculations
+        })();
+    </script>
+</body>
+</html>

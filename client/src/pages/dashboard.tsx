@@ -1,36 +1,24 @@
-import { useState } from "react";
 import { useQuery } from "@tanstack/react-query";
-import { Download, Microscope, User, Info } from "lucide-react";
+import { Download } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Link } from "wouter";
+import Navigation from "@/components/navigation";
 import OverviewCards from "@/components/dashboard/overview-cards";
 import WeeklyInputForm from "@/components/dashboard/weekly-input-form";
 import ChartsSection from "@/components/dashboard/charts-section";
 import HistoricalTable from "@/components/dashboard/historical-table";
 import InsightsSection from "@/components/dashboard/insights-section";
-import HighRiskWarning from "@/components/dashboard/high-risk-warning";
-import SafeLevelNotification from "@/components/dashboard/safe-level-notification";
 import { MicroplasticEntry } from "@shared/schema";
+import { useSessionCacheInvalidation } from "@/hooks/use-ip-cache-invalidation";
 
 export default function Dashboard() {
-  const [showHighRiskWarning, setShowHighRiskWarning] = useState(false);
-  const [showSafeLevelNotification, setShowSafeLevelNotification] = useState(false);
-  const [currentParticleCount, setCurrentParticleCount] = useState(0);
+  // Enable IP-based cache invalidation for clean slate on new IPs
+  useSessionCacheInvalidation();
 
   const { data: entries = [] } = useQuery<MicroplasticEntry[]>({
     queryKey: ["/api/microplastic-entries"],
   });
-
-  const handleFormSuccess = (entry: MicroplasticEntry) => {
-    if (entry.riskLevel === "High") {
-      setCurrentParticleCount(entry.totalParticles);
-      setShowHighRiskWarning(true);
-    } else if (entry.riskLevel === "Low") {
-      setCurrentParticleCount(entry.totalParticles);
-      setShowSafeLevelNotification(true);
-    }
-  };
 
   const handleExportData = () => {
     if (entries.length === 0) {
@@ -55,82 +43,59 @@ export default function Dashboard() {
   };
 
   return (
-    <div className="min-h-screen bg-background">
-      {/* High Risk Warning Modal */}
-      <HighRiskWarning
-        show={showHighRiskWarning}
-        particleCount={currentParticleCount}
-        onClose={() => setShowHighRiskWarning(false)}
-      />
+    <div className="min-h-screen bg-blue-50 no-pull-refresh">
+      {/* Navigation */}
+      <Navigation />
       
-      {/* Safe Level Notification */}
-      <SafeLevelNotification
-        show={showSafeLevelNotification}
-        particleCount={currentParticleCount}
-        onClose={() => setShowSafeLevelNotification(false)}
-      />
-      
-      {/* Header */}
-      <header className="bg-white shadow-sm border-b border-gray-200">
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-          <div className="flex justify-between items-center h-16">
-            <div className="flex items-center">
-              <Microscope className="text-primary text-2xl mr-3 h-6 w-6" />
-              <h1 className="text-xl font-semibold text-gray-900">MicroPlastic Tracker™</h1>
+      <div className="container mx-auto px-3 sm:px-4 py-4 sm:py-8">
+        {/* Header */}
+        <div className="mb-6 sm:mb-8">
+          <div className="flex flex-col sm:flex-row sm:items-center justify-between mb-4 space-y-4 sm:space-y-0">
+            <div className="text-center sm:text-left">
+              <h1 className="text-2xl sm:text-3xl font-bold text-blue-800">MicroPlastic Tracker™</h1>
+              <p className="text-sm sm:text-base text-blue-600">Monitor your microplastic intake based on peer reviewed studies</p>
             </div>
-            <div className="flex items-center space-x-4">
-              <Link href="/about">
-                <Button 
-                  data-testid="button-about-us"
-                  className="gap-2 bg-slate-700 hover:bg-slate-800 text-white"
-                >
-                  <Info className="h-4 w-4" />
-                  About Us
-                </Button>
-              </Link>
+            <div className="flex justify-center sm:justify-end">
               <Button 
                 onClick={handleExportData}
                 data-testid="button-export-data"
-                className="bg-primary hover:bg-primary/90"
+                className="bg-primary hover:bg-primary/90 touch-target"
+                size="sm"
               >
                 <Download className="mr-2 h-4 w-4" />
-                Export Data
+                <span className="hidden sm:inline">Export Data</span>
+                <span className="sm:hidden">Export</span>
               </Button>
             </div>
           </div>
         </div>
-      </header>
 
-      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-6">
-        {/* Overview Cards */}
-        <OverviewCards />
-
-        {/* Main Content Grid */}
-        <div className="grid grid-cols-1 xl:grid-cols-3 gap-6 mt-8">
-          {/* Weekly Input Form */}
-          <div className="xl:col-span-1">
-            <WeeklyInputForm onSuccess={handleFormSuccess} />
+        {/* Main Content */}
+        <div className="grid grid-cols-1 lg:grid-cols-3 gap-6 sm:gap-8">
+          {/* Left Column - Input Form */}
+          <div className="lg:col-span-1 space-y-4 sm:space-y-6">
+            <WeeklyInputForm />
           </div>
 
-          {/* Charts Section */}
-          <div className="xl:col-span-2">
+          {/* Right Column - Charts and Data */}
+          <div className="lg:col-span-2 space-y-4 sm:space-y-6">
+            {/* Overview Cards */}
+            <OverviewCards />
+
+            {/* Charts Section */}
             <ChartsSection />
+
+            {/* Historical Table */}
+            <HistoricalTable />
+
+            {/* Insights Section */}
+            <InsightsSection />
           </div>
-        </div>
-
-        {/* Historical Data Table */}
-        <div className="mt-8">
-          <HistoricalTable />
-        </div>
-
-        {/* Insights and Recommendations */}
-        <div className="mt-8">
-          <InsightsSection />
         </div>
 
         {/* FDA Disclaimer */}
-        <div className="mt-12 pt-8 border-t border-gray-200">
-          <p className="text-xs text-gray-500 text-center">
+        <div className="mt-8 sm:mt-12 pt-6 sm:pt-8 border-t border-gray-200">
+          <p className="text-xs text-gray-500 text-center px-4">
             These statements have not been evaluated by the FDA nor are we medical professionals.
           </p>
         </div>

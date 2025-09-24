@@ -6,6 +6,7 @@ import { TooltipProvider } from "@/components/ui/tooltip";
 import { useSessionCacheInvalidation } from "@/hooks/use-ip-cache-invalidation";
 import Landing from "@/pages/landing";
 import Dashboard from "@/pages/dashboard";
+import PfaDashboard from "@/pages/pfa-dashboard";
 import About from "@/pages/about";
 import NotFound from "@/pages/not-found";
 
@@ -17,6 +18,7 @@ function Router() {
     <Switch>
       <Route path="/" component={Landing} />
       <Route path="/dashboard" component={Dashboard} />
+      <Route path="/pfa-dashboard" component={PfaDashboard} />
       <Route path="/about" component={About} />
       <Route component={NotFound} />
     </Switch>

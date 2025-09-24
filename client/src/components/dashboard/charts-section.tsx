@@ -1,20 +1,28 @@
 import { useState } from "react";
 import { useQuery } from "@tanstack/react-query";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
-import { Button } from "@/components/ui/button";
-import { LineChart, Line, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer, ReferenceLine } from "recharts";
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
+import { Badge } from "@/components/ui/badge";
+import { Alert, AlertDescription } from "@/components/ui/alert";
+import { AlertTriangle, Info } from "lucide-react";
+import { LineChart, Line, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer } from "recharts";
 import { MicroplasticEntry, RISK_LEVELS } from "@shared/schema";
 import { 
-  getSourceBreakdown, 
   aggregateDataIntoBuckets,
   calculateYAxisDomain,
+  calculateRegressionLine,
   type ChartGranularity
 } from "@/lib/calculations";
+import { getSourceBreakdown } from "@/lib/microplastic-sources";
 
 export default function ChartsSection() {
   const [granularity, setGranularity] = useState<ChartGranularity>('Month');
   const { data: entries = [], isLoading } = useQuery<MicroplasticEntry[]>({
     queryKey: ["/api/microplastic-entries"],
+  });
+  
+  const { data: dashboardStats } = useQuery({
+    queryKey: ["/api/dashboard-stats"],
   });
 
   if (isLoading) {
@@ -37,12 +45,26 @@ export default function ChartsSection() {
   // Aggregate data into time buckets
   const chartData = aggregateDataIntoBuckets(entries, granularity);
 
+  // Calculate regression line for trend analysis
+  const regressionData = calculateRegressionLine(chartData);
+  console.log('Chart data for regression:', chartData);
+  console.log('Regression data:', regressionData);
+  const chartDataWithRegression = chartData.map((item, index) => ({
+    ...item,
+    regression: regressionData[index]?.y || null
+  }));
+
   // Calculate Y-axis domain with proper scaling
-  const thresholds = [RISK_LEVELS.LOW.max, RISK_LEVELS.MEDIUM.max];
+  const thresholds = [RISK_LEVELS.LOW.max, RISK_LEVELS.NORMAL.max];
   const yAxisDomain = calculateYAxisDomain(
     chartData.map(d => d.particles),
     thresholds
   );
+
+  // Check for risk levels and show appropriate alerts
+  const currentRiskLevel = dashboardStats?.currentRiskLevel;
+  const showHighRiskWarning = currentRiskLevel === 'High' || currentRiskLevel === 'Extreme';
+  const showSafeLevelNotification = currentRiskLevel === 'Low';
 
   // Get latest entry for source breakdown
   const latestEntry = entries[0];
@@ -68,126 +90,147 @@ export default function ChartsSection() {
       const value = payload[0].value;
       const sampleCount = data.sampleCount || 1;
       
+      // Format value for display, handling both small and large numbers
+      let displayValue = '0.00';
+      if (typeof value === 'number' && !isNaN(value) && isFinite(value)) {
+        if (value >= 1000) {
+          displayValue = `${(value / 1000).toFixed(1)}k`;
+        } else if (value >= 10) {
+          displayValue = value.toFixed(1);
+        } else {
+          displayValue = value.toFixed(2);
+        }
+      }
+      
       return (
-        <div className="bg-white p-3 border border-gray-200 rounded-lg shadow-lg">
-          <p className="font-medium text-gray-900">{label}</p>
-          <p className="text-sm text-gray-600">
-            <span className="font-medium text-blue-600">{value.toFixed(1)} p/mL</span>
-            {granularity === 'Month' || granularity === 'Year' ? ' (mean)' : ''}
+        <div className="bg-white p-3 border border-blue-200 rounded-lg shadow-lg">
+          <p className="font-medium text-blue-800">{label}</p>
+          <p className="text-blue-600">
+            Microplastic Level: <span className="font-semibold">{displayValue} p/mL</span>
           </p>
-          {sampleCount > 1 && (
-            <p className="text-xs text-gray-500">{sampleCount} samples</p>
-          )}
+          <p className="text-blue-500 text-sm">
+            {sampleCount} {sampleCount === 1 ? 'entry' : 'entries'} recorded
+          </p>
         </div>
       );
     }
     return null;
   };
 
+  const getChartDescription = () => {
+    switch (granularity) {
+      case 'Week':
+        return "Daily microplastic intake over the last 7 days";
+      case 'Month':
+        return "Weekly microplastic intake over the last 4 weeks";
+      case 'Year':
+        return "Monthly averages over last 12 months";
+      default:
+        return "Microplastic intake trend";
+    }
+  };
+
   return (
     <div className="space-y-6">
-      {/* Time-series Chart with Granularity Controls */}
-      <Card data-testid="card-monthly-trend">
+      {/* Chart Controls */}
+      <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
+        <div>
+          <h3 className="text-lg font-semibold text-blue-800">Microplastic Intake Trend</h3>
+          <p className="text-sm text-blue-600">{getChartDescription()}</p>
+        </div>
+        <div className="flex items-center space-x-2">
+          <Select value={granularity} onValueChange={(value: 'Week' | 'Month' | 'Year') => setGranularity(value)}>
+            <SelectTrigger className="w-32 border-blue-300 focus:border-blue-500">
+              <SelectValue />
+            </SelectTrigger>
+            <SelectContent>
+              <SelectItem value="Week">Daily</SelectItem>
+              <SelectItem value="Month">Weekly</SelectItem>
+              <SelectItem value="Year">Monthly</SelectItem>
+            </SelectContent>
+          </Select>
+        </div>
+      </div>
+
+      {/* Warning Alert */}
+      {showHighRiskWarning && (
+        <Alert className="border-red-200 bg-red-50">
+          <AlertTriangle className="h-4 w-4 text-red-600" />
+          <AlertDescription className="text-red-800">
+            <strong>High Microplastic Exposure Detected!</strong> Your current risk level is <Badge variant="outline" className="ml-1 bg-red-100 text-red-800 border-red-300">{currentRiskLevel}</Badge>. 
+            Consider reducing exposure to microplastic-containing products.
+          </AlertDescription>
+        </Alert>
+      )}
+
+      {/* Safe Level Notification */}
+      {showSafeLevelNotification && (
+        <Alert className="border-green-200 bg-green-50">
+          <Info className="h-4 w-4 text-green-600" />
+          <AlertDescription className="text-green-800">
+            <strong>Great job!</strong> Your current risk level is <Badge variant="outline" className="ml-1 bg-green-100 text-green-800 border-green-300">{currentRiskLevel}</Badge>. 
+            You're maintaining low microplastic exposure levels.
+          </AlertDescription>
+        </Alert>
+      )}
+
+      {/* Main Chart */}
+      <Card className="border-blue-200 bg-blue-50" data-testid="card-monthly-trend">
         <CardHeader>
-          <div className="flex items-center justify-between">
-            <div>
-              <CardTitle className="text-lg font-semibold text-gray-900">
-                Microplastic Intake Trend
-              </CardTitle>
-              <p className="text-sm text-gray-500 mt-1">
-                {granularity === 'Week' && 'Daily averages over last 7 days'}
-                {granularity === 'Month' && 'Weekly averages over last 4 weeks'}
-                {granularity === 'Year' && 'Monthly averages over last 12 months'}
-              </p>
-            </div>
-            <div className="flex space-x-2">
-              <Button 
-                variant={granularity === 'Week' ? 'default' : 'outline'} 
-                size="sm" 
-                className="px-3 py-1 text-xs"
-                onClick={() => setGranularity('Week')}
-                data-testid="button-granularity-week"
-              >
-                Week
-              </Button>
-              <Button 
-                variant={granularity === 'Month' ? 'default' : 'outline'} 
-                size="sm" 
-                className="px-3 py-1 text-xs"
-                onClick={() => setGranularity('Month')}
-                data-testid="button-granularity-month"
-              >
-                Month
-              </Button>
-              <Button 
-                variant={granularity === 'Year' ? 'default' : 'outline'} 
-                size="sm" 
-                className="px-3 py-1 text-xs"
-                onClick={() => setGranularity('Year')}
-                data-testid="button-granularity-year"
-              >
-                Year
-              </Button>
-            </div>
-          </div>
+          <CardTitle className="text-blue-800">Microplastic Intake Over Time</CardTitle>
         </CardHeader>
         <CardContent>
-          <div className="h-80">
+          <div className="h-80 w-full min-w-[300px]">
             {chartData.length > 0 ? (
               <ResponsiveContainer width="100%" height="100%">
-                <LineChart data={chartData} margin={{ top: 5, right: 80, left: 5, bottom: 60 }}>
-                  <CartesianGrid strokeDasharray="3 3" stroke="#f0f0f0" />
+                <LineChart data={chartDataWithRegression}>
+                  <CartesianGrid strokeDasharray="3 3" stroke="#dbeafe" />
                   <XAxis 
                     dataKey="label" 
-                    tick={{ fontSize: 12 }}
-                    angle={granularity === 'Week' ? -45 : -30}
-                    textAnchor="end"
-                    height={60}
-                    interval={granularity === 'Year' ? 1 : granularity === 'Month' ? 0 : 0}
+                    stroke="#1e40af"
+                    fontSize={12}
+                    tickLine={false}
+                    axisLine={false}
                   />
                   <YAxis 
-                    tick={{ fontSize: 12 }}
                     domain={yAxisDomain}
-                    label={{ 
-                      value: 'Microplastic Intake (p/mL)', 
-                      angle: -90, 
-                      position: 'insideLeft',
-                      style: { textAnchor: 'middle', fontSize: '12px', fill: '#6B7280' }
+                    stroke="#1e40af"
+                    fontSize={12}
+                    tickLine={false}
+                    axisLine={false}
+                    tickFormatter={(value) => {
+                      if (value >= 1000) {
+                        return `${(value / 1000).toFixed(1)}k`;
+                      } else if (value >= 10) {
+                        return value.toFixed(0);
+                      } else {
+                        return value.toFixed(1);
+                      }
                     }}
                   />
-                  <Tooltip 
-                    content={customTooltip}
-                    cursor={{ stroke: '#E5E7EB', strokeWidth: 1 }}
-                  />
-                  
-                  {/* Threshold Reference Lines with Labels */}
-                  <ReferenceLine 
-                    y={RISK_LEVELS.LOW.max} 
-                    stroke="#22C55E" 
-                    strokeDasharray="5 5"
+                  <Tooltip content={customTooltip} />
+                  <Line
+                    type="monotone"
+                    dataKey="particles"
+                    stroke="#2563eb"
                     strokeWidth={2}
+                    dot={{ fill: "#2563eb", strokeWidth: 2, r: 4 }}
+                    activeDot={{ r: 6, stroke: "#2563eb", strokeWidth: 2 }}
                   />
-                  <ReferenceLine 
-                    y={RISK_LEVELS.MEDIUM.max} 
-                    stroke="#F97316" 
-                    strokeDasharray="5 5"
+                  {/* Regression Line */}
+                  <Line
+                    type="monotone"
+                    dataKey="regression"
+                    stroke="#dc2626"
                     strokeWidth={2}
-                  />
-                  
-                  {/* Data Line */}
-                  <Line 
-                    type="monotone" 
-                    dataKey="particles" 
-                    stroke="hsl(var(--primary))" 
-                    strokeWidth={3}
-                    dot={{ fill: "hsl(var(--primary))", strokeWidth: 2, r: 5 }}
-                    activeDot={{ r: 7, fill: "hsl(var(--primary))", stroke: '#fff', strokeWidth: 2 }}
+                    strokeDasharray="5 5"
+                    dot={false}
                     connectNulls={false}
                   />
                 </LineChart>
               </ResponsiveContainer>
             ) : (
-              <div className="flex flex-col items-center justify-center h-full text-gray-500">
+              <div className="flex flex-col items-center justify-center h-full text-blue-500">
                 <div className="text-center">
                   <p className="text-lg font-medium mb-2">No data available</p>
                   <p className="text-sm">Add weekly consumption data to see trends over time</p>
@@ -195,79 +238,86 @@ export default function ChartsSection() {
               </div>
             )}
           </div>
-          
-          {/* Threshold Legend */}
-          {chartData.length > 0 && (
-            <div className="flex justify-end space-x-4 mt-4 text-xs">
-              <div className="flex items-center">
-                <div className="w-4 h-0.5 bg-green-500 mr-2" style={{ borderTop: '2px dashed #22C55E' }}></div>
-                <span className="text-gray-600">Low Risk (&lt;{RISK_LEVELS.LOW.max} p/mL)</span>
-              </div>
-              <div className="flex items-center">
-                <div className="w-4 h-0.5 bg-orange-500 mr-2" style={{ borderTop: '2px dashed #F97316' }}></div>
-                <span className="text-gray-600">Med Risk (&lt;{RISK_LEVELS.MEDIUM.max} p/mL)</span>
-              </div>
-            </div>
-          )}
         </CardContent>
       </Card>
 
-      {/* Risk Level Distribution */}
-      <Card data-testid="card-risk-levels">
+      {/* Risk Level Thresholds */}
+      <Card className="border-blue-200 bg-blue-50" data-testid="card-risk-levels">
         <CardHeader>
-          <CardTitle className="text-lg font-semibold text-gray-900">Risk Level Distribution</CardTitle>
+          <CardTitle className="text-blue-800 flex items-center gap-2">
+            <Info className="h-4 w-4" />
+            Microplastic Risk Level Thresholds
+          </CardTitle>
         </CardHeader>
         <CardContent>
-          <div className="grid grid-cols-3 gap-4">
-            <div className="text-center p-4 bg-green-50 rounded-lg">
-              <div className="w-4 h-4 bg-green-500 rounded-full mx-auto mb-2"></div>
-              <p className="text-sm font-medium text-gray-700">Low Risk</p>
-              <p className="text-lg font-bold text-green-600">&lt; {RISK_LEVELS.LOW.max}</p>
-              <p className="text-xs text-gray-500">particles/mL</p>
+          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
+            <div className="text-center">
+              <Badge 
+                variant="outline" 
+                className="w-full justify-center bg-green-100 text-green-800 border-green-300"
+              >
+                Low Risk
+              </Badge>
+              <p className="text-xs text-blue-600 mt-1">
+                0 - {RISK_LEVELS.LOW.max} p/mL
+              </p>
+              <p className="text-xs text-blue-500 mt-1">Below typical levels</p>
             </div>
-            <div className="text-center p-4 bg-orange-50 rounded-lg">
-              <div className="w-4 h-4 bg-orange-500 rounded-full mx-auto mb-2"></div>
-              <p className="text-sm font-medium text-gray-700">Medium Risk</p>
-              <p className="text-lg font-bold text-orange-600">{RISK_LEVELS.LOW.max} - {RISK_LEVELS.MEDIUM.max}</p>
-              <p className="text-xs text-gray-500">particles/mL</p>
+            <div className="text-center">
+              <Badge 
+                variant="outline" 
+                className="w-full justify-center bg-blue-200 text-blue-900 border-blue-400"
+              >
+                Normal Risk
+              </Badge>
+              <p className="text-xs text-blue-600 mt-1">
+                {RISK_LEVELS.LOW.max} - {RISK_LEVELS.NORMAL.max} p/mL
+              </p>
+              <p className="text-xs text-blue-500 mt-1">Within typical range</p>
             </div>
-            <div className="text-center p-4 bg-red-50 rounded-lg">
-              <div className="w-4 h-4 bg-red-500 rounded-full mx-auto mb-2"></div>
-              <p className="text-sm font-medium text-gray-700">High Risk</p>
-              <p className="text-lg font-bold text-red-600">&gt; {RISK_LEVELS.MEDIUM.max}</p>
-              <p className="text-xs text-gray-500">particles/mL</p>
+            <div className="text-center">
+              <Badge 
+                variant="outline" 
+                className="w-full justify-center bg-red-100 text-red-800 border-red-300"
+              >
+                High Risk
+              </Badge>
+              <p className="text-xs text-blue-600 mt-1">
+                &gt; {RISK_LEVELS.NORMAL.max} p/mL
+              </p>
+              <p className="text-xs text-blue-500 mt-1">Above recommended levels</p>
             </div>
           </div>
         </CardContent>
       </Card>
 
       {/* Source Breakdown */}
-      <Card data-testid="card-source-breakdown">
+      <Card className="border-blue-200 bg-blue-50" data-testid="card-source-breakdown">
         <CardHeader>
-          <CardTitle className="text-lg font-semibold text-gray-900">Top Contributing Sources</CardTitle>
+          <CardTitle className="text-blue-800">Top Contributing Sources</CardTitle>
         </CardHeader>
         <CardContent>
           <div className="space-y-4">
             {topSources.length > 0 ? topSources.map((source, index) => (
-              <div key={source.key} className="flex items-center justify-between p-3 bg-gray-50 rounded-lg">
+              <div key={source.key} className="flex items-center justify-between p-3 bg-white rounded-lg border border-blue-200">
                 <div className="flex items-center">
                   <i className={`${source.icon} ${source.color} mr-3`}></i>
-                  <span className="font-medium text-gray-900">{source.label}</span>
+                  <span className="font-medium text-blue-900">{source.label}</span>
                 </div>
                 <div className="flex items-center">
-                  <div className="w-20 bg-gray-200 rounded-full h-2 mr-3">
+                  <div className="w-20 bg-blue-200 rounded-full h-2 mr-3">
                     <div 
-                      className="bg-primary h-2 rounded-full" 
+                      className="bg-blue-500 h-2 rounded-full" 
                       style={{ width: `${totalParticles > 0 ? (source.particles / totalParticles) * 100 : 0}%` }}
                     />
                   </div>
-                  <span className="text-sm font-medium text-gray-700">
+                  <span className="text-sm font-medium text-blue-700">
                     {source.particles.toFixed(1)} p/mL
                   </span>
                 </div>
               </div>
             )) : (
-              <div className="text-center text-gray-500 py-8">
+              <div className="text-center text-blue-500 py-8">
                 No data available. Add weekly consumption data to see source breakdown.
               </div>
             )}
