@@ -74,6 +74,22 @@ export default function About() {
               </p>
             </div>
 
+            {/* Free Access Section */}
+            <div className="bg-emerald-50 p-6 rounded-lg border-l-4 border-emerald-500">
+              <h2 className="text-2xl font-semibold text-emerald-800 mb-3">
+                Free for Everyone, Forever
+              </h2>
+              <p className="text-gray-700 mb-4">
+                ChemTracer is and will always remain <strong>completely free</strong>. We believe that access to information about chemical exposure is a fundamental right, not a privilege. Every person deserves to understand what they're putting into their body and how it might affect their health.
+              </p>
+              <p className="text-gray-700 mb-4">
+                Our mission is purely educational—to inform and empower the public with scientifically accurate data about microplastic and PFAS exposure. We're not here to sell products or premium subscriptions. We're here to democratize access to environmental health information that has traditionally been locked away in academic journals and research institutions.
+              </p>
+              <p className="text-gray-700">
+                By keeping our platform free and accessible, we hope to raise awareness about these invisible threats and inspire a generation to make more informed choices about their daily consumption habits. Knowledge is power, and we believe everyone deserves that power.
+              </p>
+            </div>
+
             {/* Further Reading Link */}
             <div className="bg-gray-50 p-6 rounded-lg text-center">
               <BookOpen className="w-8 h-8 text-gray-600 mx-auto mb-3" />

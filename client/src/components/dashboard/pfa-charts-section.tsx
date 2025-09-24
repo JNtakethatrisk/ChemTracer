@@ -10,7 +10,6 @@ import { apiRequest } from "../../lib/queryClient";
 import { 
   aggregatePfaDataIntoBuckets, 
   calculatePfaYAxisDomain, 
-  calculatePfaRegressionLine,
   formatPfaValue,
   formatPfaTooltipValue
 } from "../../lib/pfa-calculations";
@@ -37,13 +36,6 @@ export function PfaChartsSection({ entries }: PfaChartsSectionProps) {
 
   const chartData = aggregatePfaDataIntoBuckets(entries, granularity);
   const yAxisDomain = calculatePfaYAxisDomain(chartData);
-  const regressionLine = calculatePfaRegressionLine(chartData);
-  
-  // Add regression data to chart data
-  const chartDataWithRegression = chartData.map((item, index) => ({
-    ...item,
-    regression: regressionLine[index]?.y || null
-  }));
 
   const customTooltip = ({ active, payload, label }: any) => {
     if (active && payload && payload.length) {
@@ -119,7 +111,7 @@ export function PfaChartsSection({ entries }: PfaChartsSectionProps) {
         <CardContent>
           <div className="h-80 w-full min-w-[300px]">
             <ResponsiveContainer width="100%" height="100%">
-              <LineChart data={chartDataWithRegression}>
+              <LineChart data={chartData}>
                 <CartesianGrid strokeDasharray="3 3" stroke="#d1fae5" />
                 <XAxis 
                   dataKey="label" 
@@ -144,16 +136,6 @@ export function PfaChartsSection({ entries }: PfaChartsSectionProps) {
                   strokeWidth={2}
                   dot={{ fill: "#059669", strokeWidth: 2, r: 4 }}
                   activeDot={{ r: 6, stroke: "#059669", strokeWidth: 2 }}
-                />
-                {/* Regression Line */}
-                <Line
-                  type="monotone"
-                  dataKey="regression"
-                  stroke="#dc2626"
-                  strokeWidth={2}
-                  strokeDasharray="5 5"
-                  dot={false}
-                  connectNulls={false}
                 />
               </LineChart>
             </ResponsiveContainer>
