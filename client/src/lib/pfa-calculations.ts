@@ -1,4 +1,4 @@
-// import { PFA_RISK_LEVELS } from "@shared/schema";
+// import { PFA_RISK_LEVELS } from "../../../shared/schema";
 // import { getPfaRiskLevel, getPfaRiskLevelInfo } from "./pfa-sources";
 
 export function getPfaWeekStart(date: Date): string {

@@ -1,19 +1,19 @@
 import { useState } from "react";
 import { useQuery } from "@tanstack/react-query";
-import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
-import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
-import { Badge } from "@/components/ui/badge";
-import { Alert, AlertDescription } from "@/components/ui/alert";
+import { Card, CardContent, CardHeader, CardTitle } from "../ui/card";
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "../ui/select";
+import { Badge } from "../ui/badge";
+import { Alert, AlertDescription } from "../ui/alert";
 import { AlertTriangle, Info } from "lucide-react";
 import { LineChart, Line, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer } from "recharts";
-import { MicroplasticEntry, RISK_LEVELS, type DashboardStats } from "@shared/schema";
+import { MicroplasticEntry, RISK_LEVELS, type DashboardStats } from "../../../../shared/schema";
 import { 
   aggregateDataIntoBuckets,
   calculateYAxisDomain,
   calculateRegressionLine,
   type ChartGranularity
-} from "@/lib/calculations";
-import { getSourceBreakdown } from "@/lib/microplastic-sources";
+} from "../../lib/calculations";
+import { getSourceBreakdown } from "../../lib/microplastic-sources";
 
 export default function ChartsSection() {
   const [granularity, setGranularity] = useState<ChartGranularity>('Month');

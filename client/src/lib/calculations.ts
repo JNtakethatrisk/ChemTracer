@@ -1,4 +1,4 @@
-import { RISK_LEVELS } from "@shared/schema";
+import { RISK_LEVELS } from "../../../shared/schema";
 
 // MICROPLASTIC_SOURCES moved to microplastic-sources.ts
 

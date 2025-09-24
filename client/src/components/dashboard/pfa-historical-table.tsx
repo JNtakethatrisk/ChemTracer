@@ -1,14 +1,14 @@
 import { useState } from "react";
-import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
-import { Input } from "@/components/ui/input";
-import { Button } from "@/components/ui/button";
-import { Badge } from "@/components/ui/badge";
-import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table";
-import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
+import { Card, CardContent, CardHeader, CardTitle } from "../ui/card";
+import { Input } from "../ui/input";
+import { Button } from "../ui/button";
+import { Badge } from "../ui/badge";
+import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "../ui/table";
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "../ui/select";
 import { Search, Filter, X } from "lucide-react";
-import { getPfaWeekLabel, formatPfaValue } from "@/lib/pfa-calculations";
-import { getPfaSourceBreakdown } from "@/lib/pfa-sources";
-// import { PFA_RISK_LEVELS } from "@shared/schema";
+import { getPfaWeekLabel, formatPfaValue } from "../../lib/pfa-calculations";
+import { getPfaSourceBreakdown } from "../../lib/pfa-sources";
+// import { PFA_RISK_LEVELS } from "../../../../shared/schema";
 
 interface PfaHistoricalTableProps {
   entries: any[];

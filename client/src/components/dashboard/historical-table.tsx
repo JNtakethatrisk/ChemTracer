@@ -1,15 +1,15 @@
 import { useState } from "react";
 import { useQuery } from "@tanstack/react-query";
 import { Filter, Search, X } from "lucide-react";
-import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
-import { Button } from "@/components/ui/button";
-import { Input } from "@/components/ui/input";
-import { Badge } from "@/components/ui/badge";
-import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table";
-import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
-import { MicroplasticEntry } from "@shared/schema";
-import { getWeekLabel } from "@/lib/calculations";
-import { getSourceBreakdown } from "@/lib/microplastic-sources";
+import { Card, CardContent, CardHeader, CardTitle } from "../ui/card";
+import { Button } from "../ui/button";
+import { Input } from "../ui/input";
+import { Badge } from "../ui/badge";
+import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "../ui/table";
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "../ui/select";
+import { MicroplasticEntry } from "../../../../shared/schema";
+import { getWeekLabel } from "../../lib/calculations";
+import { getSourceBreakdown } from "../../lib/microplastic-sources";
 
 export default function HistoricalTable() {
   const [searchTerm, setSearchTerm] = useState("");

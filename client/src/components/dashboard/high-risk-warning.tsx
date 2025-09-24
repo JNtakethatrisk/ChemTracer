@@ -1,9 +1,9 @@
 // import { useState, useEffect, useRef } from "react";
 // import { useQuery } from "@tanstack/react-query";
 import { AlertTriangle, ExternalLink } from "lucide-react";
-import { Alert, AlertDescription } from "@/components/ui/alert";
-import { Button } from "@/components/ui/button";
-import { Card, CardContent } from "@/components/ui/card";
+import { Alert, AlertDescription } from "../ui/alert";
+import { Button } from "../ui/button";
+import { Card, CardContent } from "../ui/card";
 
 // interface DashboardStats {
 //   currentRiskLevel: string;

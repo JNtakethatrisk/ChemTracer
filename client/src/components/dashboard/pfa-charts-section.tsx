@@ -1,21 +1,21 @@
 import { useState } from "react";
-import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
-import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
-import { Badge } from "@/components/ui/badge";
-import { Alert, AlertDescription } from "@/components/ui/alert";
+import { Card, CardContent, CardHeader, CardTitle } from "../ui/card";
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "../ui/select";
+import { Badge } from "../ui/badge";
+import { Alert, AlertDescription } from "../ui/alert";
 import { AlertTriangle, Info } from "lucide-react";
 import { LineChart, Line, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer } from "recharts";
 import { useQuery } from "@tanstack/react-query";
-import { apiRequest } from "@/lib/queryClient";
+import { apiRequest } from "../../lib/queryClient";
 import { 
   aggregatePfaDataIntoBuckets, 
   calculatePfaYAxisDomain, 
   // calculatePfaRegressionLine,
   formatPfaValue,
   formatPfaTooltipValue
-} from "@/lib/pfa-calculations";
-import { PFA_RISK_LEVELS } from "@shared/schema";
-// import { getPfaSourceBreakdown } from "@/lib/pfa-sources";
+} from "../../lib/pfa-calculations";
+import { PFA_RISK_LEVELS } from "../../../../shared/schema";
+// import { getPfaSourceBreakdown } from "../../lib/pfa-sources";
 
 interface PfaChartsSectionProps {
   entries: any[];

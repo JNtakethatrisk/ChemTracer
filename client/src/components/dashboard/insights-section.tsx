@@ -2,7 +2,7 @@ import { useQuery } from "@tanstack/react-query";
 import { Lightbulb, Target } from "lucide-react";
 import { Card, CardContent, CardHeader, CardTitle } from "../ui/card";
 import { Progress } from "../ui/progress";
-import { MicroplasticEntry, RISK_LEVELS } from "@shared/schema";
+import { MicroplasticEntry, RISK_LEVELS } from "../../../../shared/schema";
 import { getSourceBreakdown } from "../../lib/microplastic-sources";
 
 interface DashboardStats {

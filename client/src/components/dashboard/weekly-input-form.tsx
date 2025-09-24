@@ -2,16 +2,16 @@
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { useMutation, useQueryClient } from "@tanstack/react-query";
-import { Button } from "@/components/ui/button";
-import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
-import { Form, FormControl, FormField, FormItem, FormLabel, FormMessage } from "@/components/ui/form";
-import { Input } from "@/components/ui/input";
-import { useToast } from "@/hooks/use-toast";
-import { type InsertMicroplasticEntry, type MicroplasticEntry } from "@shared/schema";
-import { getWeekStart, getWeekLabel } from "@/lib/calculations";
-import { apiRequest } from "@/lib/queryClient";
+import { Button } from "../ui/button";
+import { Card, CardContent, CardHeader, CardTitle } from "../ui/card";
+import { Form, FormControl, FormField, FormItem, FormLabel, FormMessage } from "../ui/form";
+import { Input } from "../ui/input";
+import { useToast } from "../../hooks/use-toast";
+import { type InsertMicroplasticEntry, type MicroplasticEntry } from "../../../../shared/schema";
+import { getWeekStart, getWeekLabel } from "../../lib/calculations";
+import { apiRequest } from "../../lib/queryClient";
 import { z } from "zod";
-import { MICROPLASTIC_SOURCES } from "@/lib/microplastic-sources";
+import { MICROPLASTIC_SOURCES } from "../../lib/microplastic-sources";
 
 interface WeeklyInputFormProps {}
 

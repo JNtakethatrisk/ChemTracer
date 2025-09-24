@@ -1,10 +1,10 @@
 import { useState } from 'react';
-import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
-import { Button } from '@/components/ui/button';
-import { Badge } from '@/components/ui/badge';
+import { Card, CardContent, CardHeader, CardTitle } from '../ui/card';
+import { Button } from '../ui/button';
+import { Badge } from '../ui/badge';
 import { DragDropContext, Droppable, Draggable } from '@hello-pangea/dnd';
 import { Settings, GripVertical, Eye, EyeOff } from 'lucide-react';
-import { MicroplasticSource, CATEGORIES, getSourcesByCategory } from '@/lib/microplastic-sources';
+import { MicroplasticSource, CATEGORIES, getSourcesByCategory } from '../../lib/microplastic-sources';
 
 interface SourceManagerProps {
   sources: MicroplasticSource[];
