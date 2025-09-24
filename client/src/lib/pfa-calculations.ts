@@ -63,8 +63,6 @@ export function getPfaTimeBuckets(granularity: 'Day' | 'Week' | 'Month'): { labe
       
       const startMonth = weekStart.toLocaleDateString('en-US', { month: 'short' });
       const startDay = weekStart.getDate();
-      const endMonth = weekEnd.toLocaleDateString('en-US', { month: 'short' });
-      const endDay = weekEnd.getDate();
       
       const label = `Week of ${startMonth} ${startDay}`;
       

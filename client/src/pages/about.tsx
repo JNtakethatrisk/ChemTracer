@@ -1,5 +1,5 @@
 import { Button } from "../components/ui/button";
-import { ArrowLeft, Brain, TrendingUp, BookOpen } from "lucide-react";
+import { Brain, TrendingUp, BookOpen } from "lucide-react";
 import { Link } from "wouter";
 import Navigation from "../components/navigation";
 import Logo from "../components/logo";
