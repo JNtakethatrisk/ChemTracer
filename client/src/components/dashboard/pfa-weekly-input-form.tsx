@@ -1,4 +1,4 @@
-// import { useState } from "react";
+import { useCallback } from "react";
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { useMutation, useQueryClient } from "@tanstack/react-query";
@@ -82,34 +82,41 @@ export function PfaWeeklyInputForm({ onSuccess }: PfaWeeklyInputFormProps) {
     createEntryMutation.mutate(data);
   };
 
-  const handleInputChange = (e: React.ChangeEvent<HTMLInputElement>, field: any) => {
+  const handleInputChange = useCallback((e: React.ChangeEvent<HTMLInputElement>, field: any) => {
     const value = e.target.value;
     // Allow empty string for clearing, but prevent negative values and decimals
-    if (value === '' || value === '0') {
+    if (value === '') {
+      field.onChange(value); // Allow empty temporarily for better UX
+    } else if (value === '0') {
       field.onChange(0);
     } else {
       const numValue = parseInt(value, 10);
-      if (!isNaN(numValue) && numValue >= 0 && Number.isInteger(numValue)) {
+      if (!isNaN(numValue) && numValue >= 0) {
         field.onChange(numValue);
       }
     }
-  };
+  }, []);
 
-  const handleKeyDown = (e: React.KeyboardEvent<HTMLInputElement>) => {
+  const handleKeyDown = useCallback((e: React.KeyboardEvent<HTMLInputElement>) => {
     // Prevent negative signs, decimal points, and scientific notation
     if (e.key === '-' || e.key === 'e' || e.key === 'E' || e.key === '.' || e.key === '+') {
       e.preventDefault();
     }
-  };
+  }, []);
 
-  const handleBlur = (e: React.FocusEvent<HTMLInputElement>, field: any) => {
+  const handleBlur = useCallback((e: React.FocusEvent<HTMLInputElement>, field: any) => {
     const value = e.target.value;
-    const numValue = parseInt(value, 10);
-    if (value === '' || isNaN(numValue) || numValue < 0 || !Number.isInteger(numValue)) {
+    if (value === '') {
       field.onChange(0);
-      e.target.value = "0";
+    } else {
+      const numValue = parseInt(value, 10);
+      if (isNaN(numValue) || numValue < 0) {
+        field.onChange(0);
+      } else {
+        field.onChange(numValue);
+      }
     }
-  };
+  }, []);
 
   return (
     <Card className="border-green-200 bg-green-50">
@@ -144,7 +151,7 @@ export function PfaWeeklyInputForm({ onSuccess }: PfaWeeklyInputFormProps) {
                           min="0"
                           step="1"
                           placeholder="0"
-                          value={field.value || ''}
+                          value={field.value === 0 ? '' : field.value}
                           onChange={(e) => handleInputChange(e, field)}
                           onKeyDown={handleKeyDown}
                           onBlur={(e) => handleBlur(e, field)}

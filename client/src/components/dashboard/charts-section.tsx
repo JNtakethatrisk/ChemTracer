@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useState, useMemo } from "react";
 import { useQuery } from "@tanstack/react-query";
 import { Card, CardContent, CardHeader, CardTitle } from "../ui/card";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "../ui/select";
@@ -42,24 +42,29 @@ export default function ChartsSection() {
     );
   }
 
-  // Aggregate data into time buckets
-  const chartData = aggregateDataIntoBuckets(entries, granularity);
+  // Memoize chart calculations to prevent unnecessary recalculations
+  const chartData = useMemo(() => 
+    aggregateDataIntoBuckets(entries, granularity),
+    [entries, granularity]
+  );
 
   // Calculate regression line for trend analysis
-  const regressionData = calculateRegressionLine(chartData);
-  console.log('Chart data for regression:', chartData);
-  console.log('Regression data:', regressionData);
-  const chartDataWithRegression = chartData.map((item, index) => ({
-    ...item,
-    regression: regressionData[index]?.y || null
-  }));
+  const chartDataWithRegression = useMemo(() => {
+    const regressionData = calculateRegressionLine(chartData);
+    return chartData.map((item, index) => ({
+      ...item,
+      regression: regressionData[index]?.y || null
+    }));
+  }, [chartData]);
 
   // Calculate Y-axis domain with proper scaling
-  const thresholds = [RISK_LEVELS.LOW.max, RISK_LEVELS.NORMAL.max];
-  const yAxisDomain = calculateYAxisDomain(
-    chartData.map(d => d.particles),
-    thresholds
-  );
+  const yAxisDomain = useMemo(() => {
+    const thresholds = [RISK_LEVELS.LOW.max, RISK_LEVELS.NORMAL.max];
+    return calculateYAxisDomain(
+      chartData.map(d => d.particles),
+      thresholds
+    );
+  }, [chartData]);
 
   // Check for risk levels and show appropriate alerts
   const currentRiskLevel = dashboardStats?.currentRiskLevel || 'No Data';
@@ -182,7 +187,10 @@ export default function ChartsSection() {
           <div className="h-80 w-full min-w-[300px]">
             {chartData.length > 0 ? (
               <ResponsiveContainer width="100%" height="100%">
-                <LineChart data={chartDataWithRegression}>
+                <LineChart 
+                  data={chartDataWithRegression}
+                  margin={{ top: 5, right: 5, bottom: 5, left: 5 }}
+                >
                   <CartesianGrid strokeDasharray="3 3" stroke="#dbeafe" />
                   <XAxis 
                     dataKey="label" 
@@ -215,6 +223,8 @@ export default function ChartsSection() {
                     strokeWidth={2}
                     dot={{ fill: "#2563eb", strokeWidth: 2, r: 4 }}
                     activeDot={{ r: 6, stroke: "#2563eb", strokeWidth: 2 }}
+                    animationDuration={300}
+                    animationEasing="ease-in-out"
                   />
                   {/* Regression Line */}
                   <Line
@@ -225,6 +235,8 @@ export default function ChartsSection() {
                     strokeDasharray="5 5"
                     dot={false}
                     connectNulls={false}
+                    animationDuration={300}
+                    animationEasing="ease-in-out"
                   />
                 </LineChart>
               </ResponsiveContainer>

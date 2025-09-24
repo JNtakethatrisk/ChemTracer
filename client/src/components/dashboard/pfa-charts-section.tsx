@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useState, useMemo } from "react";
 import { Card, CardContent, CardHeader, CardTitle } from "../ui/card";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "../ui/select";
 import { Badge } from "../ui/badge";
@@ -34,8 +34,16 @@ export function PfaChartsSection({ entries }: PfaChartsSectionProps) {
   const currentRiskLevel = dashboardStats?.currentRiskLevel || "No Data";
   const showWarning = currentRiskLevel === 'High' || currentRiskLevel === 'Extreme';
 
-  const chartData = aggregatePfaDataIntoBuckets(entries, granularity);
-  const yAxisDomain = calculatePfaYAxisDomain(chartData);
+  // Memoize chart calculations to prevent unnecessary recalculations
+  const chartData = useMemo(() => 
+    aggregatePfaDataIntoBuckets(entries, granularity),
+    [entries, granularity]
+  );
+  
+  const yAxisDomain = useMemo(() => 
+    calculatePfaYAxisDomain(chartData),
+    [chartData]
+  );
 
   const customTooltip = ({ active, payload, label }: any) => {
     if (active && payload && payload.length) {
@@ -111,7 +119,10 @@ export function PfaChartsSection({ entries }: PfaChartsSectionProps) {
         <CardContent>
           <div className="h-80 w-full min-w-[300px]">
             <ResponsiveContainer width="100%" height="100%">
-              <LineChart data={chartData}>
+              <LineChart 
+                data={chartData}
+                margin={{ top: 5, right: 5, bottom: 5, left: 5 }}
+              >
                 <CartesianGrid strokeDasharray="3 3" stroke="#d1fae5" />
                 <XAxis 
                   dataKey="label" 
@@ -136,6 +147,8 @@ export function PfaChartsSection({ entries }: PfaChartsSectionProps) {
                   strokeWidth={2}
                   dot={{ fill: "#059669", strokeWidth: 2, r: 4 }}
                   activeDot={{ r: 6, stroke: "#059669", strokeWidth: 2 }}
+                  animationDuration={300}
+                  animationEasing="ease-in-out"
                 />
               </LineChart>
             </ResponsiveContainer>
