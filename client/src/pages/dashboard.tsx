@@ -16,9 +16,24 @@ export default function Dashboard() {
   // Enable IP-based cache invalidation for clean slate on new IPs
   useSessionCacheInvalidation();
 
-  const { data: entries = [] } = useQuery<MicroplasticEntry[]>({
+  const { data: entries = [], isLoading, error } = useQuery<MicroplasticEntry[]>({
     queryKey: ["/api/microplastic-entries"],
   });
+
+  if (error) {
+    console.error("Dashboard query error:", error);
+  }
+
+  if (isLoading) {
+    return (
+      <div className="min-h-screen bg-blue-50 flex items-center justify-center no-pull-refresh">
+        <div className="text-center px-4">
+          <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-blue-600 mx-auto"></div>
+          <p className="mt-4 text-blue-600 text-sm sm:text-base">Loading dashboard...</p>
+        </div>
+      </div>
+    );
+  }
 
   const handleExportData = () => {
     if (entries.length === 0) {
