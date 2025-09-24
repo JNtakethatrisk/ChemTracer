@@ -52,7 +52,7 @@ export default function About() {
                     Our econometric models go beyond simple tracking. We employ:
                   </p>
                   <ul className="list-disc list-inside text-gray-700 space-y-2 ml-4">
-                    <li><strong>Regression Analysis:</strong> Identifying causal relationships between exposure sources and health outcomes</li>
+                    <li><strong>Regression Analysis:</strong> Identifying relationships between exposure sources and health outcomes</li>
                     <li><strong>Time-Series Forecasting:</strong> Predicting future exposure trends based on your habits</li>
                     <li><strong>Machine Learning Classification:</strong> Categorizing risk levels using ensemble methods</li>
                     <li><strong>Bayesian Inference:</strong> Updating risk assessments as new data becomes available</li>
