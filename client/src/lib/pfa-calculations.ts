@@ -117,25 +117,54 @@ export function aggregatePfaDataIntoBuckets(
   const buckets = getPfaTimeBuckets(granularity);
   
   return buckets.map(bucket => {
-    const relevantEntries = entries.filter(entry => {
-      const entryDate = new Date(entry.weekStart);
-      const bucketStart = new Date(bucket.startDate);
-      const bucketEnd = new Date(bucket.endDate);
-      return entryDate >= bucketStart && entryDate <= bucketEnd;
-    });
+    if (granularity === 'Day') {
+      // For daily view, find entries where this day falls within the entry's week
+      const relevantEntries = entries.filter(entry => {
+        const entryWeekStart = new Date(entry.weekStart);
+        const entryWeekEnd = new Date(entryWeekStart);
+        entryWeekEnd.setDate(entryWeekEnd.getDate() + 6);
+        
+        const bucketDate = new Date(bucket.startDate);
+        
+        // Check if this day falls within the entry's week
+        return bucketDate >= entryWeekStart && bucketDate <= entryWeekEnd;
+      });
 
-    if (relevantEntries.length === 0) {
-      return { particles: 0, label: bucket.label, sampleCount: 0 };
+      if (relevantEntries.length === 0) {
+        return { particles: 0, label: bucket.label, sampleCount: 0 };
+      }
+
+      // For daily view, divide weekly total by 7 to get daily average
+      const totalPfas = relevantEntries.reduce((sum, entry) => sum + (entry.totalPfas || 0), 0);
+      const dailyAverage = totalPfas / 7;
+      
+      return {
+        particles: Math.round(dailyAverage * 1000) / 1000,
+        label: bucket.label,
+        sampleCount: relevantEntries.length
+      };
+    } else {
+      // For weekly and monthly views, use the original logic
+      const relevantEntries = entries.filter(entry => {
+        const entryDate = new Date(entry.weekStart);
+        const bucketStart = new Date(bucket.startDate);
+        const bucketEnd = new Date(bucket.endDate);
+        return entryDate >= bucketStart && entryDate <= bucketEnd;
+      });
+
+      if (relevantEntries.length === 0) {
+        return { particles: 0, label: bucket.label, sampleCount: 0 };
+      }
+
+      const totalPfas = relevantEntries.reduce((sum, entry) => sum + (entry.totalPfas || 0), 0);
+      const averagePfas = granularity === 'Month' ? totalPfas / relevantEntries.length : totalPfas;
+      
+      return {
+        particles: Math.round(averagePfas * 1000) / 1000,
+        label: bucket.label,
+        sampleCount: relevantEntries.length
+      };
     }
-
-    const totalPfas = relevantEntries.reduce((sum, entry) => sum + (entry.totalPfas || 0), 0);
-    const averagePfas = granularity === 'Month' ? totalPfas / relevantEntries.length : totalPfas;
-    
-    return {
-      particles: Math.round(averagePfas * 1000) / 1000,
-      label: bucket.label,
-      sampleCount: relevantEntries.length
-    };
   });
 }
 

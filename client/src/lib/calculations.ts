@@ -178,22 +178,56 @@ export function aggregateDataIntoBuckets(entries: any[], granularity: ChartGranu
     };
   });
 
-  // Distribute samples into buckets
-  samples.forEach(sample => {
-    const bucket = buckets.find(b => 
-      sample.timestamp >= b.startDate && sample.timestamp <= b.endDate
-    );
-    if (bucket) {
-      bucket.samples.push(sample);
-    }
-  });
+  if (granularity === 'Week') {
+    // For daily view, we need to handle week-based data differently
+    // Each entry represents a week's worth of data, so we distribute it across all days
+    buckets.forEach(bucket => {
+      // Find entries where this day falls within the entry's week
+      entries.forEach(entry => {
+        const entryWeekStart = new Date(entry.weekStart);
+        const entryWeekEnd = new Date(entryWeekStart);
+        entryWeekEnd.setDate(entryWeekEnd.getDate() + 6);
+        
+        // Check if this bucket's day falls within the entry's week
+        if (bucket.startDate >= entryWeekStart && bucket.startDate <= entryWeekEnd) {
+          const particles = entry.totalParticles;
+          const validatedParticles = typeof particles === 'number' && 
+            !isNaN(particles) && 
+            isFinite(particles) && 
+            particles >= 0 ? 
+            particles / 7 : // Divide by 7 to get daily average
+            0;
+          
+          bucket.samples.push({
+            timestamp: bucket.startDate,
+            intakePml: validatedParticles
+          });
+        }
+      });
+      
+      // Calculate mean for this bucket
+      if (bucket.samples.length > 0) {
+        bucket.mean = bucket.samples.reduce((sum, sample) => sum + sample.intakePml, 0) / bucket.samples.length;
+      }
+    });
+  } else {
+    // For weekly and monthly views, use the original logic
+    samples.forEach(sample => {
+      const bucket = buckets.find(b => 
+        sample.timestamp >= b.startDate && sample.timestamp <= b.endDate
+      );
+      if (bucket) {
+        bucket.samples.push(sample);
+      }
+    });
 
-  // Calculate means for buckets with samples
-  buckets.forEach(bucket => {
-    if (bucket.samples.length > 0) {
-      bucket.mean = bucket.samples.reduce((sum, sample) => sum + sample.intakePml, 0) / bucket.samples.length;
-    }
-  });
+    // Calculate means for buckets with samples
+    buckets.forEach(bucket => {
+      if (bucket.samples.length > 0) {
+        bucket.mean = bucket.samples.reduce((sum, sample) => sum + sample.intakePml, 0) / bucket.samples.length;
+      }
+    });
+  }
 
   // Return only buckets with data (no fake zeros)
   return buckets
