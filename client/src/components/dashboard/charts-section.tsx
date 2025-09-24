@@ -6,7 +6,7 @@ import { Badge } from "@/components/ui/badge";
 import { Alert, AlertDescription } from "@/components/ui/alert";
 import { AlertTriangle, Info } from "lucide-react";
 import { LineChart, Line, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer } from "recharts";
-import { MicroplasticEntry, RISK_LEVELS } from "@shared/schema";
+import { MicroplasticEntry, RISK_LEVELS, type DashboardStats } from "@shared/schema";
 import { 
   aggregateDataIntoBuckets,
   calculateYAxisDomain,

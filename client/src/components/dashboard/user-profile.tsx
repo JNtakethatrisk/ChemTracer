@@ -1,4 +1,4 @@
-import { useState, useEffect } from "react";
+import { useState } from "react";
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
@@ -28,7 +28,11 @@ export default function UserProfile() {
     queryKey: ["/api/user-profile"],
   });
 
-  const { data: percentileData } = useQuery({
+  const { data: percentileData } = useQuery<{
+    message: string;
+    percentile: number;
+    totalCount: number;
+  }>({
     queryKey: ["/api/percentile-comparison", profile?.age],
     enabled: !!profile?.age,
   });
@@ -44,11 +48,7 @@ export default function UserProfile() {
 
   const updateProfileMutation = useMutation({
     mutationFn: async (data: UserProfileForm) => {
-      return apiRequest("/api/user-profile", {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify(data),
-      });
+      return apiRequest("POST", "/api/user-profile", data);
     },
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ["/api/user-profile"] });
@@ -72,13 +72,6 @@ export default function UserProfile() {
     updateProfileMutation.mutate(data);
   };
 
-  const getAgeGroup = (age: number) => {
-    if (age < 18) return "0-17";
-    if (age < 30) return "18-29";
-    if (age < 45) return "30-44";
-    if (age < 60) return "45-59";
-    return "60+";
-  };
 
   if (isLoading) {
     return (
