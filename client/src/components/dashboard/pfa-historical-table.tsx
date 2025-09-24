@@ -5,21 +5,21 @@ import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
-import { Search, Filter, X, Eye } from "lucide-react";
+import { Search, Filter, X } from "lucide-react";
 import { getPfaWeekLabel, formatPfaValue } from "@/lib/pfa-calculations";
 import { getPfaSourceBreakdown } from "@/lib/pfa-sources";
-import { PFA_RISK_LEVELS } from "@shared/schema";
+// import { PFA_RISK_LEVELS } from "@shared/schema";
 
 interface PfaHistoricalTableProps {
   entries: any[];
 }
 
-const riskLevelColors = {
-  "Low": "bg-green-100 text-green-800 border-green-300",
-  "Normal": "bg-green-200 text-green-900 border-green-400", 
-  "High": "bg-orange-100 text-orange-800 border-orange-300",
-  "Extreme": "bg-red-100 text-red-800 border-red-300",
-};
+// const riskLevelColors = {
+//   "Low": "bg-green-100 text-green-800 border-green-300",
+//   "Normal": "bg-green-200 text-green-900 border-green-400", 
+//   "High": "bg-orange-100 text-orange-800 border-orange-300",
+//   "Extreme": "bg-red-100 text-red-800 border-red-300",
+// };
 
 export function PfaHistoricalTable({ entries }: PfaHistoricalTableProps) {
   const [searchTerm, setSearchTerm] = useState("");

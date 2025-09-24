@@ -1,8 +1,8 @@
 import { useQuery } from "@tanstack/react-query";
 import { Download } from "lucide-react";
 import { Button } from "@/components/ui/button";
-import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
-import { Link } from "wouter";
+// import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
+// import { Link } from "wouter";
 import Navigation from "@/components/navigation";
 import OverviewCards from "@/components/dashboard/overview-cards";
 import WeeklyInputForm from "@/components/dashboard/weekly-input-form";
@@ -28,7 +28,7 @@ export default function Dashboard() {
 
     const csvContent = [
       "Week,Bottled Water,Seafood,Salt,Plastic Packaged,Tea Bags,Household Dust,Synthetic Clothing,Canned Food,Plastic Kitchenware,Total Particles,Risk Level",
-      ...entries.map(entry => 
+      ...entries.map((entry: any) => 
         `${entry.weekStart},${entry.bottledWater},${entry.seafood},${entry.salt},${entry.plasticPackaged},${entry.teaBags},${entry.householdDust},${entry.syntheticClothing},${entry.cannedFood},${entry.plasticKitchenware},${entry.totalParticles},${entry.riskLevel}`
       )
     ].join("\n");

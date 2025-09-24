@@ -1,4 +1,4 @@
-import { useState } from "react";
+// import { useState } from "react";
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { useMutation, useQueryClient } from "@tanstack/react-query";
@@ -7,11 +7,11 @@ import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Form, FormControl, FormField, FormItem, FormLabel, FormMessage } from "@/components/ui/form";
 import { Input } from "@/components/ui/input";
 import { useToast } from "@/hooks/use-toast";
-import { insertMicroplasticEntrySchema, type InsertMicroplasticEntry, type MicroplasticEntry } from "@shared/schema";
+import { type InsertMicroplasticEntry, type MicroplasticEntry } from "@shared/schema";
 import { getWeekStart, getWeekLabel } from "@/lib/calculations";
 import { apiRequest } from "@/lib/queryClient";
 import { z } from "zod";
-import { MICROPLASTIC_SOURCES, calculateTotalParticles } from "@/lib/microplastic-sources";
+import { MICROPLASTIC_SOURCES } from "@/lib/microplastic-sources";
 
 interface WeeklyInputFormProps {}
 
@@ -54,7 +54,7 @@ export function WeeklyInputForm({}: WeeklyInputFormProps) {
   const createEntryMutation = useMutation({
     mutationFn: async (data: z.infer<typeof formSchema>) => {
       // Calculate total particles
-      const totalParticles = calculateTotalParticles(data, MICROPLASTIC_SOURCES);
+      // const totalParticles = calculateTotalParticles(data, MICROPLASTIC_SOURCES);
       
       // Create entry data with all fields
       const entryData: InsertMicroplasticEntry = {
@@ -76,7 +76,7 @@ export function WeeklyInputForm({}: WeeklyInputFormProps) {
       const result = await response.json();
       return result as MicroplasticEntry;
     },
-    onSuccess: (data) => {
+    onSuccess: () => {
       toast({
         title: "Entry created successfully",
         description: `Week of ${getWeekLabel(new Date().toISOString())} recorded`,

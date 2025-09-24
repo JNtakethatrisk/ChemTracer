@@ -10,12 +10,12 @@ import { apiRequest } from "@/lib/queryClient";
 import { 
   aggregatePfaDataIntoBuckets, 
   calculatePfaYAxisDomain, 
-  calculatePfaRegressionLine,
+  // calculatePfaRegressionLine,
   formatPfaValue,
   formatPfaTooltipValue
 } from "@/lib/pfa-calculations";
 import { PFA_RISK_LEVELS } from "@shared/schema";
-import { getPfaSourceBreakdown } from "@/lib/pfa-sources";
+// import { getPfaSourceBreakdown } from "@/lib/pfa-sources";
 
 interface PfaChartsSectionProps {
   entries: any[];
@@ -37,7 +37,7 @@ export function PfaChartsSection({ entries }: PfaChartsSectionProps) {
 
   const chartData = aggregatePfaDataIntoBuckets(entries, granularity);
   const yAxisDomain = calculatePfaYAxisDomain(chartData);
-  const regressionLine = calculatePfaRegressionLine(chartData);
+  // const regressionLine = calculatePfaRegressionLine(chartData);
 
   const customTooltip = ({ active, payload, label }: any) => {
     if (active && payload && payload.length) {

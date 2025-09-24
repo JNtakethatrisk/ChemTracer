@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import { useState } from 'react';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
@@ -13,7 +13,7 @@ interface SourceManagerProps {
 
 export function SourceManager({ sources, onSourcesChange }: SourceManagerProps) {
   const [isOpen, setIsOpen] = useState(false);
-  const [draggedCategory, setDraggedCategory] = useState<string | null>(null);
+  // const [draggedCategory, setDraggedCategory] = useState<string | null>(null);
 
   const sourcesByCategory = getSourcesByCategory(sources);
 

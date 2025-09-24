@@ -1,4 +1,4 @@
-import { useState } from "react";
+// import { useState } from "react";
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { useMutation, useQueryClient } from "@tanstack/react-query";
@@ -7,11 +7,11 @@ import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Form, FormControl, FormField, FormItem, FormLabel, FormMessage } from "@/components/ui/form";
 import { Input } from "@/components/ui/input";
 import { useToast } from "@/hooks/use-toast";
-import { insertPfaEntrySchema, type InsertPfaEntry, type PfaEntry } from "@shared/schema";
+import { type InsertPfaEntry, type PfaEntry } from "@shared/schema";
 import { getPfaWeekStart, getPfaWeekLabel } from "@/lib/pfa-calculations";
 import { apiRequest } from "@/lib/queryClient";
 import { z } from "zod";
-import { PFA_SOURCES, calculateTotalPfas } from "@/lib/pfa-sources";
+import { PFA_SOURCES } from "@/lib/pfa-sources";
 
 interface PfaWeeklyInputFormProps {
   onSuccess?: (entry: PfaEntry) => void;
@@ -46,7 +46,7 @@ export function PfaWeeklyInputForm({ onSuccess }: PfaWeeklyInputFormProps) {
   const createEntryMutation = useMutation({
     mutationFn: async (data: z.infer<typeof formSchema>) => {
       // Calculate total PFAs
-      const totalPfas = calculateTotalPfas(data);
+      // const totalPfas = calculateTotalPfas(data);
       
       // Create entry data with all fields
       const entryData: InsertPfaEntry = {

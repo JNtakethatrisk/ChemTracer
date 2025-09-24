@@ -107,14 +107,14 @@ export default function InsightsSection() {
     
     // Risk level reduction goal
     if (stats.currentParticleCount > RISK_LEVELS.LOW.max) {
-      const targetReduction = stats.currentParticleCount - RISK_LEVELS.LOW.max;
+      // const targetReduction = stats.currentParticleCount - RISK_LEVELS.LOW.max;
       const currentProgress = Math.max(0, (RISK_LEVELS.NORMAL.max - stats.currentParticleCount) / (RISK_LEVELS.NORMAL.max - RISK_LEVELS.LOW.max) * 100);
       
       goals.push({
         title: "Reduce to Low Risk",
         target: `< ${RISK_LEVELS.LOW.max} p/mL`,
         progress: Math.min(100, Math.max(0, currentProgress)),
-        description: `${Math.min(100, Math.max(0, currentProgress)).toFixed(0)}% progress • Need to reduce by ${targetReduction.toFixed(1)} p/mL`,
+        description: `${Math.min(100, Math.max(0, currentProgress)).toFixed(0)}% progress • Need to reduce by ${(stats.currentParticleCount - RISK_LEVELS.LOW.max).toFixed(1)} p/mL`,
         color: "bg-primary",
       });
     }
@@ -131,7 +131,7 @@ export default function InsightsSection() {
     // Bottled water reduction goal (if applicable)
     if (entries.length > 0 && (entries[0].bottledWater || 0) > 2) {
       const currentBottled = entries[0].bottledWater || 0;
-      const targetReduction = 50; // 50% reduction target
+      // const targetReduction = 50; // 50% reduction target
       const achieved = Math.min(100, ((10 - currentBottled) / 10) * 100); // Assuming 10 was starting point
       
       goals.push({

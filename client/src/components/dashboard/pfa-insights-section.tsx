@@ -17,7 +17,7 @@ export function PfaInsightsSection({
   entries, 
   currentRiskLevel, 
   weeklyIntake, 
-  monthlyAverage 
+  // monthlyAverage 
 }: PfaInsightsSectionProps) {
   const getRiskLevelInfo = (riskLevel: string) => {
     return Object.values(PFA_RISK_LEVELS).find(level => level.label === riskLevel) || PFA_RISK_LEVELS.LOW;

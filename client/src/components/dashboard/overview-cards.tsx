@@ -1,5 +1,5 @@
 import { useQuery } from "@tanstack/react-query";
-import { Calendar, TrendingUp, CheckCircle, Target } from "lucide-react";
+import { Calendar, TrendingUp, CheckCircle } from "lucide-react";
 import { Card, CardContent } from "@/components/ui/card";
 import { getRiskLevelInfo } from "@/lib/calculations";
 
@@ -46,9 +46,9 @@ export default function OverviewCards() {
   }
 
   const riskInfo = getRiskLevelInfo(stats.currentRiskLevel);
-  const riskColor = riskInfo.color === "green" ? "text-green-600" : 
-                   riskInfo.color === "blue" ? "text-blue-600" :
-                   riskInfo.color === "red" ? "text-red-600" : "text-purple-600";
+  // const riskColor = riskInfo.color === "green" ? "text-green-600" : 
+  //                  riskInfo.color === "blue" ? "text-blue-600" :
+  //                  riskInfo.color === "red" ? "text-red-600" : "text-purple-600";
   const riskBgColor = riskInfo.color === "green" ? "bg-green-500" : 
                      riskInfo.color === "blue" ? "bg-blue-500" :
                      riskInfo.color === "red" ? "bg-red-500" : "bg-purple-500";

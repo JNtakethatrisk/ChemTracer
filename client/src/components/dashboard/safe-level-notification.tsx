@@ -1,18 +1,18 @@
-import { useState, useEffect, useRef } from "react";
-import { useQuery } from "@tanstack/react-query";
+// import { useState, useEffect, useRef } from "react";
+// import { useQuery } from "@tanstack/react-query";
 import { Shield, CheckCircle, ExternalLink } from "lucide-react";
 import { Alert, AlertDescription } from "@/components/ui/alert";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent } from "@/components/ui/card";
 
-interface DashboardStats {
-  currentRiskLevel: string;
-  currentParticleCount: number;
-  weeklyIntake: number;
-  monthlyAverage: number;
-  dataCompleteness: number;
-  weeklyChange: number;
-}
+// interface DashboardStats {
+//   currentRiskLevel: string;
+//   currentParticleCount: number;
+//   weeklyIntake: number;
+//   monthlyAverage: number;
+//   dataCompleteness: number;
+//   weeklyChange: number;
+// }
 
 interface SafeLevelNotificationProps {
   show: boolean;
