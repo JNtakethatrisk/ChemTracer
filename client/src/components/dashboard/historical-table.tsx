@@ -55,7 +55,6 @@ export default function HistoricalTable() {
       householdDust: entry.householdDust || 0,
       syntheticClothing: entry.syntheticClothing || 0,
       cannedFood: entry.cannedFood || 0,
-      cosmetics: entry.cosmetics || 0,
       plasticKitchenware: entry.plasticKitchenware || 0,
     });
     return sources[0]?.label || "None";

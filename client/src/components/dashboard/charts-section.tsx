@@ -77,7 +77,6 @@ export default function ChartsSection() {
     householdDust: latestEntry.householdDust || 0,
     syntheticClothing: latestEntry.syntheticClothing || 0,
     cannedFood: latestEntry.cannedFood || 0,
-    cosmetics: latestEntry.cosmetics || 0,
     plasticKitchenware: latestEntry.plasticKitchenware || 0,
   }).slice(0, 3) : [];
 

@@ -27,9 +27,9 @@ export default function Dashboard() {
     }
 
     const csvContent = [
-      "Week,Bottled Water,Seafood,Salt,Plastic Packaged,Tea Bags,Household Dust,Synthetic Clothing,Canned Food,Cosmetics,Plastic Kitchenware,Total Particles,Risk Level",
+      "Week,Bottled Water,Seafood,Salt,Plastic Packaged,Tea Bags,Household Dust,Synthetic Clothing,Canned Food,Plastic Kitchenware,Total Particles,Risk Level",
       ...entries.map(entry => 
-        `${entry.weekStart},${entry.bottledWater},${entry.seafood},${entry.salt},${entry.plasticPackaged},${entry.teaBags},${entry.householdDust},${entry.syntheticClothing},${entry.cannedFood},${entry.cosmetics},${entry.plasticKitchenware},${entry.totalParticles},${entry.riskLevel}`
+        `${entry.weekStart},${entry.bottledWater},${entry.seafood},${entry.salt},${entry.plasticPackaged},${entry.teaBags},${entry.householdDust},${entry.syntheticClothing},${entry.cannedFood},${entry.plasticKitchenware},${entry.totalParticles},${entry.riskLevel}`
       )
     ].join("\n");
 
