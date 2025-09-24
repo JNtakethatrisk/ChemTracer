@@ -1,6 +1,6 @@
 import { useEffect } from 'react';
 import { useQuery } from '@tanstack/react-query';
-import { queryClient } from '@/lib/queryClient';
+import { queryClient } from '../lib/queryClient';
 
 interface SessionResponse {
   ip: string;

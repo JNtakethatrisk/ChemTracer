@@ -1,7 +1,7 @@
 import { useQuery } from "@tanstack/react-query";
 import { Calendar, TrendingUp, CheckCircle } from "lucide-react";
-import { Card, CardContent } from "@/components/ui/card";
-import { getRiskLevelInfo } from "@/lib/calculations";
+import { Card, CardContent } from "../ui/card";
+import { getRiskLevelInfo } from "../../lib/calculations";
 
 interface DashboardStats {
   currentRiskLevel: string;

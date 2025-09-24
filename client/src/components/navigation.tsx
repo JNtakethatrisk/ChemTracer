@@ -1,8 +1,8 @@
 import { Link, useLocation } from "wouter";
-import { Button } from "@/components/ui/button";
+import { Button } from "./ui/button";
 import { Home, Leaf, Info } from "lucide-react";
-import Logo from "@/components/logo";
-import PlasticLogo from "@/components/plastic-logo";
+import Logo from "./logo";
+import PlasticLogo from "./plastic-logo";
 
 export function Navigation() {
   const [location] = useLocation();

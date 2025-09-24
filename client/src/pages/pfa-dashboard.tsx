@@ -1,15 +1,15 @@
 import { useQuery } from "@tanstack/react-query";
-import { apiRequest } from "@/lib/queryClient";
-import Navigation from "@/components/navigation";
-import { PfaWeeklyInputForm } from "@/components/dashboard/pfa-weekly-input-form";
-import { PfaOverviewCards } from "@/components/dashboard/pfa-overview-cards";
-import { PfaChartsSection } from "@/components/dashboard/pfa-charts-section";
-import { PfaHistoricalTable } from "@/components/dashboard/pfa-historical-table";
-import { PfaInsightsSection } from "@/components/dashboard/pfa-insights-section";
-import { PfaLearnMoreModal } from "@/components/dashboard/pfa-learn-more-modal";
-import { Button } from "@/components/ui/button";
+import { apiRequest } from "../lib/queryClient";
+import Navigation from "../components/navigation";
+import { PfaWeeklyInputForm } from "../components/dashboard/pfa-weekly-input-form";
+import { PfaOverviewCards } from "../components/dashboard/pfa-overview-cards";
+import { PfaChartsSection } from "../components/dashboard/pfa-charts-section";
+import { PfaHistoricalTable } from "../components/dashboard/pfa-historical-table";
+import { PfaInsightsSection } from "../components/dashboard/pfa-insights-section";
+import { PfaLearnMoreModal } from "../components/dashboard/pfa-learn-more-modal";
+import { Button } from "../components/ui/button";
 import { Download } from "lucide-react";
-import { useSessionCacheInvalidation } from "@/hooks/use-ip-cache-invalidation";
+import { useSessionCacheInvalidation } from "../hooks/use-ip-cache-invalidation";
 
 export function PfaDashboard() {
   // Enable IP-based cache invalidation for clean slate on new IPs

@@ -1,16 +1,16 @@
 import { useQuery } from "@tanstack/react-query";
 import { Download } from "lucide-react";
-import { Button } from "@/components/ui/button";
+import { Button } from "../components/ui/button";
 // import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 // import { Link } from "wouter";
-import Navigation from "@/components/navigation";
-import OverviewCards from "@/components/dashboard/overview-cards";
-import WeeklyInputForm from "@/components/dashboard/weekly-input-form";
-import ChartsSection from "@/components/dashboard/charts-section";
-import HistoricalTable from "@/components/dashboard/historical-table";
-import InsightsSection from "@/components/dashboard/insights-section";
+import Navigation from "../components/navigation";
+import OverviewCards from "../components/dashboard/overview-cards";
+import WeeklyInputForm from "../components/dashboard/weekly-input-form";
+import ChartsSection from "../components/dashboard/charts-section";
+import HistoricalTable from "../components/dashboard/historical-table";
+import InsightsSection from "../components/dashboard/insights-section";
 import { MicroplasticEntry } from "@shared/schema";
-import { useSessionCacheInvalidation } from "@/hooks/use-ip-cache-invalidation";
+import { useSessionCacheInvalidation } from "../hooks/use-ip-cache-invalidation";
 
 export default function Dashboard() {
   // Enable IP-based cache invalidation for clean slate on new IPs
