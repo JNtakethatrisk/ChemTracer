@@ -97,16 +97,16 @@ export default function Landing() {
           {/* Features Preview */}
           <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4 lg:gap-6 pt-6 sm:pt-8 max-w-4xl mx-auto w-full">
             <div className="text-center space-y-2 p-3">
-              <div className="w-10 h-10 sm:w-12 sm:h-12 bg-green-100 rounded-full flex items-center justify-center mx-auto">
-                <div className="w-5 h-5 sm:w-6 sm:h-6 bg-green-500 rounded-full"></div>
+              <div className="w-10 h-10 sm:w-12 sm:h-12 bg-red-100 rounded-full flex items-center justify-center mx-auto">
+                <div className="w-5 h-5 sm:w-6 sm:h-6 bg-red-500 rounded-full"></div>
               </div>
               <h3 className="font-semibold text-green-800 text-sm sm:text-base">Risk Assessment</h3>
               <p className="text-xs sm:text-sm text-green-700">Get personalized unlimited risk level assessments based on your consumption, age, and location</p>
             </div>
             
             <div className="text-center space-y-2 p-3">
-              <div className="w-10 h-10 sm:w-12 sm:h-12 bg-emerald-100 rounded-full flex items-center justify-center mx-auto">
-                <div className="w-5 h-5 sm:w-6 sm:h-6 bg-emerald-500 rounded-full"></div>
+              <div className="w-10 h-10 sm:w-12 sm:h-12 bg-blue-100 rounded-full flex items-center justify-center mx-auto">
+                <div className="w-5 h-5 sm:w-6 sm:h-6 bg-blue-500 rounded-full"></div>
               </div>
               <h3 className="font-semibold text-green-800 text-sm sm:text-base">Weekly Tracking</h3>
               <p className="text-xs sm:text-sm text-green-700">Monitor your microplastic and PFAS intake based on peer reviewed studies</p>

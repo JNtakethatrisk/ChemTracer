@@ -64,8 +64,8 @@ export function Navigation() {
                 }`}
               >
                 <Leaf className="h-3 w-3 sm:h-4 sm:w-4" />
-                <span className="hidden sm:inline">PFA Tracker</span>
-                <span className="sm:hidden">PFA</span>
+                <span className="hidden sm:inline">PFAS Tracker</span>
+                <span className="sm:hidden">PFAS</span>
               </Button>
             </Link>
             

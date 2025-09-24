@@ -21,8 +21,7 @@ interface PfaWeeklyInputFormProps {
 const formSchema = z.object({
   dentalFloss: z.number().int().min(0).default(0),
   toiletPaper: z.number().int().min(0).default(0),
-  yogaPants: z.number().int().min(0).default(0),
-  sportsBras: z.number().int().min(0).default(0),
+  sweatResistantClothing: z.number().int().min(0).default(0),
   tapWater: z.number().int().min(0).default(0),
   nonStickPans: z.number().int().min(0).default(0),
 });
@@ -36,8 +35,7 @@ export function PfaWeeklyInputForm({ onSuccess }: PfaWeeklyInputFormProps) {
     defaultValues: {
       dentalFloss: 0,
       toiletPaper: 0,
-      yogaPants: 0,
-      sportsBras: 0,
+      sweatResistantClothing: 0,
       tapWater: 0,
       nonStickPans: 0,
     },
@@ -53,8 +51,7 @@ export function PfaWeeklyInputForm({ onSuccess }: PfaWeeklyInputFormProps) {
         weekStart: getPfaWeekStart(new Date()),
         dentalFloss: data.dentalFloss || 0,
         toiletPaper: data.toiletPaper || 0,
-        yogaPants: data.yogaPants || 0,
-        sportsBras: data.sportsBras || 0,
+        sweatResistantClothing: data.sweatResistantClothing || 0,
         tapWater: data.tapWater || 0,
         nonStickPans: data.nonStickPans || 0,
       };

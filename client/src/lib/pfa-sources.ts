@@ -33,23 +33,13 @@ export const PFA_SOURCES: PfaSource[] = [
     enabled: true
   },
   {
-    key: 'yogaPants',
-    label: 'Yoga Pants',
-    description: 'PFAS-treated yoga pants and workout clothes',
+    key: 'sweatResistantClothing',
+    label: 'Sweat/Water Resistant Clothing',
+    description: 'PFAS-treated athletic wear, yoga pants, sports bras, and moisture-wicking fabrics',
     category: 'clothing',
     unit: 'wears per week',
     pfasPerUnit: 0.012,
-    icon: '🧘‍♀️',
-    enabled: true
-  },
-  {
-    key: 'sportsBras',
-    label: 'Sports Bras',
-    description: 'PFAS-treated sports bras and athletic wear',
-    category: 'clothing',
-    unit: 'wears per week',
-    pfasPerUnit: 0.012,
-    icon: '🏃‍♀️',
+    icon: '👕',
     enabled: true
   },
   {
@@ -99,8 +89,7 @@ export function calculateTotalPfas(entry: any): number {
   let total = 0;
   total += (entry.dentalFloss || 0) * PFA_SOURCES.find(s => s.key === 'dentalFloss')!.pfasPerUnit;
   total += (entry.toiletPaper || 0) * PFA_SOURCES.find(s => s.key === 'toiletPaper')!.pfasPerUnit;
-  total += (entry.yogaPants || 0) * PFA_SOURCES.find(s => s.key === 'yogaPants')!.pfasPerUnit;
-  total += (entry.sportsBras || 0) * PFA_SOURCES.find(s => s.key === 'sportsBras')!.pfasPerUnit;
+  total += (entry.sweatResistantClothing || 0) * PFA_SOURCES.find(s => s.key === 'sweatResistantClothing')!.pfasPerUnit;
   total += (entry.tapWater || 0) * PFA_SOURCES.find(s => s.key === 'tapWater')!.pfasPerUnit;
   total += (entry.nonStickPans || 0) * PFA_SOURCES.find(s => s.key === 'nonStickPans')!.pfasPerUnit;
   return Math.round(total * 1000) / 1000; // Round to 3 decimal places for ppt

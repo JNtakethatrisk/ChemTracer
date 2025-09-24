@@ -23,8 +23,7 @@ const CONVERSION_FACTORS = {
 const PFA_CONVERSION_FACTORS = {
   dentalFloss: 0.05,      // ppt per use per week
   toiletPaper: 0.02,      // ppt per roll per week
-  yogaPants: 0.012,       // ppt per wear per week
-  sportsBras: 0.012,      // ppt per wear per week
+  sweatResistantClothing: 0.012,  // ppt per wear per week
   tapWater: 0.001,        // ppt per glass per week
   nonStickPans: 0.03,     // ppt per use per week
 };
@@ -59,8 +58,7 @@ function calculateTotalPfas(entry: any): number {
   
   total += (entry.dentalFloss || 0) * PFA_CONVERSION_FACTORS.dentalFloss;
   total += (entry.toiletPaper || 0) * PFA_CONVERSION_FACTORS.toiletPaper;
-  total += (entry.yogaPants || 0) * PFA_CONVERSION_FACTORS.yogaPants;
-  total += (entry.sportsBras || 0) * PFA_CONVERSION_FACTORS.sportsBras;
+  total += (entry.sweatResistantClothing || 0) * PFA_CONVERSION_FACTORS.sweatResistantClothing;
   total += (entry.tapWater || 0) * PFA_CONVERSION_FACTORS.tapWater;
   total += (entry.nonStickPans || 0) * PFA_CONVERSION_FACTORS.nonStickPans;
   
