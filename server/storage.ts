@@ -93,46 +93,68 @@ export class DatabaseStorage implements IStorage {
 
   // PFA methods
   async getPfaEntries(userIp: string): Promise<PfaEntry[]> {
-    const entries = await db.select().from(pfaEntries)
-      .where(eq(pfaEntries.userIp, userIp))
-      .orderBy(desc(pfaEntries.createdAt));
-    return entries;
+    try {
+      const entries = await db.select().from(pfaEntries)
+        .where(eq(pfaEntries.userIp, userIp))
+        .orderBy(desc(pfaEntries.createdAt));
+      return entries;
+    } catch (error) {
+      console.error("getPfaEntries error:", error);
+      // Return empty array if table doesn't exist
+      return [];
+    }
   }
 
   async getPfaEntry(id: string, userIp: string): Promise<PfaEntry | undefined> {
-    const [entry] = await db.select().from(pfaEntries)
-      .where(and(eq(pfaEntries.id, id), eq(pfaEntries.userIp, userIp)));
-    return entry || undefined;
+    try {
+      const [entry] = await db.select().from(pfaEntries)
+        .where(and(eq(pfaEntries.id, id), eq(pfaEntries.userIp, userIp)));
+      return entry || undefined;
+    } catch (error) {
+      console.error("getPfaEntry error:", error);
+      return undefined;
+    }
   }
 
   async getPfaEntriesByDateRange(userIp: string, startDate: string, endDate: string): Promise<PfaEntry[]> {
-    const entries = await db.select().from(pfaEntries)
-      .where(and(
-        eq(pfaEntries.userIp, userIp),
-        gte(pfaEntries.weekStart, startDate),
-        lte(pfaEntries.weekStart, endDate)
-      ))
-      .orderBy(desc(pfaEntries.createdAt));
-    return entries;
+    try {
+      const entries = await db.select().from(pfaEntries)
+        .where(and(
+          eq(pfaEntries.userIp, userIp),
+          gte(pfaEntries.weekStart, startDate),
+          lte(pfaEntries.weekStart, endDate)
+        ))
+        .orderBy(desc(pfaEntries.createdAt));
+      return entries;
+    } catch (error) {
+      console.error("getPfaEntriesByDateRange error:", error);
+      return [];
+    }
   }
 
   async createPfaEntry(userIp: string, insertEntry: InsertPfaEntry & { totalPfas: number; riskLevel: string }): Promise<PfaEntry> {
-    const [entry] = await db
-      .insert(pfaEntries)
-      .values({
-        userIp,
-        weekStart: insertEntry.weekStart,
-        dentalFloss: insertEntry.dentalFloss ?? 0,
-        toiletPaper: insertEntry.toiletPaper ?? 0,
-        yogaPants: insertEntry.yogaPants ?? 0,
-        sportsBras: insertEntry.sportsBras ?? 0,
-        tapWater: insertEntry.tapWater ?? 0,
-        nonStickPans: insertEntry.nonStickPans ?? 0,
-        totalPfas: insertEntry.totalPfas,
-        riskLevel: insertEntry.riskLevel,
-      })
-      .returning();
-    return entry;
+    try {
+      const [entry] = await db
+        .insert(pfaEntries)
+        .values({
+          userIp,
+          weekStart: insertEntry.weekStart,
+          dentalFloss: insertEntry.dentalFloss ?? 0,
+          toiletPaper: insertEntry.toiletPaper ?? 0,
+          yogaPants: insertEntry.yogaPants ?? 0,
+          sportsBras: insertEntry.sportsBras ?? 0,
+          tapWater: insertEntry.tapWater ?? 0,
+          nonStickPans: insertEntry.nonStickPans ?? 0,
+          totalPfas: insertEntry.totalPfas,
+          riskLevel: insertEntry.riskLevel,
+        })
+        .returning();
+      return entry;
+    } catch (error) {
+      console.error("createPfaEntry error:", error);
+      // Throw error so API returns 500
+      throw error;
+    }
   }
 
   async updatePfaEntry(id: string, userIp: string, updateEntry: Partial<PfaEntry>): Promise<PfaEntry | undefined> {

@@ -399,7 +399,8 @@ export async function registerRoutes(app: Express): Promise<Server> {
       const userIp = getUserIp(req);
       const entries = await storage.getPfaEntries(userIp);
       
-      if (entries.length === 0) {
+      // Always return valid stats even if no entries
+      if (!entries || entries.length === 0) {
         return res.json({
           currentRiskLevel: "No Data",
           currentPfaCount: 0,
