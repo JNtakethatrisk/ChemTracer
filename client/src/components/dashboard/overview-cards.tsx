@@ -3,14 +3,7 @@ import { Calendar, TrendingUp, CheckCircle } from "lucide-react";
 import { Card, CardContent } from "../ui/card";
 import { getRiskLevelInfo } from "../../lib/calculations";
 
-interface DashboardStats {
-  currentRiskLevel: string;
-  currentParticleCount: number;
-  weeklyIntake: number;
-  monthlyAverage: number;
-  dataCompleteness: number;
-  weeklyChange: number;
-}
+import { type DashboardStats } from "../../../../shared/schema";
 
 export default function OverviewCards() {
   const { data: stats, isLoading } = useQuery<DashboardStats>({
@@ -88,6 +81,9 @@ export default function OverviewCards() {
             <span data-testid="text-weekly-change">
               {Math.abs(stats.weeklyChange).toFixed(1)}% from last week
             </span>
+          </p>
+          <p className="text-xs text-blue-500 mt-1">
+            Based on {stats.totalEntries} {stats.totalEntries === 1 ? 'entry' : 'entries'}
           </p>
         </CardContent>
       </Card>

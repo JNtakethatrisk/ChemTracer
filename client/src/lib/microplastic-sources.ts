@@ -10,7 +10,49 @@ export interface MicroplasticSource {
 }
 
 export const MICROPLASTIC_SOURCES: MicroplasticSource[] = [
-  // Food Category
+  // Top priority items (most commonly tracked)
+  {
+    key: 'bottledWater',
+    label: 'Plastic Water Bottles',
+    description: 'Water from single-use plastic bottles',
+    category: 'beverages',
+    unit: 'bottles per week',
+    particlesPerUnit: 0.2,
+    icon: '🍶',
+    enabled: true
+  },
+  {
+    key: 'syntheticClothing',
+    label: 'Synthetic Clothing',
+    description: 'Wearing polyester, nylon, and synthetic fabrics',
+    category: 'clothing',
+    unit: 'wears per week',
+    particlesPerUnit: 0.15,
+    icon: '👕',
+    enabled: true
+  },
+  {
+    key: 'plasticPackaged',
+    label: 'Plastic Packaged Food',
+    description: 'Food items wrapped or stored in plastic',
+    category: 'packaging',
+    unit: 'items per week',
+    particlesPerUnit: 0.2,
+    icon: '📦',
+    enabled: true
+  },
+  {
+    key: 'householdDust',
+    label: 'Indoor Time',
+    description: 'Hours spent indoors (exposure to household dust)',
+    category: 'household',
+    unit: 'hours per day',
+    particlesPerUnit: 0.01,
+    icon: '🏠',
+    enabled: true
+  },
+
+  // Other sources
   {
     key: 'seafood',
     label: 'Seafood Meals',
@@ -32,28 +74,6 @@ export const MICROPLASTIC_SOURCES: MicroplasticSource[] = [
     enabled: true
   },
   {
-    key: 'cannedFood',
-    label: 'Canned Food',
-    description: 'Food from metal cans with plastic linings',
-    category: 'food',
-    unit: 'cans per week',
-    particlesPerUnit: 0.3,
-    icon: '🥫',
-    enabled: true
-  },
-
-  // Beverages Category
-  {
-    key: 'bottledWater',
-    label: 'Plastic Water Bottles',
-    description: 'Water from single-use plastic bottles',
-    category: 'beverages',
-    unit: 'bottles per week',
-    particlesPerUnit: 0.2,
-    icon: '💧',
-    enabled: true
-  },
-  {
     key: 'teaBags',
     label: 'Tea Bags',
     description: 'Tea bags made with plastic materials',
@@ -64,25 +84,13 @@ export const MICROPLASTIC_SOURCES: MicroplasticSource[] = [
     enabled: true
   },
   {
-    key: 'coffeeCups',
-    label: 'Keurig Cups',
-    description: 'Keurig K-cups and single-serve coffee pods',
-    category: 'beverages',
-    unit: 'cups per week',
-    particlesPerUnit: 0.15,
-    icon: '☕',
-    enabled: true
-  },
-
-  // Household Category
-  {
-    key: 'householdDust',
-    label: 'Indoor Time',
-    description: 'Hours spent indoors (exposure to household dust)',
-    category: 'household',
-    unit: 'hours per day',
-    particlesPerUnit: 0.01,
-    icon: '🏠',
+    key: 'cannedFood',
+    label: 'Canned Food',
+    description: 'Food from metal cans with plastic linings',
+    category: 'food',
+    unit: 'cans per week',
+    particlesPerUnit: 0.3,
+    icon: '🥫',
     enabled: true
   },
   {
@@ -95,28 +103,14 @@ export const MICROPLASTIC_SOURCES: MicroplasticSource[] = [
     icon: '🍽️',
     enabled: true
   },
-
-  // Clothing Category
   {
-    key: 'syntheticClothing',
-    label: 'Synthetic Clothing',
-    description: 'Wearing polyester, nylon, and synthetic fabrics',
-    category: 'clothing',
-    unit: 'wears per week',
+    key: 'coffeeCups',
+    label: 'Keurig Cups',
+    description: 'Keurig K-cups and single-serve coffee pods',
+    category: 'beverages',
+    unit: 'cups per week',
     particlesPerUnit: 0.15,
-    icon: '👕',
-    enabled: true
-  },
-
-  // Packaging Category
-  {
-    key: 'plasticPackaged',
-    label: 'Plastic Packaged Food',
-    description: 'Food items wrapped or stored in plastic',
-    category: 'packaging',
-    unit: 'items per week',
-    particlesPerUnit: 0.2,
-    icon: '📦',
+    icon: '☕',
     enabled: true
   },
   {

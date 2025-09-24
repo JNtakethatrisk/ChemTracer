@@ -234,6 +234,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
           monthlyAverage: 0,
           dataCompleteness: 0,
           weeklyChange: 0,
+          totalEntries: 0,
         });
       }
       
@@ -261,6 +262,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
         monthlyAverage: Math.round(monthlyAverage * 100) / 100,
         dataCompleteness: Math.round(dataCompleteness),
         weeklyChange: Math.round(weeklyChange * 100) / 100,
+        totalEntries: entries.length,
       });
     } catch (error) {
       res.status(500).json({ message: "Failed to fetch dashboard statistics" });
@@ -422,6 +424,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
           monthlyAverage: 0,
           dataCompleteness: 0,
           weeklyChange: 0,
+          totalEntries: 0,
         });
       }
       
@@ -449,6 +452,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
         monthlyAverage: Math.round(monthlyAverage * 1000) / 1000,
         dataCompleteness: Math.round(dataCompleteness),
         weeklyChange: Math.round(weeklyChange * 100) / 100,
+        totalEntries: entries.length,
       });
     } catch (error) {
       console.error("PFA dashboard stats error:", error);

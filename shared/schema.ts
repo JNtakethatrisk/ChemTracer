@@ -100,4 +100,5 @@ export type DashboardStats = {
   weeklyChange: number;
   monthlyAverage: number;
   dataCompleteness: number;
+  totalEntries: number;
 };

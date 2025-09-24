@@ -9,6 +9,7 @@ interface PfaDashboardStats {
   monthlyAverage: number;
   dataCompleteness: number;
   weeklyChange: number;
+  totalEntries: number;
 }
 
 interface PfaOverviewCardsProps {
@@ -86,6 +87,9 @@ export function PfaOverviewCards({ stats }: PfaOverviewCardsProps) {
           </div>
           <p className="text-xs text-green-600">
             This week's PFA exposure
+          </p>
+          <p className="text-xs text-green-500 mt-1">
+            Based on {stats.totalEntries} {stats.totalEntries === 1 ? 'entry' : 'entries'}
           </p>
         </CardContent>
       </Card>
