@@ -46,7 +46,7 @@ export function PfaWeeklyInputForm({ onSuccess }: PfaWeeklyInputFormProps) {
   const createEntryMutation = useMutation({
     mutationFn: async (data: z.infer<typeof formSchema>) => {
       // Calculate total PFAs
-      const totalPfas = calculateTotalPfas(data, PFA_SOURCES);
+      const totalPfas = calculateTotalPfas(data);
       
       // Create entry data with all fields
       const entryData: InsertPfaEntry = {
