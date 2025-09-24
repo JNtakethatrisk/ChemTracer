@@ -83,7 +83,7 @@ export default function OverviewCards() {
             </span>
           </p>
           <p className="text-xs text-blue-500 mt-1">
-            Based on {stats.totalEntries} {stats.totalEntries === 1 ? 'entry' : 'entries'}
+            Based on {stats.totalEntries || 0} {stats.totalEntries === 1 ? 'entry' : 'entries'}
           </p>
         </CardContent>
       </Card>

@@ -89,7 +89,7 @@ export function PfaOverviewCards({ stats }: PfaOverviewCardsProps) {
             This week's PFA exposure
           </p>
           <p className="text-xs text-green-500 mt-1">
-            Based on {stats.totalEntries} {stats.totalEntries === 1 ? 'entry' : 'entries'}
+            Based on {stats.totalEntries || 0} {stats.totalEntries === 1 ? 'entry' : 'entries'}
           </p>
         </CardContent>
       </Card>

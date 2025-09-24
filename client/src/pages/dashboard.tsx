@@ -27,9 +27,9 @@ export default function Dashboard() {
     }
 
     const csvContent = [
-      "Week,Bottled Water,Seafood,Salt,Plastic Packaged,Tea Bags,Household Dust,Synthetic Clothing,Canned Food,Plastic Kitchenware,Total Particles,Risk Level",
+      "Week,Bottled Water,Seafood,Salt,Plastic Packaged,Tea Bags,Household Dust,Synthetic Clothing,Canned Food,Plastic Kitchenware,Coffee Cups,Takeout Containers,Total Particles,Risk Level",
       ...entries.map((entry: any) => 
-        `${entry.weekStart},${entry.bottledWater},${entry.seafood},${entry.salt},${entry.plasticPackaged},${entry.teaBags},${entry.householdDust},${entry.syntheticClothing},${entry.cannedFood},${entry.plasticKitchenware},${entry.totalParticles},${entry.riskLevel}`
+        `${entry.weekStart},${entry.bottledWater || 0},${entry.seafood || 0},${entry.salt || 0},${entry.plasticPackaged || 0},${entry.teaBags || 0},${entry.householdDust || 0},${entry.syntheticClothing || 0},${entry.cannedFood || 0},${entry.plasticKitchenware || 0},${entry.coffeeCups || 0},${entry.takeoutContainers || 0},${entry.totalParticles || 0},${entry.riskLevel || ''}`
       )
     ].join("\n");
 
