@@ -37,7 +37,7 @@ export default function UserProfile() {
     enabled: !!profile?.age,
   });
 
-  const form = useForm<UserProfileForm>({
+  const form = useForm({
     resolver: zodResolver(insertUserProfileSchema),
     defaultValues: {
       age: profile?.age || 0,
