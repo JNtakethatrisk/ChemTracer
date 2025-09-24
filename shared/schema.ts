@@ -93,3 +93,12 @@ export const PFA_RISK_LEVELS = {
   HIGH: { min: 0.1, max: 1.0, label: "High", color: "orange", description: "Above recommended levels" },
   EXTREME: { min: 1.0, max: Infinity, label: "Extreme", color: "red", description: "Significantly above safe levels" },
 } as const;
+
+export type DashboardStats = {
+  currentRiskLevel: string;
+  currentParticleCount: number;
+  weeklyIntake: number;
+  weeklyChange: number;
+  monthlyAverage: number;
+  dataCompleteness: number;
+};
