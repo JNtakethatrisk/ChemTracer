@@ -121,7 +121,7 @@ export function getTimeBuckets(granularity: ChartGranularity): TimeBucket[] {
         
         buckets.push({
           key: `week-${startOfWeek.getTime()}`,
-          label: `${startOfWeek.toLocaleDateString('en-US', { month: 'short', day: 'numeric' })} - ${endOfWeek.toLocaleDateString('en-US', { month: 'short', day: 'numeric' })}`,
+          label: `Week of ${startOfWeek.toLocaleDateString('en-US', { month: 'short', day: 'numeric' })}`,
           startDate: startOfWeek,
           endDate: endOfWeek,
           samples: [],
@@ -140,8 +140,7 @@ export function getTimeBuckets(granularity: ChartGranularity): TimeBucket[] {
         buckets.push({
           key: `month-${startOfMonth.getTime()}`,
           label: startOfMonth.toLocaleDateString('en-US', { 
-            month: 'short', 
-            year: '2-digit' 
+            month: 'short'
           }),
           startDate: startOfMonth,
           endDate: endOfMonth,

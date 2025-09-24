@@ -10,7 +10,7 @@ import { apiRequest } from "../../lib/queryClient";
 import { 
   aggregatePfaDataIntoBuckets, 
   calculatePfaYAxisDomain, 
-  // calculatePfaRegressionLine,
+  calculatePfaRegressionLine,
   formatPfaValue,
   formatPfaTooltipValue
 } from "../../lib/pfa-calculations";
@@ -37,7 +37,13 @@ export function PfaChartsSection({ entries }: PfaChartsSectionProps) {
 
   const chartData = aggregatePfaDataIntoBuckets(entries, granularity);
   const yAxisDomain = calculatePfaYAxisDomain(chartData);
-  // const regressionLine = calculatePfaRegressionLine(chartData);
+  const regressionLine = calculatePfaRegressionLine(chartData);
+  
+  // Add regression data to chart data
+  const chartDataWithRegression = chartData.map((item, index) => ({
+    ...item,
+    regression: regressionLine[index]?.y || null
+  }));
 
   const customTooltip = ({ active, payload, label }: any) => {
     if (active && payload && payload.length) {
@@ -113,7 +119,7 @@ export function PfaChartsSection({ entries }: PfaChartsSectionProps) {
         <CardContent>
           <div className="h-80 w-full min-w-[300px]">
             <ResponsiveContainer width="100%" height="100%">
-              <LineChart data={chartData}>
+              <LineChart data={chartDataWithRegression}>
                 <CartesianGrid strokeDasharray="3 3" stroke="#d1fae5" />
                 <XAxis 
                   dataKey="label" 
