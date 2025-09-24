@@ -296,7 +296,8 @@ export async function registerRoutes(app: Express): Promise<Server> {
       const entries = await storage.getPfaEntries(userIp);
       res.json(entries);
     } catch (error) {
-      res.status(500).json({ message: "Failed to fetch PFA entries" });
+      console.error("PFA entries error:", error);
+      res.status(500).json({ message: "Failed to fetch PFA entries", error: error.message });
     }
   });
 
@@ -435,7 +436,8 @@ export async function registerRoutes(app: Express): Promise<Server> {
         weeklyChange: Math.round(weeklyChange * 100) / 100,
       });
     } catch (error) {
-      res.status(500).json({ message: "Failed to fetch PFA dashboard statistics" });
+      console.error("PFA dashboard stats error:", error);
+      res.status(500).json({ message: "Failed to fetch PFA dashboard statistics", error: error.message });
     }
   });
 

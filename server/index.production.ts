@@ -2,12 +2,16 @@ import "dotenv/config";
 import express, { type Request, Response, NextFunction } from "express";
 import { registerRoutes } from "./routes";
 import { serveStatic, log } from "./vite-production";
+import { initializeDatabase } from "./init-db";
+
 const app = express();
 
 // Trust proxy to get real IP addresses
 app.set('trust proxy', true);
 
 (async () => {
+  // Initialize database tables
+  await initializeDatabase();
 
   // Log all incoming requests with full details
   app.use((req: Request, res: Response, next: NextFunction) => {
