@@ -38,7 +38,7 @@ export default function UserProfile() {
   });
 
   const form = useForm({
-    resolver: zodResolver(insertUserProfileSchema),
+    // resolver: zodResolver(insertUserProfileSchema),
     defaultValues: {
       age: profile?.age || 0,
       gender: profile?.gender || "",

@@ -38,12 +38,13 @@ export function PfaDashboard() {
     }
 
     const csvContent = [
-      ["Week Start", "Dental Floss", "Toilet Paper", "Sweat Resistant Clothing", "Tap Water", "Non-Stick Pans", "Total PFAs", "Risk Level", "Created At"],
+      ["Week Start", "Dental Floss", "Toilet Paper", "Yoga Pants", "Sports Bras", "Tap Water", "Non-Stick Pans", "Total PFAs", "Risk Level", "Created At"],
       ...entries.map((entry: any) => [
         entry.weekStart,
         entry.dentalFloss || 0,
         entry.toiletPaper || 0,
-        entry.sweatResistantClothing || 0,
+        entry.yogaPants || 0,
+        entry.sportsBras || 0,
         entry.tapWater || 0,
         entry.nonStickPans || 0,
         entry.totalPfas || 0,
