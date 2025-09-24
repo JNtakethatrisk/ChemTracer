@@ -14,6 +14,10 @@ app.set('trust proxy', true);
   await initializeDatabase();
 
   // Log all incoming requests with full details
+  // Add body parsing middleware
+  app.use(express.json());
+  app.use(express.urlencoded({ extended: false }));
+
   app.use((req: Request, res: Response, next: NextFunction) => {
     const clientIp = req.headers['x-forwarded-for'] || 
                      req.headers['x-real-ip'] || 
@@ -38,7 +42,7 @@ app.set('trust proxy', true);
         responsePreview = bodyStr.length > 100 ? bodyStr.substring(0, 100) + '…' : bodyStr;
       }
       
-      log(`${method} ${path} ${status} in ${duration}ms :: ${responsePreview}`);
+      log(`${method} ${path} ${status} in ${duration}ms :: ${JSON.stringify(req.body)} :: ${clientIp} :: ${contentLength} bytes`);
     });
 
     next();
