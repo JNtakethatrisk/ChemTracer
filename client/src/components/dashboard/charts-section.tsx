@@ -21,7 +21,7 @@ export default function ChartsSection() {
     queryKey: ["/api/microplastic-entries"],
   });
   
-  const { data: dashboardStats } = useQuery({
+  const { data: dashboardStats } = useQuery<DashboardStats>({
     queryKey: ["/api/dashboard-stats"],
   });
 
@@ -62,7 +62,7 @@ export default function ChartsSection() {
   );
 
   // Check for risk levels and show appropriate alerts
-  const currentRiskLevel = dashboardStats?.currentRiskLevel;
+  const currentRiskLevel = dashboardStats?.currentRiskLevel || 'No Data';
   const showHighRiskWarning = currentRiskLevel === 'High' || currentRiskLevel === 'Extreme';
   const showSafeLevelNotification = currentRiskLevel === 'Low';
 
@@ -297,10 +297,10 @@ export default function ChartsSection() {
         </CardHeader>
         <CardContent>
           <div className="space-y-4">
-            {topSources.length > 0 ? topSources.map((source, index) => (
+            {topSources.length > 0 ? topSources.map((source) => (
               <div key={source.key} className="flex items-center justify-between p-3 bg-white rounded-lg border border-blue-200">
                 <div className="flex items-center">
-                  <i className={`${source.icon} ${source.color} mr-3`}></i>
+                  <i className={`${source.icon} mr-3`}></i>
                   <span className="font-medium text-blue-900">{source.label}</span>
                 </div>
                 <div className="flex items-center">
