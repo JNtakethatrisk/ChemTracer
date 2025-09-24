@@ -8,7 +8,6 @@ const app = express();
 app.set('trust proxy', true);
 
 (async () => {
-  const server = app.listen(); // http server
 
   // Log all incoming requests with full details
   app.use((req: Request, res: Response, next: NextFunction) => {
@@ -57,7 +56,7 @@ app.set('trust proxy', true);
 
   // ALWAYS serve the app on the port specified in the environment variable PORT
   const port = parseInt(process.env.PORT || '5000', 10);
-  server.listen(port, "0.0.0.0", () => {
+  app.listen(port, "0.0.0.0", () => {
     log(`serving on port ${port}`);
   });
 })();
