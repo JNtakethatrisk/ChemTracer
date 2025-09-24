@@ -47,7 +47,7 @@ export default function OverviewCards() {
                      riskInfo.color === "red" ? "bg-red-500" : "bg-purple-500";
 
   return (
-    <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4 lg:gap-6 mb-8 w-full">
+    <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4 lg:gap-6 mb-8 w-full">">
       {/* Current Risk Level */}
       <Card className="border-blue-200 bg-blue-50" data-testid="card-current-risk">
         <CardContent className="p-6">

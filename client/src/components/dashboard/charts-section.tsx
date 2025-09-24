@@ -25,23 +25,6 @@ export default function ChartsSection() {
     queryKey: ["/api/dashboard-stats"],
   });
 
-  if (isLoading) {
-    return (
-      <div className="space-y-6">
-        <Card>
-          <CardHeader>
-            <CardTitle>Monthly Trend</CardTitle>
-          </CardHeader>
-          <CardContent>
-            <div className="h-64 flex items-center justify-center">
-              <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-primary"></div>
-            </div>
-          </CardContent>
-        </Card>
-      </div>
-    );
-  }
-
   // Memoize chart calculations to prevent unnecessary recalculations
   const chartData = useMemo(() => 
     aggregateDataIntoBuckets(entries, granularity),
@@ -65,6 +48,23 @@ export default function ChartsSection() {
       thresholds
     );
   }, [chartData]);
+
+  if (isLoading) {
+    return (
+      <div className="space-y-6">
+        <Card>
+          <CardHeader>
+            <CardTitle>Monthly Trend</CardTitle>
+          </CardHeader>
+          <CardContent>
+            <div className="h-64 flex items-center justify-center">
+              <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-primary"></div>
+            </div>
+          </CardContent>
+        </Card>
+      </div>
+    );
+  }
 
   // Check for risk levels and show appropriate alerts
   const currentRiskLevel = dashboardStats?.currentRiskLevel || 'No Data';
