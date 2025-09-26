@@ -30,13 +30,13 @@ const pfaCalcSchema = z.object({
 });
 
 // Pure calculation endpoint for microplastics
-router.post("/calc/microplastic", (req, res) => {
+router.post("/api/calc/microplastic", (req, res) => {
   try {
     const input = microplasticCalcSchema.parse(req.body);
     const totalParticles = calculateTotalParticles(input);
     const riskLevel = getRiskLevel(totalParticles);
     
-    res.json({
+    res.status(200).json({
       totalParticles,
       riskLevel,
       sources: Object.entries(input).map(([key, value]) => ({
@@ -55,13 +55,13 @@ router.post("/calc/microplastic", (req, res) => {
 });
 
 // Pure calculation endpoint for PFAs
-router.post("/calc/pfa", (req, res) => {
+router.post("/api/calc/pfa", (req, res) => {
   try {
     const input = pfaCalcSchema.parse(req.body);
     const totalPfas = calculateTotalPfas(input);
     const riskLevel = getPfaRiskLevel(totalPfas);
     
-    res.json({
+    res.status(200).json({
       totalPfas,
       riskLevel,
       sources: Object.entries(input).map(([key, value]) => ({
