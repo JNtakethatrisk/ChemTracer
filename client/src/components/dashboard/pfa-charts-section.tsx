@@ -4,10 +4,13 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from ".
 import { Badge } from "../ui/badge";
 import { Alert, AlertDescription } from "../ui/alert";
 import { AlertTriangle, Info } from "lucide-react";
+import { Switch } from "../ui/switch";
+import { Label } from "../ui/label";
 import { LineChart, Line, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer } from "recharts";
 import { useTrackerData } from "../../hooks/useTrackerData";
 import { 
-  aggregatePfaDataIntoBuckets, 
+  aggregatePfaDataIntoBuckets,
+  preparePfaChartData, 
   calculatePfaYAxisDomain, 
   formatPfaValue,
   formatPfaTooltipValue
@@ -21,6 +24,7 @@ interface PfaChartsSectionProps {
 
 export function PfaChartsSection({ entries }: PfaChartsSectionProps) {
   const [granularity, setGranularity] = useState<'Day' | 'Week' | 'Month'>('Week');
+  const [showIndividualEntries, setShowIndividualEntries] = useState(true);
 
   const { stats } = useTrackerData('pfa');
 
@@ -29,8 +33,10 @@ export function PfaChartsSection({ entries }: PfaChartsSectionProps) {
 
   // Memoize chart calculations to prevent unnecessary recalculations
   const chartData = useMemo(() => 
-    aggregatePfaDataIntoBuckets(entries, granularity),
-    [entries, granularity]
+    showIndividualEntries 
+      ? preparePfaChartData(entries, true)
+      : aggregatePfaDataIntoBuckets(entries, granularity),
+    [entries, granularity, showIndividualEntries]
   );
   
   const yAxisDomain = useMemo(() => 
@@ -106,8 +112,16 @@ export function PfaChartsSection({ entries }: PfaChartsSectionProps) {
 
       {/* Main Chart */}
       <Card className="border-green-200 bg-green-50">
-        <CardHeader>
+        <CardHeader className="flex flex-row items-center justify-between">
           <CardTitle className="text-green-800">PFA Exposure Over Time</CardTitle>
+          <div className="flex items-center space-x-2">
+            <Label htmlFor="individual-entries" className="text-sm text-green-700">Show Individual Entries</Label>
+            <Switch
+              id="individual-entries"
+              checked={showIndividualEntries}
+              onCheckedChange={setShowIndividualEntries}
+            />
+          </div>
         </CardHeader>
         <CardContent>
           <div className="h-80 w-full min-w-[300px]">
@@ -143,8 +157,8 @@ export function PfaChartsSection({ entries }: PfaChartsSectionProps) {
                   dataKey="particles"
                   stroke="#047857"
                   strokeWidth={3}
-                  dot={{ fill: "#059669", strokeWidth: 2, r: 6 }}
-                  activeDot={{ r: 8, stroke: "#047857", strokeWidth: 3 }}
+                  dot={{ fill: "#059669", strokeWidth: 1, r: 3 }}
+                  activeDot={{ r: 5, stroke: "#047857", strokeWidth: 2 }}
                   animationDuration={300}
                   animationEasing="ease-in-out"
                   connectNulls={true}

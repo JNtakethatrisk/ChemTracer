@@ -4,10 +4,13 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from ".
 import { Badge } from "../ui/badge";
 import { Alert, AlertDescription } from "../ui/alert";
 import { AlertTriangle, Info } from "lucide-react";
+import { Switch } from "../ui/switch";
+import { Label } from "../ui/label";
 import { LineChart, Line, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer } from "recharts";
 import { RISK_LEVELS } from "../../../../shared/schema";
 import { 
   aggregateDataIntoBuckets,
+  prepareMicroplasticChartData,
   calculateYAxisDomain,
   calculateRegressionLine,
   type ChartGranularity
@@ -17,12 +20,15 @@ import { useTrackerData } from "../../hooks/useTrackerData";
 
 export default function ChartsSection() {
   const [granularity, setGranularity] = useState<ChartGranularity>('Month');
+  const [showIndividualEntries, setShowIndividualEntries] = useState(true);
   const { entries, stats: dashboardStats, isLoading } = useTrackerData('microplastic');
 
   // Memoize chart calculations to prevent unnecessary recalculations
   const chartData = useMemo(() => 
-    aggregateDataIntoBuckets(entries, granularity),
-    [entries, granularity]
+    showIndividualEntries 
+      ? prepareMicroplasticChartData(entries, true)
+      : aggregateDataIntoBuckets(entries, granularity),
+    [entries, granularity, showIndividualEntries]
   );
 
   // Calculate regression line for trend analysis
@@ -174,8 +180,16 @@ export default function ChartsSection() {
 
       {/* Main Chart */}
       <Card className="border-blue-200 bg-blue-50" data-testid="card-monthly-trend">
-        <CardHeader>
+        <CardHeader className="flex flex-row items-center justify-between">
           <CardTitle className="text-blue-800">Microplastic Intake Over Time</CardTitle>
+          <div className="flex items-center space-x-2">
+            <Label htmlFor="individual-entries-micro" className="text-sm text-blue-700">Show Individual Entries</Label>
+            <Switch
+              id="individual-entries-micro"
+              checked={showIndividualEntries}
+              onCheckedChange={setShowIndividualEntries}
+            />
+          </div>
         </CardHeader>
         <CardContent>
           <div className="h-80 w-full min-w-[300px]">
@@ -215,8 +229,8 @@ export default function ChartsSection() {
                     dataKey="particles"
                     stroke="#1d4ed8"
                     strokeWidth={3}
-                    dot={{ fill: "#2563eb", strokeWidth: 2, r: 6 }}
-                    activeDot={{ r: 8, stroke: "#1d4ed8", strokeWidth: 3 }}
+                  dot={{ fill: "#2563eb", strokeWidth: 1, r: 3 }}
+                  activeDot={{ r: 5, stroke: "#1d4ed8", strokeWidth: 2 }}
                     animationDuration={300}
                     animationEasing="ease-in-out"
                     label={({ x, y, value }: any) => (

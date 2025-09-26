@@ -103,6 +103,31 @@ export function getPfaTimeBuckets(granularity: 'Day' | 'Week' | 'Month'): { labe
   return buckets;
 }
 
+export function preparePfaChartData(
+  entries: any[],
+  showIndividualEntries: boolean = false
+): { particles: number; label: string; sampleCount: number; createdAt?: string }[] {
+  if (showIndividualEntries && entries.length > 0) {
+    // Show each entry as a separate point
+    return entries
+      .sort((a, b) => new Date(a.createdAt).getTime() - new Date(b.createdAt).getTime())
+      .map(entry => ({
+        particles: entry.totalPfas || 0,
+        label: new Date(entry.createdAt).toLocaleDateString('en-US', { 
+          month: 'short', 
+          day: 'numeric',
+          hour: '2-digit',
+          minute: '2-digit'
+        }),
+        sampleCount: 1,
+        createdAt: entry.createdAt
+      }));
+  }
+  
+  // Otherwise use the original weekly aggregation
+  return aggregatePfaDataIntoBuckets(entries, 'Week');
+}
+
 export function aggregatePfaDataIntoBuckets(
   entries: any[],
   granularity: 'Day' | 'Week' | 'Month'

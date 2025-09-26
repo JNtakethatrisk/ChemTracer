@@ -156,6 +156,31 @@ export function getTimeBuckets(granularity: ChartGranularity): TimeBucket[] {
 }
 
 // Aggregate samples into time buckets
+export function prepareMicroplasticChartData(
+  entries: any[],
+  showIndividualEntries: boolean = false
+): { particles: number; label: string; sampleCount: number; createdAt?: string }[] {
+  if (showIndividualEntries && entries.length > 0) {
+    // Show each entry as a separate point
+    return entries
+      .sort((a, b) => new Date(a.createdAt).getTime() - new Date(b.createdAt).getTime())
+      .map(entry => ({
+        particles: entry.totalParticles || 0,
+        label: new Date(entry.createdAt).toLocaleDateString('en-US', { 
+          month: 'short', 
+          day: 'numeric',
+          hour: '2-digit',
+          minute: '2-digit'
+        }),
+        sampleCount: 1,
+        createdAt: entry.createdAt
+      }));
+  }
+  
+  // Otherwise use the original weekly aggregation
+  return aggregateDataIntoBuckets(entries, 'Week');
+}
+
 export function aggregateDataIntoBuckets(entries: any[], granularity: ChartGranularity) {
   const buckets = getTimeBuckets(granularity);
   
