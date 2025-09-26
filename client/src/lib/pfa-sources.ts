@@ -1,4 +1,4 @@
-import { PFA_RISK_LEVELS } from "../../../shared/schema";
+import { PFAS_RISK_LEVELS } from "../../../shared/schema";
 
 export interface PfaSource {
   key: string;
@@ -116,15 +116,15 @@ export function getPfaSourceBreakdown(entry: any) {
 }
 
 export function getPfaRiskLevel(totalPfas: number): string {
-  if (totalPfas < PFA_RISK_LEVELS.LOW.max) return PFA_RISK_LEVELS.LOW.label;
-  if (totalPfas < PFA_RISK_LEVELS.NORMAL.max) return PFA_RISK_LEVELS.NORMAL.label;
-  if (totalPfas < PFA_RISK_LEVELS.HIGH.max) return PFA_RISK_LEVELS.HIGH.label;
-  return PFA_RISK_LEVELS.EXTREME.label;
+  if (totalPfas < PFAS_RISK_LEVELS.LOW.max) return PFAS_RISK_LEVELS.LOW.label;
+  if (totalPfas < PFAS_RISK_LEVELS.NORMAL.max) return PFAS_RISK_LEVELS.NORMAL.label;
+  if (totalPfas < PFAS_RISK_LEVELS.HIGH.max) return PFAS_RISK_LEVELS.HIGH.label;
+  return PFAS_RISK_LEVELS.EXTREME.label;
 }
 
 export function getPfaRiskLevelInfo(totalPfas: number) {
-  if (totalPfas < PFA_RISK_LEVELS.LOW.max) return PFA_RISK_LEVELS.LOW;
-  if (totalPfas < PFA_RISK_LEVELS.NORMAL.max) return PFA_RISK_LEVELS.NORMAL;
-  if (totalPfas < PFA_RISK_LEVELS.HIGH.max) return PFA_RISK_LEVELS.HIGH;
-  return PFA_RISK_LEVELS.EXTREME;
+  if (totalPfas < PFAS_RISK_LEVELS.LOW.max) return PFAS_RISK_LEVELS.LOW;
+  if (totalPfas < PFAS_RISK_LEVELS.NORMAL.max) return PFAS_RISK_LEVELS.NORMAL;
+  if (totalPfas < PFAS_RISK_LEVELS.HIGH.max) return PFAS_RISK_LEVELS.HIGH;
+  return PFAS_RISK_LEVELS.EXTREME;
 }
