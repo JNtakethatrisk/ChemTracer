@@ -19,7 +19,7 @@ import { getSourceBreakdown } from "../../lib/microplastic-sources";
 import { useTrackerData } from "../../hooks/useTrackerData";
 
 export default function ChartsSection() {
-  const [granularity, setGranularity] = useState<ChartGranularity>('Day');
+  const [granularity, setGranularity] = useState<ChartGranularity>('Week');
   const [showIndividualEntries, setShowIndividualEntries] = useState(false);
   const { entries, stats: dashboardStats, isLoading } = useTrackerData('microplastic');
 
