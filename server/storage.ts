@@ -3,12 +3,17 @@ import { db } from "./db";
 import { eq, and, gte, lte, desc, sql } from "drizzle-orm";
 
 export interface IStorage {
+  // Legacy IP-based methods (for backwards compatibility)
   getMicroplasticEntries(userIp: string): Promise<MicroplasticEntry[]>;
   getMicroplasticEntry(id: string, userIp: string): Promise<MicroplasticEntry | undefined>;
   getMicroplasticEntriesByDateRange(userIp: string, startDate: string, endDate: string): Promise<MicroplasticEntry[]>;
   createMicroplasticEntry(userIp: string, entry: InsertMicroplasticEntry & { totalParticles: number; riskLevel: string }): Promise<MicroplasticEntry>;
   updateMicroplasticEntry(id: string, userIp: string, entry: Partial<MicroplasticEntry>): Promise<MicroplasticEntry | undefined>;
   deleteMicroplasticEntry(id: string, userIp: string): Promise<boolean>;
+  
+  // User-based microplastic methods
+  getMicroplasticEntriesByUser(userId: string): Promise<MicroplasticEntry[]>;
+  createMicroplasticEntryForUser(userId: string, entry: InsertMicroplasticEntry & { totalParticles: number; riskLevel: string }): Promise<MicroplasticEntry>;
   
   // PFA methods
   getPfaEntries(userIp: string): Promise<PfaEntry[]>;
@@ -18,9 +23,18 @@ export interface IStorage {
   updatePfaEntry(id: string, userIp: string, entry: Partial<PfaEntry>): Promise<PfaEntry | undefined>;
   deletePfaEntry(id: string, userIp: string): Promise<boolean>;
   
+  // User-based PFA methods
+  getPfaEntriesByUser(userId: string): Promise<PfaEntry[]>;
+  createPfaEntryForUser(userId: string, entry: InsertPfaEntry & { totalPfas: number; riskLevel: string }): Promise<PfaEntry>;
+  
   // User profile methods
   getUserProfile(userIp: string): Promise<UserProfile | undefined>;
   createOrUpdateUserProfile(userIp: string, profile: InsertUserProfile): Promise<UserProfile>;
+  
+  // User-based profile methods
+  getUserProfileByUserId(userId: string): Promise<UserProfile | undefined>;
+  createUserProfileForUser(userId: string, profile: InsertUserProfile): Promise<UserProfile>;
+  updateUserProfile(profileId: string, profile: InsertUserProfile): Promise<UserProfile>;
   
   // Percentile calculation methods
   getPercentileData(ageGroup?: string): Promise<{ totalParticles: number; count: number }[]>;
@@ -196,6 +210,98 @@ export class DatabaseStorage implements IStorage {
         .returning();
       return newProfile;
     }
+  }
+
+  // User-based microplastic methods
+  async getMicroplasticEntriesByUser(userId: string): Promise<MicroplasticEntry[]> {
+    const entries = await db.select().from(microplasticEntries)
+      .where(eq(microplasticEntries.userId, userId))
+      .orderBy(desc(microplasticEntries.createdAt));
+    return entries;
+  }
+
+  async createMicroplasticEntryForUser(userId: string, insertEntry: InsertMicroplasticEntry & { totalParticles: number; riskLevel: string }): Promise<MicroplasticEntry> {
+    const [entry] = await db
+      .insert(microplasticEntries)
+      .values({
+        userId,
+        weekStart: insertEntry.weekStart,
+        bottledWater: insertEntry.bottledWater ?? 0,
+        seafood: insertEntry.seafood ?? 0,
+        salt: insertEntry.salt ?? 0,
+        plasticPackaged: insertEntry.plasticPackaged ?? 0,
+        teaBags: insertEntry.teaBags ?? 0,
+        householdDust: insertEntry.householdDust ?? 0,
+        syntheticClothing: insertEntry.syntheticClothing ?? 0,
+        cannedFood: insertEntry.cannedFood ?? 0,
+        plasticKitchenware: insertEntry.plasticKitchenware ?? 0,
+        coffeeCups: insertEntry.coffeeCups ?? 0,
+        takeoutContainers: insertEntry.takeoutContainers ?? 0,
+        totalParticles: insertEntry.totalParticles,
+        riskLevel: insertEntry.riskLevel,
+      })
+      .returning();
+    return entry;
+  }
+
+  // User-based PFA methods
+  async getPfaEntriesByUser(userId: string): Promise<PfaEntry[]> {
+    try {
+      const entries = await db.select().from(pfaEntries)
+        .where(eq(pfaEntries.userId, userId))
+        .orderBy(desc(pfaEntries.createdAt));
+      return entries;
+    } catch (error) {
+      console.error("getPfaEntriesByUser error:", error);
+      return [];
+    }
+  }
+
+  async createPfaEntryForUser(userId: string, insertEntry: InsertPfaEntry & { totalPfas: number; riskLevel: string }): Promise<PfaEntry> {
+    try {
+      const [entry] = await db
+        .insert(pfaEntries)
+        .values({
+          userId,
+          weekStart: insertEntry.weekStart,
+          dentalFloss: insertEntry.dentalFloss ?? 0,
+          toiletPaper: insertEntry.toiletPaper ?? 0,
+          sweatResistantClothing: insertEntry.sweatResistantClothing ?? 0,
+          tapWater: insertEntry.tapWater ?? 0,
+          nonStickPans: insertEntry.nonStickPans ?? 0,
+          totalPfas: insertEntry.totalPfas,
+          riskLevel: insertEntry.riskLevel,
+        })
+        .returning();
+      return entry;
+    } catch (error) {
+      console.error("createPfaEntryForUser error:", error);
+      throw error;
+    }
+  }
+
+  // User-based profile methods
+  async getUserProfileByUserId(userId: string): Promise<UserProfile | undefined> {
+    const [profile] = await db.select().from(userProfiles)
+      .where(eq(userProfiles.userId, userId));
+    return profile || undefined;
+  }
+
+  async createUserProfileForUser(userId: string, profileData: InsertUserProfile): Promise<UserProfile> {
+    const [profile] = await db
+      .insert(userProfiles)
+      .values({ userId, ...profileData })
+      .returning();
+    return profile;
+  }
+
+  async updateUserProfile(profileId: string, profileData: InsertUserProfile): Promise<UserProfile> {
+    const [profile] = await db
+      .update(userProfiles)
+      .set({ ...profileData, updatedAt: new Date() })
+      .where(eq(userProfiles.id, profileId))
+      .returning();
+    return profile;
   }
 
   // Percentile calculation methods

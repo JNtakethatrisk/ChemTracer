@@ -1,11 +1,23 @@
 import { sql } from "drizzle-orm";
-import { pgTable, text, varchar, real, integer, timestamp } from "drizzle-orm/pg-core";
+import { pgTable, text, varchar, real, integer, timestamp, uuid } from "drizzle-orm/pg-core";
 import { createInsertSchema } from "drizzle-zod";
 import { z } from "zod";
 
+// Users table for authentication
+export const users = pgTable("users", {
+  id: uuid("id").primaryKey().default(sql`gen_random_uuid()`),
+  email: text("email").notNull().unique(),
+  name: text("name"),
+  googleId: text("google_id").unique(),
+  picture: text("picture"),
+  createdAt: timestamp("created_at").defaultNow(),
+  updatedAt: timestamp("updated_at").defaultNow(),
+});
+
 export const microplasticEntries = pgTable("microplastic_entries", {
   id: varchar("id").primaryKey().default(sql`gen_random_uuid()`),
-  userIp: text("user_ip").notNull(),
+  userId: uuid("user_id").references(() => users.id, { onDelete: "cascade" }),
+  userIp: text("user_ip"), // Keep for backwards compatibility, but nullable
   weekStart: text("week_start").notNull(),
   bottledWater: integer("bottled_water").default(0),
   seafood: integer("seafood").default(0),
@@ -25,7 +37,8 @@ export const microplasticEntries = pgTable("microplastic_entries", {
 
 export const userProfiles = pgTable("user_profiles", {
   id: varchar("id").primaryKey().default(sql`gen_random_uuid()`),
-  userIp: text("user_ip").notNull().unique(),
+  userId: uuid("user_id").references(() => users.id, { onDelete: "cascade" }).unique(),
+  userIp: text("user_ip"), // Keep for backwards compatibility
   age: integer("age"),
   gender: text("gender"),
   location: text("location"),
@@ -35,7 +48,8 @@ export const userProfiles = pgTable("user_profiles", {
 
 export const pfaEntries = pgTable("pfa_entries", {
   id: varchar("id").primaryKey().default(sql`gen_random_uuid()`),
-  userIp: text("user_ip").notNull(),
+  userId: uuid("user_id").references(() => users.id, { onDelete: "cascade" }),
+  userIp: text("user_ip"), // Keep for backwards compatibility
   weekStart: text("week_start").notNull(),
   dentalFloss: integer("dental_floss").default(0),
   toiletPaper: integer("toilet_paper").default(0),
@@ -47,8 +61,15 @@ export const pfaEntries = pgTable("pfa_entries", {
   createdAt: timestamp("created_at").defaultNow(),
 });
 
+export const insertUserSchema = createInsertSchema(users).omit({
+  id: true,
+  createdAt: true,
+  updatedAt: true,
+});
+
 export const insertMicroplasticEntrySchema = createInsertSchema(microplasticEntries).omit({
   id: true,
+  userId: true,
   userIp: true,
   totalParticles: true,
   riskLevel: true,
@@ -57,6 +78,7 @@ export const insertMicroplasticEntrySchema = createInsertSchema(microplasticEntr
 
 export const insertUserProfileSchema = createInsertSchema(userProfiles).omit({
   id: true,
+  userId: true,
   userIp: true,
   createdAt: true,
   updatedAt: true,
@@ -64,12 +86,15 @@ export const insertUserProfileSchema = createInsertSchema(userProfiles).omit({
 
 export const insertPfaEntrySchema = createInsertSchema(pfaEntries).omit({
   id: true,
+  userId: true,
   userIp: true,
   totalPfas: true,
   riskLevel: true,
   createdAt: true,
 });
 
+export type InsertUser = z.infer<typeof insertUserSchema>;
+export type User = typeof users.$inferSelect;
 export type InsertMicroplasticEntry = z.infer<typeof insertMicroplasticEntrySchema>;
 export type MicroplasticEntry = typeof microplasticEntries.$inferSelect;
 export type InsertUserProfile = z.infer<typeof insertUserProfileSchema>;
