@@ -4,7 +4,7 @@ import { guestStorage } from '../services/guestStorage';
 
 // Custom hook that handles both guest and authenticated data
 export function useTrackerData(type: 'microplastic' | 'pfa') {
-  const { isAuthenticated, user } = useAuth();
+  const { isAuthenticated } = useAuth();
   const queryClient = useQueryClient();
 
   // Determine endpoints based on type

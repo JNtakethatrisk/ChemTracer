@@ -1,6 +1,6 @@
 import { Link, useLocation } from "wouter";
 import { Button } from "./ui/button";
-import { Home, Leaf, Info, LogIn, LogOut, User } from "lucide-react";
+import { Home, Leaf, Info, LogIn, LogOut } from "lucide-react";
 import {
   DropdownMenu,
   DropdownMenuContent,

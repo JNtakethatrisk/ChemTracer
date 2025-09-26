@@ -1,12 +1,6 @@
 // Guest storage service using sessionStorage
 // Data is lost when the tab is closed
 
-interface GuestData {
-  microplasticEntries: any[];
-  pfaEntries: any[];
-  userProfile: any | null;
-}
-
 class GuestStorageService {
   private readonly KEYS = {
     MICROPLASTIC_ENTRIES: 'guestMicroplasticEntries',
