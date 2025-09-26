@@ -1,6 +1,7 @@
 import "dotenv/config";
 import express, { type Request, Response, NextFunction } from "express";
 import session from "express-session";
+import connectPgSimple from "connect-pg-simple";
 import passport from "./auth";
 import { registerRoutes } from "./routes";
 import { serveStatic, log } from "./vite";
@@ -10,8 +11,11 @@ const app = express();
 // Trust proxy to get real IP addresses
 app.set('trust proxy', true);
 
+// Create session store
+const PgSession = connectPgSimple(session);
+
 // Session configuration
-app.use(session({
+const sessionConfig: session.SessionOptions = {
   secret: process.env.SESSION_SECRET || 'your-secret-key-change-in-production',
   resave: false,
   saveUninitialized: false,
@@ -20,7 +24,18 @@ app.use(session({
     httpOnly: true,
     maxAge: 30 * 24 * 60 * 60 * 1000 // 30 days
   }
-}));
+};
+
+// Use PostgreSQL session store in production
+if (process.env.NODE_ENV === 'production' && process.env.DATABASE_URL) {
+  sessionConfig.store = new PgSession({
+    conString: process.env.DATABASE_URL,
+    tableName: 'session',
+    createTableIfMissing: true
+  });
+}
+
+app.use(session(sessionConfig));
 
 // Initialize Passport
 app.use(passport.initialize());

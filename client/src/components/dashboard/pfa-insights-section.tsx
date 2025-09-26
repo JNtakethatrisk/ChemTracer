@@ -141,10 +141,10 @@ export function PfaInsightsSection({
             <div className="space-y-2">
               <div className="flex justify-between text-sm text-green-700">
                 <span>Risk Level Progress</span>
-                <span>{progress.toFixed(0)}%</span>
+                <span>{(progress || 0).toFixed(0)}%</span>
               </div>
               <Progress 
-                value={progress} 
+                value={progress || 0} 
                 className="h-2"
                 style={{
                   backgroundColor: '#d1fae5',
@@ -173,7 +173,7 @@ export function PfaInsightsSection({
                   </div>
                   <div className="text-right">
                     <div className="text-green-700 font-mono text-sm">
-                      {source.pfas.toFixed(3)} ppt
+                      {(source.pfas || 0).toFixed(3)} ppt
                     </div>
                     <div className="text-green-600 text-xs">
                       {source.percentage}% of total

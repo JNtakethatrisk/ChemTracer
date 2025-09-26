@@ -26,6 +26,9 @@ const riskLevelColors = {
 
 export function PfaOverviewCards({ stats }: PfaOverviewCardsProps) {
   const formatPfaValue = (value: number): string => {
+    if (value === null || value === undefined || isNaN(value)) {
+      return "0.000";
+    }
     if (value >= 1) {
       return value.toFixed(1);
     } else if (value >= 0.1) {
@@ -76,8 +79,8 @@ export function PfaOverviewCards({ stats }: PfaOverviewCardsProps) {
           <CardTitle className="text-sm font-medium text-green-800">Weekly Intake</CardTitle>
           <div className="flex items-center space-x-1">
             {getTrendIcon(stats.weeklyChange)}
-            <span className={`text-xs font-medium ${getTrendColor(stats.weeklyChange)}`}>
-              {Math.abs(stats.weeklyChange).toFixed(1)}%
+            <span className={`text-xs font-medium ${getTrendColor(stats.weeklyChange || 0)}`}>
+              {Math.abs(stats.weeklyChange || 0).toFixed(1)}%
             </span>
           </div>
         </CardHeader>
