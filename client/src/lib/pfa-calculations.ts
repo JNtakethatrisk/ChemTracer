@@ -162,27 +162,32 @@ export function aggregatePfaDataIntoBuckets(
 }
 
 export function calculatePfaYAxisDomain(data: { particles: number; label: string }[]): [number, number] {
-  if (data.length === 0) return [0, 10];
+  if (data.length === 0) return [0, 1];
   
   const validValues = data
     .map(d => d.particles)
     .filter(val => !isNaN(val) && isFinite(val) && val >= 0);
   
-  if (validValues.length === 0) return [0, 10];
+  if (validValues.length === 0) return [0, 1];
   
   const min = Math.min(...validValues);
   const max = Math.max(...validValues);
   
+  // For very small values, ensure readable scale
+  if (max < 0.5) {
+    return [0, Math.max(0.5, max * 1.5)];
+  }
+  
   if (min === max) {
-    return [Math.max(0, min - 0.01), min + 0.01];
+    return [Math.max(0, min * 0.8), max * 1.2];
   }
   
   const range = max - min;
-  const headroom = range * 0.1;
+  const padding = Math.max(range * 0.2, 0.1); // At least 0.1 padding
   
   return [
-    Math.max(0, min - headroom),
-    max + headroom
+    Math.max(0, min - padding * 0.5),
+    max + padding
   ];
 }
 

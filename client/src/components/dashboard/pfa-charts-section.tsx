@@ -116,7 +116,7 @@ export function PfaChartsSection({ entries }: PfaChartsSectionProps) {
                 data={chartData}
                 margin={{ top: 5, right: 5, bottom: 5, left: 5 }}
               >
-                <CartesianGrid strokeDasharray="3 3" stroke="#d1fae5" />
+                <CartesianGrid strokeDasharray="3 3" stroke="#bbf7d0" opacity={0.7} />
                 <XAxis 
                   dataKey="label" 
                   stroke="#065f46"
@@ -141,13 +141,18 @@ export function PfaChartsSection({ entries }: PfaChartsSectionProps) {
                 <Line
                   type="monotone"
                   dataKey="particles"
-                  stroke="#059669"
-                  strokeWidth={2}
-                  dot={{ fill: "#059669", strokeWidth: 2, r: 4 }}
-                  activeDot={{ r: 6, stroke: "#059669", strokeWidth: 2 }}
+                  stroke="#047857"
+                  strokeWidth={3}
+                  dot={{ fill: "#059669", strokeWidth: 2, r: 6 }}
+                  activeDot={{ r: 8, stroke: "#047857", strokeWidth: 3 }}
                   animationDuration={300}
                   animationEasing="ease-in-out"
                   connectNulls={true}
+                  label={({ x, y, value }: any) => (
+                    <text x={x} y={y - 10} fill="#047857" fontSize={12} fontWeight="bold" textAnchor="middle">
+                      {formatPfaValue(value)}
+                    </text>
+                  )}
                 />
               </LineChart>
             </ResponsiveContainer>

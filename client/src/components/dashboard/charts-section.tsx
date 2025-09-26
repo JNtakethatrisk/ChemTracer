@@ -185,7 +185,7 @@ export default function ChartsSection() {
                   data={chartDataWithRegression}
                   margin={{ top: 5, right: 5, bottom: 5, left: 5 }}
                 >
-                  <CartesianGrid strokeDasharray="3 3" stroke="#dbeafe" />
+                  <CartesianGrid strokeDasharray="3 3" stroke="#bfdbfe" opacity={0.7} />
                   <XAxis 
                     dataKey="label" 
                     stroke="#1e40af"
@@ -213,12 +213,17 @@ export default function ChartsSection() {
                   <Line
                     type="monotone"
                     dataKey="particles"
-                    stroke="#2563eb"
-                    strokeWidth={2}
-                    dot={{ fill: "#2563eb", strokeWidth: 2, r: 4 }}
-                    activeDot={{ r: 6, stroke: "#2563eb", strokeWidth: 2 }}
+                    stroke="#1d4ed8"
+                    strokeWidth={3}
+                    dot={{ fill: "#2563eb", strokeWidth: 2, r: 6 }}
+                    activeDot={{ r: 8, stroke: "#1d4ed8", strokeWidth: 3 }}
                     animationDuration={300}
                     animationEasing="ease-in-out"
+                    label={({ x, y, value }: any) => (
+                      <text x={x} y={y - 10} fill="#1d4ed8" fontSize={12} fontWeight="bold" textAnchor="middle">
+                        {value >= 1000 ? `${(value / 1000).toFixed(1)}k` : value.toFixed(1)}
+                      </text>
+                    )}
                   />
                   {/* Regression Line */}
                   <Line
