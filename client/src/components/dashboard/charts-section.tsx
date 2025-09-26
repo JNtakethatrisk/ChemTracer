@@ -1,12 +1,11 @@
 import { useState, useMemo } from "react";
-import { useQuery } from "@tanstack/react-query";
 import { Card, CardContent, CardHeader, CardTitle } from "../ui/card";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "../ui/select";
 import { Badge } from "../ui/badge";
 import { Alert, AlertDescription } from "../ui/alert";
 import { AlertTriangle, Info } from "lucide-react";
 import { LineChart, Line, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer } from "recharts";
-import { MicroplasticEntry, RISK_LEVELS, type DashboardStats } from "../../../../shared/schema";
+import { RISK_LEVELS } from "../../../../shared/schema";
 import { 
   aggregateDataIntoBuckets,
   calculateYAxisDomain,
@@ -14,16 +13,11 @@ import {
   type ChartGranularity
 } from "../../lib/calculations";
 import { getSourceBreakdown } from "../../lib/microplastic-sources";
+import { useTrackerData } from "../../hooks/useTrackerData";
 
 export default function ChartsSection() {
   const [granularity, setGranularity] = useState<ChartGranularity>('Month');
-  const { data: entries = [], isLoading } = useQuery<MicroplasticEntry[]>({
-    queryKey: ["/api/microplastic-entries"],
-  });
-  
-  const { data: dashboardStats } = useQuery<DashboardStats>({
-    queryKey: ["/api/dashboard-stats"],
-  });
+  const { entries, stats: dashboardStats, isLoading } = useTrackerData('microplastic');
 
   // Memoize chart calculations to prevent unnecessary recalculations
   const chartData = useMemo(() => 

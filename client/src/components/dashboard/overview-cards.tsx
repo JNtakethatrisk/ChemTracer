@@ -1,14 +1,12 @@
-import { useQuery } from "@tanstack/react-query";
 import { Calendar, TrendingUp, CheckCircle } from "lucide-react";
 import { Card, CardContent } from "../ui/card";
 import { getRiskLevelInfo } from "../../lib/calculations";
+import { useTrackerData } from "../../hooks/useTrackerData";
 
 import { type DashboardStats } from "../../../../shared/schema";
 
 export default function OverviewCards() {
-  const { data: stats, isLoading } = useQuery<DashboardStats>({
-    queryKey: ["/api/dashboard-stats"],
-  });
+  const { stats, isLoading } = useTrackerData('microplastic');
 
   if (isLoading) {
     return (

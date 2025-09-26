@@ -1,27 +1,12 @@
-import { useQuery } from "@tanstack/react-query";
 import { Lightbulb, Target } from "lucide-react";
 import { Card, CardContent, CardHeader, CardTitle } from "../ui/card";
 import { Progress } from "../ui/progress";
-import { MicroplasticEntry, RISK_LEVELS } from "../../../../shared/schema";
+import { RISK_LEVELS } from "../../../../shared/schema";
 import { getSourceBreakdown } from "../../lib/microplastic-sources";
-
-interface DashboardStats {
-  currentRiskLevel: string;
-  currentParticleCount: number;
-  weeklyIntake: number;
-  monthlyAverage: number;
-  dataCompleteness: number;
-  weeklyChange: number;
-}
+import { useTrackerData } from "../../hooks/useTrackerData";
 
 export default function InsightsSection() {
-  const { data: entries = [] } = useQuery<MicroplasticEntry[]>({
-    queryKey: ["/api/microplastic-entries"],
-  });
-
-  const { data: stats } = useQuery<DashboardStats>({
-    queryKey: ["/api/dashboard-stats"],
-  });
+  const { entries, stats } = useTrackerData('microplastic');
 
   const getInsights = () => {
     if (!entries.length || !stats) return [];

@@ -1,5 +1,4 @@
 import { useState } from "react";
-import { useQuery } from "@tanstack/react-query";
 import { Filter, Search, X } from "lucide-react";
 import { Card, CardContent, CardHeader, CardTitle } from "../ui/card";
 import { Button } from "../ui/button";
@@ -7,9 +6,9 @@ import { Input } from "../ui/input";
 import { Badge } from "../ui/badge";
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "../ui/table";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "../ui/select";
-import { MicroplasticEntry } from "../../../../shared/schema";
 import { getWeekLabel } from "../../lib/calculations";
 import { getSourceBreakdown } from "../../lib/microplastic-sources";
+import { useTrackerData } from "../../hooks/useTrackerData";
 
 export default function HistoricalTable() {
   const [searchTerm, setSearchTerm] = useState("");
@@ -18,9 +17,7 @@ export default function HistoricalTable() {
   const [currentPage, setCurrentPage] = useState(1);
   const itemsPerPage = 10;
 
-  const { data: entries = [], isLoading } = useQuery<MicroplasticEntry[]>({
-    queryKey: ["/api/microplastic-entries"],
-  });
+  const { entries, isLoading } = useTrackerData('microplastic');
 
   const filteredEntries = entries.filter(entry => {
     const weekLabel = getWeekLabel(entry.weekStart);

@@ -9,7 +9,21 @@ import protectedRoutes from "./routes-protected";
 const calcLimiter = rateLimit({
   windowMs: 60 * 1000, // 1 minute
   max: 120, // 120 requests per minute
-  message: "Too many requests, please try again later."
+  message: "Too many requests, please try again later.",
+  standardHeaders: true,
+  legacyHeaders: false,
+  // Skip rate limiting in development
+  skip: (req) => process.env.NODE_ENV === 'development',
+  // Custom key generator that handles proxies properly
+  keyGenerator: (req) => {
+    // Get the real IP from various headers
+    const forwarded = req.headers['x-forwarded-for'];
+    const realIp = req.headers['x-real-ip'];
+    const ip = forwarded ? forwarded.toString().split(',')[0].trim() : 
+               realIp ? realIp.toString() : 
+               req.ip || 'unknown';
+    return ip;
+  }
 });
 
 export async function registerRoutes(app: Express): Promise<Server> {
