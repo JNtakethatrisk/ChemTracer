@@ -7,6 +7,7 @@ import Dashboard from "./pages/dashboard";
 import PfaDashboard from "./pages/pfa-dashboard";
 import About from "./pages/about";
 import FurtherReading from "./pages/further-reading";
+import { Analytics } from "./pages/analytics";
 import NotFound from "./pages/not-found";
 import ErrorBoundary from "./components/ErrorBoundary";
 
@@ -18,6 +19,7 @@ function Router() {
       <Route path="/pfa-dashboard" component={PfaDashboard} />
       <Route path="/about" component={About} />
       <Route path="/further-reading" component={FurtherReading} />
+      <Route path="/analytics" component={Analytics} />
       <Route component={NotFound} />
     </Switch>
   );

@@ -4,6 +4,7 @@ import rateLimit from "express-rate-limit";
 import authRoutes from "./routes/auth";
 import calcRoutes from "./routes/calc";
 import protectedRoutes from "./routes-protected";
+import analyticsRoutes from "./routes/analytics";
 
 // Rate limiter for public calculator endpoints
 const calcLimiter = rateLimit({
@@ -45,6 +46,9 @@ export async function registerRoutes(app: Express): Promise<Server> {
 
   // Mount protected routes (require authentication) - no rate limiting for authenticated users
   app.use(protectedRoutes);
+
+  // Mount analytics routes
+  app.use(analyticsRoutes);
 
   const httpServer = createServer(app);
   return httpServer;
