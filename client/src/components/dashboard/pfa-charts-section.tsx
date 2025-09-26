@@ -54,7 +54,7 @@ export function PfaChartsSection({ entries }: PfaChartsSectionProps) {
         <div className="bg-white p-3 border border-green-200 rounded-lg shadow-lg">
           <p className="font-medium text-green-800">{label}</p>
           <p className="text-green-600">
-            PFA Level: <span className="font-semibold">{formatPfaTooltipValue(payload[0].value)}</span>
+            PFA Level: <span className="font-semibold">{formatPfaTooltipValue(payload[0].value || 0)}</span>
           </p>
           <p className="text-green-500 text-sm">
             {sampleCount} {sampleCount === 1 ? 'entry' : 'entries'} recorded
@@ -137,7 +137,12 @@ export function PfaChartsSection({ entries }: PfaChartsSectionProps) {
                   fontSize={12}
                   tickLine={false}
                   axisLine={false}
-                  tickFormatter={(value) => formatPfaValue(value)}
+                  tickFormatter={(value) => {
+                    if (value === null || value === undefined || isNaN(value)) {
+                      return "0";
+                    }
+                    return formatPfaValue(value);
+                  }}
                 />
                 <Tooltip content={customTooltip} />
                 <Line
@@ -149,6 +154,7 @@ export function PfaChartsSection({ entries }: PfaChartsSectionProps) {
                   activeDot={{ r: 6, stroke: "#059669", strokeWidth: 2 }}
                   animationDuration={300}
                   animationEasing="ease-in-out"
+                  connectNulls={true}
                 />
               </LineChart>
             </ResponsiveContainer>

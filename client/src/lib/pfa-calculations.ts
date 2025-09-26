@@ -212,6 +212,9 @@ export function calculatePfaRegressionLine(data: { particles: number; label: str
 }
 
 export function formatPfaValue(value: number): string {
+  if (value === null || value === undefined || isNaN(value)) {
+    return "0.000";
+  }
   if (value >= 1) {
     return value.toFixed(1);
   } else if (value >= 0.1) {

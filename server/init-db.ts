@@ -72,6 +72,27 @@ export async function initializeDatabase() {
       console.log("Migration check/update:", migrationError.message);
     }
     
+    // Make user_ip nullable for authenticated users
+    try {
+      console.log("Making user_ip columns nullable...");
+      await db.execute(`
+        ALTER TABLE microplastic_entries 
+        ALTER COLUMN user_ip DROP NOT NULL
+      `);
+      await db.execute(`
+        ALTER TABLE user_profiles 
+        ALTER COLUMN user_ip DROP NOT NULL
+      `);
+      await db.execute(`
+        ALTER TABLE pfa_entries 
+        ALTER COLUMN user_ip DROP NOT NULL
+      `);
+      console.log("Made user_ip columns nullable");
+    } catch (error: any) {
+      // This will fail if already nullable, which is fine
+      console.log("user_ip nullable migration:", error.message);
+    }
+
     console.log("Database tables initialized successfully");
   } catch (error) {
     console.error("Database initialization error:", error);
