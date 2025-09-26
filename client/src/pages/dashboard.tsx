@@ -1,24 +1,17 @@
-import { useQuery } from "@tanstack/react-query";
 import { Download } from "lucide-react";
 import { Button } from "../components/ui/button";
-// import { Card, CardContent, CardHeader, CardTitle } from "../ui/card";
-// import { Link } from "wouter";
 import Navigation from "../components/navigation";
 import OverviewCards from "../components/dashboard/overview-cards";
 import WeeklyInputForm from "../components/dashboard/weekly-input-form";
 import ChartsSection from "../components/dashboard/charts-section";
 import HistoricalTable from "../components/dashboard/historical-table";
 import InsightsSection from "../components/dashboard/insights-section";
-import { MicroplasticEntry } from "../../../shared/schema";
-import { useSessionCacheInvalidation } from "../hooks/use-ip-cache-invalidation";
+import { useTrackerData } from "../hooks/useTrackerData";
+import { GuestBanner } from "../components/GuestBanner";
+import { SaveDataPrompt } from "../components/SaveDataPrompt";
 
 export default function Dashboard() {
-  // Enable IP-based cache invalidation for clean slate on new IPs
-  useSessionCacheInvalidation();
-
-  const { data: entries = [], isLoading, error } = useQuery<MicroplasticEntry[]>({
-    queryKey: ["/api/microplastic-entries"],
-  });
+  const { entries, isLoading, error, isGuest } = useTrackerData('microplastic');
 
   if (error) {
     console.error("Dashboard query error:", error);
@@ -61,6 +54,7 @@ export default function Dashboard() {
     <div className="min-h-screen bg-blue-50 no-pull-refresh">
       {/* Navigation */}
       <Navigation />
+      <GuestBanner />
       
       <div className="container mx-auto px-3 sm:px-4 py-4 sm:py-8">
         {/* Header */}
@@ -90,6 +84,10 @@ export default function Dashboard() {
           {/* Left Column - Input Form */}
           <div className="lg:col-span-1 space-y-4 sm:space-y-6">
             <WeeklyInputForm />
+            {/* Save Data Prompt for Guests with Data */}
+            {isGuest && entries.length > 0 && (
+              <SaveDataPrompt variant="card" />
+            )}
           </div>
 
           {/* Right Column - Charts and Data */}

@@ -1,6 +1,7 @@
 import { Switch, Route } from "wouter";
 import { queryClient } from "./lib/queryClient";
 import { QueryClientProvider } from "@tanstack/react-query";
+import { AuthProvider } from "./contexts/AuthContext";
 import Landing from "./pages/landing";
 import Dashboard from "./pages/dashboard";
 import PfaDashboard from "./pages/pfa-dashboard";
@@ -26,7 +27,9 @@ function App() {
   return (
     <ErrorBoundary>
       <QueryClientProvider client={queryClient}>
-        <Router />
+        <AuthProvider>
+          <Router />
+        </AuthProvider>
       </QueryClientProvider>
     </ErrorBoundary>
   );

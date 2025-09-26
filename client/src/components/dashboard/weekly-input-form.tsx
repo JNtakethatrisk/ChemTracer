@@ -1,17 +1,16 @@
 import { useCallback } from "react";
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
-import { useMutation, useQueryClient } from "@tanstack/react-query";
 import { Button } from "../ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "../ui/card";
 import { Form, FormControl, FormField, FormItem, FormLabel, FormMessage } from "../ui/form";
 import { Input } from "../ui/input";
 import { useToast } from "../../hooks/use-toast";
-import { type InsertMicroplasticEntry, type MicroplasticEntry } from "../../../../shared/schema";
 import { getWeekStart, getWeekLabel } from "../../lib/calculations";
-import { apiRequest } from "../../lib/queryClient";
 import { z } from "zod";
 import { MICROPLASTIC_SOURCES } from "../../lib/microplastic-sources";
+import { useTrackerData } from "../../hooks/useTrackerData";
+import { SaveDataPrompt } from "../SaveDataPrompt";
 
 interface WeeklyInputFormProps {}
 
@@ -32,7 +31,7 @@ const formSchema = z.object({
 
 export function WeeklyInputForm({}: WeeklyInputFormProps) {
   const { toast } = useToast();
-  const queryClient = useQueryClient();
+  const { createEntry, isCreating, isGuest } = useTrackerData('microplastic');
 
   const form = useForm<z.infer<typeof formSchema>>({
     resolver: zodResolver(formSchema),
@@ -51,50 +50,28 @@ export function WeeklyInputForm({}: WeeklyInputFormProps) {
     },
   });
 
-  const createEntryMutation = useMutation({
-    mutationFn: async (data: z.infer<typeof formSchema>) => {
-      // Calculate total particles
-      // const totalParticles = calculateTotalParticles(data, MICROPLASTIC_SOURCES);
-      
-      // Create entry data with all fields
-      const entryData: InsertMicroplasticEntry = {
-        weekStart: getWeekStart(new Date()),
-        bottledWater: data.bottledWater || 0,
-        seafood: data.seafood || 0,
-        salt: data.salt || 0,
-        plasticPackaged: data.plasticPackaged || 0,
-        teaBags: data.teaBags || 0,
-        householdDust: data.householdDust || 0,
-        syntheticClothing: data.syntheticClothing || 0,
-        cannedFood: data.cannedFood || 0,
-        plasticKitchenware: data.plasticKitchenware || 0,
-        coffeeCups: data.coffeeCups || 0,
-        takeoutContainers: data.takeoutContainers || 0,
-      };
-
-      const response = await apiRequest("POST", "/api/microplastic-entries", entryData);
-      const result = await response.json();
-      return result as MicroplasticEntry;
-    },
-    onSuccess: () => {
-      toast({
-        title: "Entry created successfully",
-        description: `Week of ${getWeekLabel(new Date().toISOString())} recorded`,
-      });
-      queryClient.invalidateQueries({ queryKey: ["/api/microplastic-entries"] });
-      queryClient.invalidateQueries({ queryKey: ["/api/dashboard-stats"] });
-    },
-    onError: (error) => {
-      toast({
-        title: "Error creating entry",
-        description: error instanceof Error ? error.message : "Unknown error",
-        variant: "destructive",
-      });
-    },
-  });
-
   const onSubmit = (data: z.infer<typeof formSchema>) => {
-    createEntryMutation.mutate(data);
+    const entryData = {
+      weekStart: getWeekStart(new Date()),
+      ...data,
+    };
+
+    createEntry(entryData, {
+      onSuccess: () => {
+        toast({
+          title: "Entry created successfully",
+          description: `Week of ${getWeekLabel(new Date().toISOString())} recorded`,
+        });
+        form.reset();
+      },
+      onError: (error: Error) => {
+        toast({
+          title: "Error creating entry",
+          description: error.message || "Unknown error",
+          variant: "destructive",
+        });
+      },
+    });
   };
 
   const handleInputChange = useCallback((e: React.ChangeEvent<HTMLInputElement>, field: any) => {
@@ -185,11 +162,14 @@ export function WeeklyInputForm({}: WeeklyInputFormProps) {
               <Button
                 type="submit"
                 className="w-full bg-blue-600 hover:bg-blue-700 text-white"
-                disabled={createEntryMutation.isPending}
+                disabled={isCreating}
                 data-testid="button-calculate-week"
               >
-                {createEntryMutation.isPending ? "Calculating..." : "Calculate This Week"}
+                {isCreating ? "Calculating..." : "Calculate This Week"}
               </Button>
+              
+              {/* Save Data Prompt for Guests */}
+              {isGuest && <SaveDataPrompt variant="inline" />}
             </div>
           </form>
         </Form>
