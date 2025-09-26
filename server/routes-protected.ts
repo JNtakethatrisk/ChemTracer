@@ -8,11 +8,8 @@ import { requireAuth } from "./middleware/auth";
 
 const router = Router();
 
-// All routes in this file require authentication
-router.use(requireAuth);
-
 // Microplastic entries - now user-scoped
-router.get("/api/microplastic-entries", async (req, res) => {
+router.get("/api/microplastic-entries", requireAuth, async (req, res) => {
   try {
     const userId = req.user!.id;
     const entries = await storage.getMicroplasticEntriesByUser(userId);
@@ -23,7 +20,7 @@ router.get("/api/microplastic-entries", async (req, res) => {
   }
 });
 
-router.post("/api/microplastic-entries", async (req, res) => {
+router.post("/api/microplastic-entries", requireAuth, async (req, res) => {
   console.log("POST /api/microplastic-entries - Request body:", req.body);
   console.log("POST /api/microplastic-entries - User:", req.user);
   
@@ -53,7 +50,7 @@ router.post("/api/microplastic-entries", async (req, res) => {
 });
 
 // PFA entries - now user-scoped
-router.get("/api/pfa-entries", async (req, res) => {
+router.get("/api/pfa-entries", requireAuth, async (req, res) => {
   try {
     const userId = req.user!.id;
     const entries = await storage.getPfaEntriesByUser(userId);
@@ -64,7 +61,7 @@ router.get("/api/pfa-entries", async (req, res) => {
   }
 });
 
-router.post("/api/pfa-entries", async (req, res) => {
+router.post("/api/pfa-entries", requireAuth, async (req, res) => {
   console.log("POST /api/pfa-entries - Request body:", req.body);
   console.log("POST /api/pfa-entries - User:", req.user);
   
@@ -94,7 +91,7 @@ router.post("/api/pfa-entries", async (req, res) => {
 });
 
 // User profile - now user-scoped
-router.get("/api/user-profile", async (req, res) => {
+router.get("/api/user-profile", requireAuth, async (req, res) => {
   try {
     const userId = req.user!.id;
     const profile = await storage.getUserProfileByUserId(userId);
@@ -105,7 +102,7 @@ router.get("/api/user-profile", async (req, res) => {
   }
 });
 
-router.post("/api/user-profile", async (req, res) => {
+router.post("/api/user-profile", requireAuth, async (req, res) => {
   try {
     const userId = req.user!.id;
     const validatedData = insertUserProfileSchema.parse(req.body);
@@ -121,7 +118,7 @@ router.post("/api/user-profile", async (req, res) => {
   }
 });
 
-router.put("/api/user-profile/:id", async (req, res) => {
+router.put("/api/user-profile/:id", requireAuth, async (req, res) => {
   try {
     const userId = req.user!.id;
     const profileId = req.params.id;
@@ -146,7 +143,7 @@ router.put("/api/user-profile/:id", async (req, res) => {
 });
 
 // Dashboard stats - now user-scoped
-router.get("/api/dashboard-stats", async (req, res) => {
+router.get("/api/dashboard-stats", requireAuth, async (req, res) => {
   try {
     const userId = req.user!.id;
     const entries = await storage.getMicroplasticEntriesByUser(userId);
@@ -209,7 +206,7 @@ router.get("/api/dashboard-stats", async (req, res) => {
   }
 });
 
-router.get("/api/pfa-dashboard-stats", async (req, res) => {
+router.get("/api/pfa-dashboard-stats", requireAuth, async (req, res) => {
   try {
     const userId = req.user!.id;
     const entries = await storage.getPfaEntriesByUser(userId);
