@@ -80,12 +80,12 @@ router.post("/api/pfa-entries", requireAuth, async (req, res) => {
     
     res.status(201).json(entry);
   } catch (error) {
-    console.error("Error creating PFA entry:", error);
+    console.error("Error creating PFAS entry:", error);
     if (error instanceof z.ZodError) {
-      console.error("PFA validation errors:", error.errors);
+      console.error("PFAS validation errors:", error.errors);
       res.status(400).json({ message: "Validation error", errors: error.errors });
     } else {
-      res.status(500).json({ message: "Failed to create PFA entry", error: error.message });
+      res.status(500).json({ message: "Failed to create PFAS entry", error: error.message });
     }
   }
 });
@@ -261,8 +261,8 @@ router.get("/api/pfa-dashboard-stats", requireAuth, async (req, res) => {
       totalEntries: entries.length,
     });
   } catch (error) {
-    console.error("PFA dashboard stats error:", error);
-    res.status(500).json({ message: "Failed to fetch PFA dashboard statistics", error: error.message });
+    console.error("PFAS dashboard stats error:", error);
+    res.status(500).json({ message: "Failed to fetch PFAS dashboard statistics", error: error.message });
   }
 });
 

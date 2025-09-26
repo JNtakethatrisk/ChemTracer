@@ -3,7 +3,7 @@ import { Progress } from "../ui/progress";
 import { Badge } from "../ui/badge";
 import { Alert, AlertDescription } from "../ui/alert";
 import { Lightbulb, TrendingUp, Shield, AlertTriangle } from "lucide-react";
-import { PFA_RISK_LEVELS } from "../../../../shared/schema";
+import { PFAS_RISK_LEVELS } from "../../../../shared/schema";
 import { getPfaSourceBreakdown } from "../../lib/pfa-sources";
 
 interface PfaInsightsSectionProps {
@@ -20,7 +20,7 @@ export function PfaInsightsSection({
   // monthlyAverage 
 }: PfaInsightsSectionProps) {
   const getRiskLevelInfo = (riskLevel: string) => {
-    return Object.values(PFA_RISK_LEVELS).find(level => level.label === riskLevel) || PFA_RISK_LEVELS.LOW;
+    return Object.values(PFAS_RISK_LEVELS).find(level => level.label === riskLevel) || PFAS_RISK_LEVELS.LOW;
   };
 
   const getRiskLevelProgress = (riskLevel: string) => {
@@ -47,8 +47,8 @@ export function PfaInsightsSection({
     if (riskLevel === "High" || riskLevel === "Extreme") {
       recommendations.push({
         icon: AlertTriangle,
-        title: "Reduce PFA Exposure",
-        description: "Your PFA levels are concerning. Consider switching to PFA-free alternatives.",
+        title: "Reduce PFAS Exposure",
+        description: "Your PFAS levels are concerning. Consider switching to PFAS-free alternatives.",
         priority: "high"
       });
     }
@@ -57,7 +57,7 @@ export function PfaInsightsSection({
       recommendations.push({
         icon: Shield,
         title: "Switch Dental Floss",
-        description: "Use PFA-free dental floss brands like silk or bamboo floss.",
+        description: "Use PFAS-free dental floss brands like silk or bamboo floss.",
         priority: "medium"
       });
     }
@@ -65,8 +65,8 @@ export function PfaInsightsSection({
     if (topSources.some(source => source.source === "Toilet Paper")) {
       recommendations.push({
         icon: Shield,
-        title: "Choose PFA-Free Toilet Paper",
-        description: "Look for brands that explicitly state they are PFA-free.",
+        title: "Choose PFAS-Free Toilet Paper",
+        description: "Look for brands that explicitly state they are PFAS-free.",
         priority: "medium"
       });
     }
@@ -93,7 +93,7 @@ export function PfaInsightsSection({
       recommendations.push({
         icon: Lightbulb,
         title: "Maintain Low Exposure",
-        description: "Keep up the good work! Continue avoiding PFA-containing products.",
+        description: "Keep up the good work! Continue avoiding PFAS-containing products.",
         priority: "low"
       });
     }
@@ -115,7 +115,7 @@ export function PfaInsightsSection({
         <CardHeader>
           <CardTitle className="text-green-800 flex items-center gap-2">
             <TrendingUp className="h-5 w-5" />
-            PFA Risk Analysis
+            PFAS Risk Analysis
           </CardTitle>
         </CardHeader>
         <CardContent className="space-y-4">
@@ -159,7 +159,7 @@ export function PfaInsightsSection({
       {topSources.length > 0 && (
         <Card className="border-green-200 bg-green-50">
           <CardHeader>
-            <CardTitle className="text-green-800">Top PFA Sources This Week</CardTitle>
+            <CardTitle className="text-green-800">Top PFAS Sources This Week</CardTitle>
           </CardHeader>
           <CardContent>
             <div className="space-y-3">
@@ -227,7 +227,7 @@ export function PfaInsightsSection({
       {/* Learn More */}
       <Card className="border-green-200 bg-green-50">
         <CardHeader>
-          <CardTitle className="text-green-800">About PFA Exposure</CardTitle>
+          <CardTitle className="text-green-800">About PFAS Exposure</CardTitle>
         </CardHeader>
         <CardContent>
           <div className="space-y-3 text-green-700">
@@ -246,7 +246,7 @@ export function PfaInsightsSection({
                 rel="noopener noreferrer"
                 className="text-green-600 hover:text-green-800 text-sm font-medium underline"
               >
-                Learn more about PFA sources and health impacts →
+                Learn more about PFAS sources and health impacts →
               </a>
             </div>
           </div>

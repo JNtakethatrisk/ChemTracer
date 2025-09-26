@@ -36,7 +36,7 @@ export default function About() {
                     At ChemTracer, we're pioneering the use of advanced machine learning algorithms and econometric regression models to create the most accurate chemical exposure tracking system available. Our team of data scientists and environmental health researchers work tirelessly to keep pace with the ever-evolving field of microplastic and PFAS research.
                   </p>
                   <p className="text-gray-700">
-                    By applying sophisticated statistical methods including time-series analysis, multivariate regression, and predictive modeling, we transform complex scientific data into actionable insights for everyday users. Our models are continuously refined as new peer-reviewed research emerges, ensuring our risk assessments remain at the cutting edge of environmental health science.
+                    Our models are based on peer-reviewed research and are continuously refined as new studies emerge, ensuring our risk assessments remain at the cutting edge of environmental health science.
                   </p>
                 </div>
               </div>

@@ -1,5 +1,5 @@
-// PFA conversion factors (ppt per unit per week)
-const PFA_CONVERSION_FACTORS = {
+// PFAS conversion factors (ppt per unit per week)
+const PFAS_CONVERSION_FACTORS = {
   dentalFloss: 0.05,      // ppt per use per week
   toiletPaper: 0.02,      // ppt per roll per week
   sweatResistantClothing: 0.012,  // ppt per wear per week
@@ -10,8 +10,8 @@ const PFA_CONVERSION_FACTORS = {
 export function calculateTotalPfas(entry: any): number {
   let total = 0;
   for (const [key, value] of Object.entries(entry)) {
-    if (key in PFA_CONVERSION_FACTORS && typeof value === 'number') {
-      total += value * PFA_CONVERSION_FACTORS[key as keyof typeof PFA_CONVERSION_FACTORS];
+    if (key in PFAS_CONVERSION_FACTORS && typeof value === 'number') {
+      total += value * PFAS_CONVERSION_FACTORS[key as keyof typeof PFAS_CONVERSION_FACTORS];
     }
   }
   return Math.round(total * 1000) / 1000; // Round to 3 decimal places for ppt

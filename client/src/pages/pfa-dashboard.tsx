@@ -15,7 +15,7 @@ export function PfaDashboard() {
   const { entries, stats: dashboardStats, isLoading, error, isGuest } = useTrackerData('pfa');
 
   if (error) {
-    console.error("PFA Dashboard error:", error);
+    console.error("PFAS Dashboard error:", error);
   }
 
   const handleExportData = () => {
@@ -25,7 +25,7 @@ export function PfaDashboard() {
     }
 
     const csvContent = [
-      ["Week Start", "Dental Floss", "Toilet Paper", "Sweat/Water Resistant Clothing", "Tap Water", "Non-Stick Pans", "Total PFAs", "Risk Level", "Created At"],
+      ["Week Start", "Dental Floss", "Toilet Paper", "Sweat/Water Resistant Clothing", "Tap Water", "Non-Stick Pans", "Total PFAS", "Risk Level", "Created At"],
       ...entries.map((entry: any) => [
         entry.weekStart,
         entry.dentalFloss || 0,
@@ -57,7 +57,7 @@ export function PfaDashboard() {
       <div className="min-h-screen bg-green-50 flex items-center justify-center no-pull-refresh">
         <div className="text-center px-4">
           <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-green-600 mx-auto"></div>
-          <p className="mt-4 text-green-600 text-sm sm:text-base">Loading PFA dashboard...</p>
+          <p className="mt-4 text-green-600 text-sm sm:text-base">Loading PFAS dashboard...</p>
         </div>
       </div>
     );
@@ -74,7 +74,7 @@ export function PfaDashboard() {
         <div className="mb-6 sm:mb-8">
           <div className="flex flex-col sm:flex-row sm:items-center justify-between mb-4 space-y-4 sm:space-y-0">
             <div className="text-center sm:text-left">
-              <h1 className="text-2xl sm:text-3xl font-bold text-green-800">PFA Tracker</h1>
+              <h1 className="text-2xl sm:text-3xl font-bold text-green-800">PFAS Tracker</h1>
               <p className="text-sm sm:text-base text-green-600">Monitor your exposure to forever chemicals</p>
             </div>
             <div className="flex flex-col sm:flex-row items-center space-y-2 sm:space-y-0 sm:space-x-4">

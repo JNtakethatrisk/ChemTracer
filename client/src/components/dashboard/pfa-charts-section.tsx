@@ -15,7 +15,7 @@ import {
   formatPfaValue,
   formatPfaTooltipValue
 } from "../../lib/pfa-calculations";
-import { PFA_RISK_LEVELS } from "../../../../shared/schema";
+import { PFAS_RISK_LEVELS } from "../../../../shared/schema";
 // import { getPfaSourceBreakdown } from "../../lib/pfa-sources";
 
 interface PfaChartsSectionProps {
@@ -53,7 +53,7 @@ export function PfaChartsSection({ entries }: PfaChartsSectionProps) {
         <div className="bg-white p-3 border border-green-200 rounded-lg shadow-lg">
           <p className="font-medium text-green-800">{label}</p>
           <p className="text-green-600">
-            PFA Level: <span className="font-semibold">{formatPfaTooltipValue(payload[0].value || 0)}</span>
+            PFAS Level: <span className="font-semibold">{formatPfaTooltipValue(payload[0].value || 0)}</span>
           </p>
           <p className="text-green-500 text-sm">
             {sampleCount} {sampleCount === 1 ? 'entry' : 'entries'} recorded
@@ -67,13 +67,13 @@ export function PfaChartsSection({ entries }: PfaChartsSectionProps) {
   const getChartDescription = () => {
     switch (granularity) {
       case 'Day':
-        return "Daily PFA exposure over the last 7 days";
+        return "Daily PFAS exposure over the last 7 days";
       case 'Week':
-        return "Weekly PFA exposure over the last 4 weeks";
+        return "Weekly PFAS exposure over the last 4 weeks";
       case 'Month':
         return "Weekly averages over last 4 weeks";
       default:
-        return "PFA exposure trend";
+        return "PFAS exposure trend";
     }
   };
 
@@ -82,7 +82,7 @@ export function PfaChartsSection({ entries }: PfaChartsSectionProps) {
       {/* Chart Controls */}
       <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
         <div>
-          <h3 className="text-lg font-semibold text-green-800">PFA Exposure Trend</h3>
+          <h3 className="text-lg font-semibold text-green-800">PFAS Exposure Trend</h3>
           <p className="text-sm text-green-600">{getChartDescription()}</p>
         </div>
         <div className="flex items-center space-x-2">
@@ -104,8 +104,8 @@ export function PfaChartsSection({ entries }: PfaChartsSectionProps) {
         <Alert className="border-red-200 bg-red-50">
           <AlertTriangle className="h-4 w-4 text-red-600" />
           <AlertDescription className="text-red-800">
-            <strong>High PFA Exposure Detected!</strong> Your current risk level is <Badge variant="outline" className="ml-1 bg-red-100 text-red-800 border-red-300">{currentRiskLevel}</Badge>. 
-            Consider reducing exposure to PFA-containing products.
+            <strong>High PFAS Exposure Detected!</strong> Your current risk level is <Badge variant="outline" className="ml-1 bg-red-100 text-red-800 border-red-300">{currentRiskLevel}</Badge>. 
+            Consider reducing exposure to PFAS-containing products.
           </AlertDescription>
         </Alert>
       )}
@@ -113,7 +113,7 @@ export function PfaChartsSection({ entries }: PfaChartsSectionProps) {
       {/* Main Chart */}
       <Card className="border-green-200 bg-green-50">
         <CardHeader className="flex flex-row items-center justify-between">
-          <CardTitle className="text-green-800">PFA Exposure Over Time</CardTitle>
+          <CardTitle className="text-green-800">PFAS Exposure Over Time</CardTitle>
           <div className="flex items-center space-x-2">
             <Label htmlFor="individual-entries" className="text-sm text-green-700">Show Individual Entries</Label>
             <Switch
@@ -179,12 +179,12 @@ export function PfaChartsSection({ entries }: PfaChartsSectionProps) {
         <CardHeader>
           <CardTitle className="text-green-800 flex items-center gap-2">
             <Info className="h-4 w-4" />
-            PFA Risk Level Thresholds
+            PFAS Risk Level Thresholds
           </CardTitle>
         </CardHeader>
         <CardContent>
           <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
-            {Object.values(PFA_RISK_LEVELS).map((level) => (
+            {Object.values(PFAS_RISK_LEVELS).map((level) => (
               <div key={level.label} className="text-center">
                 <Badge 
                   variant="outline" 

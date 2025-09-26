@@ -72,7 +72,7 @@ export default function Landing() {
               </CardContent>
             </Card>
 
-            {/* PFA Tracker */}
+            {/* PFAS Tracker */}
             <Card 
               className="cursor-pointer transition-all duration-300 hover:shadow-2xl hover:scale-105 border-2 border-emerald-200 bg-gradient-to-r from-emerald-50 to-emerald-100 min-h-[80px] sm:min-h-[100px]"
               onClick={handlePfaClick}
@@ -84,7 +84,7 @@ export default function Landing() {
                       <Leaf className="w-6 h-6 sm:w-8 sm:h-8 text-white" />
                     </div>
                     <div className="text-left">
-                      <p className="font-bold text-lg sm:text-xl text-emerald-800">PFA Tracker</p>
+                      <p className="font-bold text-lg sm:text-xl text-emerald-800">PFAS Tracker</p>
                       <p className="text-sm sm:text-base text-emerald-700 font-medium">Monitor forever chemicals</p>
                     </div>
                   </div>

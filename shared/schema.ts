@@ -110,8 +110,8 @@ export const RISK_LEVELS = {
   EXTREME: { min: 90, max: Infinity, label: "Extreme", color: "purple", description: "Significantly above normal range" },
 } as const;
 
-// PFA risk level thresholds (in ppt - parts per trillion)
-export const PFA_RISK_LEVELS = {
+// PFAS risk level thresholds (in ppt - parts per trillion)
+export const PFAS_RISK_LEVELS = {
   LOW: { min: 0, max: 0.02, label: "Low", color: "green", description: "Below EPA limits for PFOS/PFOA" },
   NORMAL: { min: 0.02, max: 0.1, label: "Normal", color: "lightgreen", description: "Within acceptable range" },
   HIGH: { min: 0.1, max: 1.0, label: "High", color: "orange", description: "Above recommended levels" },

@@ -31,10 +31,10 @@ export async function initializeDatabase() {
       `);
       
       const existingColumns = checkResult.rows.map((row: any) => row.column_name);
-      console.log("PFA table columns:", existingColumns);
+      console.log("PFAS table columns:", existingColumns);
       
       if (existingColumns.includes('yoga_pants') || existingColumns.includes('sports_bras')) {
-        console.log("Migrating PFA schema from old columns...");
+        console.log("Migrating PFAS schema from old columns...");
         
         // Add the new column if it doesn't exist
         if (!existingColumns.includes('sweat_resistant_clothing')) {

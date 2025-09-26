@@ -49,7 +49,7 @@ export function PfaWeeklyInputForm({ onSuccess }: PfaWeeklyInputFormProps) {
     createEntry(entryData, {
       onSuccess: (entry: any) => {
         toast({
-          title: "PFA entry created successfully",
+          title: "PFAS entry created successfully",
           description: `Week of ${getPfaWeekLabel(new Date().toISOString())} recorded`,
         });
         form.reset();
@@ -57,7 +57,7 @@ export function PfaWeeklyInputForm({ onSuccess }: PfaWeeklyInputFormProps) {
       },
       onError: (error: Error) => {
         toast({
-          title: "Error creating PFA entry",
+          title: "Error creating PFAS entry",
           description: error.message || "Unknown error",
           variant: "destructive",
         });
@@ -104,9 +104,9 @@ export function PfaWeeklyInputForm({ onSuccess }: PfaWeeklyInputFormProps) {
   return (
     <Card className="border-green-200 bg-green-50">
       <CardHeader>
-        <CardTitle className="text-lg font-semibold text-green-800">Weekly PFA Input</CardTitle>
+        <CardTitle className="text-lg font-semibold text-green-800">Weekly PFAS Input</CardTitle>
         <p className="text-sm text-green-600">
-          Enter your weekly PFA exposure for each source. Only whole numbers allowed (no decimals).
+          Enter your weekly PFAS exposure for each source. Only whole numbers allowed (no decimals).
         </p>
       </CardHeader>
       

@@ -18,7 +18,7 @@ async function debugPFA() {
     
     // Try to count entries
     const count = await db.select({ count: db.$count(pfaEntries) }).from(pfaEntries);
-    console.log("PFA entries count:", count);
+    console.log("PFAS entries count:", count);
     
   } catch (error) {
     console.error("Error:", error);

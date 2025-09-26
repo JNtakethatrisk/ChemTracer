@@ -20,7 +20,7 @@ const microplasticCalcSchema = z.object({
   takeoutContainers: z.number().int().min(0).default(0),
 });
 
-// PFA calculation schema
+// PFAS calculation schema
 const pfaCalcSchema = z.object({
   dentalFloss: z.number().int().min(0).default(0),
   toiletPaper: z.number().int().min(0).default(0),
@@ -54,7 +54,7 @@ router.post("/api/calc/microplastic", (req, res) => {
   }
 });
 
-// Pure calculation endpoint for PFAs
+// Pure calculation endpoint for PFAS
 router.post("/api/calc/pfa", (req, res) => {
   try {
     const input = pfaCalcSchema.parse(req.body);
