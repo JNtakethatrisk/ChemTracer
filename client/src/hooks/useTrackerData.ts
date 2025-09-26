@@ -35,7 +35,7 @@ export function useTrackerData(type: 'microplastic' | 'pfa') {
       }
       
       // Authenticated - get from API
-      const response = await fetch(endpoint.entries);
+      const response = await fetch(endpoint.entries, { credentials: 'include' });
       if (!response.ok) {
         if (response.status === 401) {
           // Not authenticated, return guest data
@@ -48,6 +48,7 @@ export function useTrackerData(type: 'microplastic' | 'pfa') {
       return response.json();
     },
     staleTime: isAuthenticated ? 5 * 60 * 1000 : 0, // 5 min for auth, always fresh for guest
+    retry: false,
   });
 
   // Get dashboard stats
@@ -62,7 +63,7 @@ export function useTrackerData(type: 'microplastic' | 'pfa') {
       }
       
       // Authenticated - get from API
-      const response = await fetch(endpoint.stats);
+      const response = await fetch(endpoint.stats, { credentials: 'include' });
       if (!response.ok) {
         if (response.status === 401) {
           return type === 'microplastic' 
@@ -74,6 +75,7 @@ export function useTrackerData(type: 'microplastic' | 'pfa') {
       return response.json();
     },
     staleTime: isAuthenticated ? 5 * 60 * 1000 : 0,
+    retry: false,
   });
 
   // Create entry mutation
@@ -141,7 +143,9 @@ export function useTrackerData(type: 'microplastic' | 'pfa') {
     stats: statsQuery.data,
     isLoading: entriesQuery.isLoading || statsQuery.isLoading,
     error: entriesQuery.error || statsQuery.error,
-    createEntry: createEntry.mutate,
+    createEntry: (data: any, options?: { onSuccess?: () => void; onError?: (error: Error) => void }) => {
+      createEntry.mutate(data, options);
+    },
     isCreating: createEntry.isPending,
     isGuest: !isAuthenticated,
   };

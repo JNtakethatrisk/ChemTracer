@@ -1,5 +1,3 @@
-import { useQuery } from "@tanstack/react-query";
-import { apiRequest } from "../lib/queryClient";
 import Navigation from "../components/navigation";
 import { PfaWeeklyInputForm } from "../components/dashboard/pfa-weekly-input-form";
 import { PfaOverviewCards } from "../components/dashboard/pfa-overview-cards";
@@ -9,27 +7,16 @@ import { PfaInsightsSection } from "../components/dashboard/pfa-insights-section
 import { PfaLearnMoreModal } from "../components/dashboard/pfa-learn-more-modal";
 import { Button } from "../components/ui/button";
 import { Download } from "lucide-react";
-import { useSessionCacheInvalidation } from "../hooks/use-ip-cache-invalidation";
+import { useTrackerData } from "../hooks/useTrackerData";
+import { GuestBanner } from "../components/GuestBanner";
+import { SaveDataPrompt } from "../components/SaveDataPrompt";
 
 export function PfaDashboard() {
-  // Enable IP-based cache invalidation for clean slate on new IPs
-  useSessionCacheInvalidation();
+  const { entries, stats: dashboardStats, isLoading, error, isGuest } = useTrackerData('pfa');
 
-  const { data: entries = [], isLoading: entriesLoading } = useQuery({
-    queryKey: ["/api/pfa-entries"],
-    queryFn: async () => {
-      const response = await apiRequest("GET", "/api/pfa-entries");
-      return response.json();
-    },
-  });
-
-  const { data: dashboardStats, isLoading: statsLoading } = useQuery({
-    queryKey: ["/api/pfa-dashboard-stats"],
-    queryFn: async () => {
-      const response = await apiRequest("GET", "/api/pfa-dashboard-stats");
-      return response.json();
-    },
-  });
+  if (error) {
+    console.error("PFA Dashboard error:", error);
+  }
 
   const handleExportData = () => {
     if (!entries || entries.length === 0) {
@@ -65,7 +52,7 @@ export function PfaDashboard() {
     window.URL.revokeObjectURL(url);
   };
 
-  if (entriesLoading || statsLoading) {
+  if (isLoading) {
     return (
       <div className="min-h-screen bg-green-50 flex items-center justify-center no-pull-refresh">
         <div className="text-center px-4">
@@ -80,6 +67,7 @@ export function PfaDashboard() {
     <div className="min-h-screen bg-green-50 no-pull-refresh">
       {/* Navigation */}
       <Navigation />
+      <GuestBanner />
       
       <div className="container mx-auto px-3 sm:px-4 py-4 sm:py-8">
         {/* Header */}
@@ -110,6 +98,10 @@ export function PfaDashboard() {
           {/* Left Column - Input Form */}
           <div className="lg:col-span-1 space-y-4 sm:space-y-6">
             <PfaWeeklyInputForm />
+            {/* Save Data Prompt for Guests with Data */}
+            {isGuest && entries.length > 0 && (
+              <SaveDataPrompt variant="card" />
+            )}
           </div>
 
           {/* Right Column - Charts and Data */}

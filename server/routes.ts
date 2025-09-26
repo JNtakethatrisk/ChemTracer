@@ -25,11 +25,12 @@ export async function registerRoutes(app: Express): Promise<Server> {
   // Mount auth routes (no rate limiting on auth)
   app.use(authRoutes);
 
-  // Mount public calculator routes with rate limiting
-  app.use("/api", calcLimiter, calcRoutes);
+  // Mount public calculator routes with rate limiting - only on calc endpoints
+  app.use("/api/calc", calcLimiter);
+  app.use(calcRoutes);
 
-  // Mount protected routes (require authentication) - only for /api routes
-  app.use("/api", protectedRoutes);
+  // Mount protected routes (require authentication) - no rate limiting for authenticated users
+  app.use(protectedRoutes);
 
   const httpServer = createServer(app);
   return httpServer;

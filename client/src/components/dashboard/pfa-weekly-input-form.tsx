@@ -1,20 +1,19 @@
 import { useCallback } from "react";
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
-import { useMutation, useQueryClient } from "@tanstack/react-query";
 import { Button } from "../ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "../ui/card";
 import { Form, FormControl, FormField, FormItem, FormLabel, FormMessage } from "../ui/form";
 import { Input } from "../ui/input";
 import { useToast } from "../../hooks/use-toast";
-import { type InsertPfaEntry, type PfaEntry } from "../../../../shared/schema";
 import { getPfaWeekStart, getPfaWeekLabel } from "../../lib/pfa-calculations";
-import { apiRequest } from "../../lib/queryClient";
 import { z } from "zod";
 import { PFA_SOURCES } from "../../lib/pfa-sources";
+import { useTrackerData } from "../../hooks/useTrackerData";
+import { SaveDataPrompt } from "../SaveDataPrompt";
 
 interface PfaWeeklyInputFormProps {
-  onSuccess?: (entry: PfaEntry) => void;
+  onSuccess?: (entry: any) => void;
 }
 
 // Define the form schema with all PFA sources - only whole numbers
@@ -28,7 +27,7 @@ const formSchema = z.object({
 
 export function PfaWeeklyInputForm({ onSuccess }: PfaWeeklyInputFormProps) {
   const { toast } = useToast();
-  const queryClient = useQueryClient();
+  const { createEntry, isCreating, isGuest } = useTrackerData('pfa');
 
   const form = useForm<z.infer<typeof formSchema>>({
     resolver: zodResolver(formSchema),
@@ -41,45 +40,29 @@ export function PfaWeeklyInputForm({ onSuccess }: PfaWeeklyInputFormProps) {
     },
   });
 
-  const createEntryMutation = useMutation({
-    mutationFn: async (data: z.infer<typeof formSchema>) => {
-      // Calculate total PFAs
-      // const totalPfas = calculateTotalPfas(data);
-      
-      // Create entry data with all fields
-      const entryData: InsertPfaEntry = {
-        weekStart: getPfaWeekStart(new Date()),
-        dentalFloss: data.dentalFloss || 0,
-        toiletPaper: data.toiletPaper || 0,
-        sweatResistantClothing: data.sweatResistantClothing || 0,
-        tapWater: data.tapWater || 0,
-        nonStickPans: data.nonStickPans || 0,
-      };
-
-      const response = await apiRequest("POST", "/api/pfa-entries", entryData);
-      const result = await response.json();
-      return result as PfaEntry;
-    },
-    onSuccess: (data) => {
-      toast({
-        title: "PFA entry created successfully",
-        description: `Week of ${getPfaWeekLabel(new Date().toISOString())} recorded`,
-      });
-      queryClient.invalidateQueries({ queryKey: ["/api/pfa-entries"] });
-      queryClient.invalidateQueries({ queryKey: ["/api/pfa-dashboard-stats"] });
-      onSuccess?.(data);
-    },
-    onError: (error) => {
-      toast({
-        title: "Error creating PFA entry",
-        description: error instanceof Error ? error.message : "Unknown error",
-        variant: "destructive",
-      });
-    },
-  });
-
   const onSubmit = (data: z.infer<typeof formSchema>) => {
-    createEntryMutation.mutate(data);
+    const entryData = {
+      weekStart: getPfaWeekStart(new Date()),
+      ...data,
+    };
+
+    createEntry(entryData, {
+      onSuccess: (entry: any) => {
+        toast({
+          title: "PFA entry created successfully",
+          description: `Week of ${getPfaWeekLabel(new Date().toISOString())} recorded`,
+        });
+        form.reset();
+        onSuccess?.(entry);
+      },
+      onError: (error: Error) => {
+        toast({
+          title: "Error creating PFA entry",
+          description: error.message || "Unknown error",
+          variant: "destructive",
+        });
+      },
+    });
   };
 
   const handleInputChange = useCallback((e: React.ChangeEvent<HTMLInputElement>, field: any) => {
@@ -170,11 +153,14 @@ export function PfaWeeklyInputForm({ onSuccess }: PfaWeeklyInputFormProps) {
               <Button
                 type="submit"
                 className="w-full bg-green-600 hover:bg-green-700 text-white"
-                disabled={createEntryMutation.isPending}
+                disabled={isCreating}
                 data-testid="button-calculate-pfa-week"
               >
-                {createEntryMutation.isPending ? "Calculating..." : "Calculate This Week"}
+                {isCreating ? "Calculating..." : "Calculate This Week"}
               </Button>
+              
+              {/* Save Data Prompt for Guests */}
+              {isGuest && <SaveDataPrompt variant="inline" />}
             </div>
           </form>
         </Form>
