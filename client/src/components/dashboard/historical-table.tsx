@@ -19,7 +19,7 @@ export default function HistoricalTable() {
 
   const { entries, isLoading } = useTrackerData('microplastic');
 
-  const filteredEntries = entries.filter(entry => {
+  const filteredEntries = entries.filter((entry: any) => {
     const weekLabel = getWeekLabel(entry.weekStart);
     const matchesSearch = weekLabel.toLowerCase().includes(searchTerm.toLowerCase()) ||
                          entry.riskLevel.toLowerCase().includes(searchTerm.toLowerCase());
@@ -42,7 +42,7 @@ export default function HistoricalTable() {
   const startIndex = (currentPage - 1) * itemsPerPage;
   const paginatedEntries = filteredEntries.slice(startIndex, startIndex + itemsPerPage);
 
-  const getTopSource = (entry: MicroplasticEntry) => {
+  const getTopSource = (entry: any) => {
     const sources = getSourceBreakdown({
       bottledWater: entry.bottledWater || 0,
       seafood: entry.seafood || 0,
@@ -57,7 +57,7 @@ export default function HistoricalTable() {
     return sources[0]?.label || "None";
   };
 
-  const getChangeFromPrevious = (currentEntry: MicroplasticEntry, index: number) => {
+  const getChangeFromPrevious = (currentEntry: any, index: number) => {
     if (index === entries.length - 1) return null;
     const previousEntry = entries[index + 1];
     if (!previousEntry) return null;
@@ -188,7 +188,7 @@ export default function HistoricalTable() {
                   </TableRow>
                 </TableHeader>
                 <TableBody>
-                  {paginatedEntries.map((entry, index) => {
+                  {paginatedEntries.map((entry: any, index: number) => {
                     const globalIndex = startIndex + index;
                     const change = getChangeFromPrevious(entry, globalIndex);
                     

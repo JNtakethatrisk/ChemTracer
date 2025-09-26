@@ -3,8 +3,6 @@ import { Card, CardContent } from "../ui/card";
 import { getRiskLevelInfo } from "../../lib/calculations";
 import { useTrackerData } from "../../hooks/useTrackerData";
 
-import { type DashboardStats } from "../../../../shared/schema";
-
 export default function OverviewCards() {
   const { stats, isLoading } = useTrackerData('microplastic');
 
