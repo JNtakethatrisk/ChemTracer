@@ -5,8 +5,7 @@ import { Badge } from "../ui/badge";
 import { Alert, AlertDescription } from "../ui/alert";
 import { AlertTriangle, Info } from "lucide-react";
 import { LineChart, Line, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer } from "recharts";
-import { useQuery } from "@tanstack/react-query";
-import { apiRequest } from "../../lib/queryClient";
+import { useTrackerData } from "../../hooks/useTrackerData";
 import { 
   aggregatePfaDataIntoBuckets, 
   calculatePfaYAxisDomain, 
@@ -23,15 +22,9 @@ interface PfaChartsSectionProps {
 export function PfaChartsSection({ entries }: PfaChartsSectionProps) {
   const [granularity, setGranularity] = useState<'Day' | 'Week' | 'Month'>('Week');
 
-  const { data: dashboardStats } = useQuery({
-    queryKey: ["/api/pfa-dashboard-stats"],
-    queryFn: async () => {
-      const response = await apiRequest("GET", "/api/pfa-dashboard-stats");
-      return response.json();
-    },
-  });
+  const { stats } = useTrackerData('pfa');
 
-  const currentRiskLevel = dashboardStats?.currentRiskLevel || "No Data";
+  const currentRiskLevel = stats?.currentRiskLevel || "No Data";
   const showWarning = currentRiskLevel === 'High' || currentRiskLevel === 'Extreme';
 
   // Memoize chart calculations to prevent unnecessary recalculations
