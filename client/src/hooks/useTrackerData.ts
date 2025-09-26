@@ -95,7 +95,9 @@ export function useTrackerData(type: 'microplastic' | 'pfa') {
       const calculated = await calcResponse.json();
       const entryData = {
         ...data,
-        totalParticles: calculated.totalParticles || calculated.totalPfas,
+        ...(type === 'microplastic' 
+          ? { totalParticles: calculated.totalParticles }
+          : { totalPfas: calculated.totalPfas }),
         riskLevel: calculated.riskLevel,
       };
 
