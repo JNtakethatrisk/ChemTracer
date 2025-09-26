@@ -23,8 +23,8 @@ interface PfaChartsSectionProps {
 }
 
 export function PfaChartsSection({ entries }: PfaChartsSectionProps) {
-  const [granularity, setGranularity] = useState<'Day' | 'Week' | 'Month'>('Week');
-  const [showIndividualEntries, setShowIndividualEntries] = useState(true);
+  const [granularity, setGranularity] = useState<'Day' | 'Week' | 'Month'>('Day');
+  const [showIndividualEntries, setShowIndividualEntries] = useState(false);
 
   const { stats } = useTrackerData('pfa');
 
@@ -82,8 +82,8 @@ export function PfaChartsSection({ entries }: PfaChartsSectionProps) {
       {/* Chart Controls */}
       <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
         <div>
-          <h3 className="text-lg font-semibold text-green-800">PFAS Exposure Trend</h3>
-          <p className="text-sm text-green-600">{getChartDescription()}</p>
+          <h3 className="text-xl font-semibold text-green-800">PFAS Exposure Trend</h3>
+          <p className="text-base text-green-600">{getChartDescription()}</p>
         </div>
         <div className="flex items-center space-x-2">
           <Select value={granularity} onValueChange={(value: 'Day' | 'Week' | 'Month') => setGranularity(value)}>
@@ -124,7 +124,7 @@ export function PfaChartsSection({ entries }: PfaChartsSectionProps) {
           </div>
         </CardHeader>
         <CardContent>
-          <div className="h-80 w-full min-w-[300px]">
+          <div className="h-64 w-full min-w-[300px]">
             <ResponsiveContainer width="100%" height="100%">
               <LineChart 
                 data={chartData}

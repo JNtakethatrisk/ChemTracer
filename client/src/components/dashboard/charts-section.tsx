@@ -19,8 +19,8 @@ import { getSourceBreakdown } from "../../lib/microplastic-sources";
 import { useTrackerData } from "../../hooks/useTrackerData";
 
 export default function ChartsSection() {
-  const [granularity, setGranularity] = useState<ChartGranularity>('Month');
-  const [showIndividualEntries, setShowIndividualEntries] = useState(true);
+  const [granularity, setGranularity] = useState<ChartGranularity>('Day');
+  const [showIndividualEntries, setShowIndividualEntries] = useState(false);
   const { entries, stats: dashboardStats, isLoading } = useTrackerData('microplastic');
 
   // Memoize chart calculations to prevent unnecessary recalculations
@@ -139,8 +139,8 @@ export default function ChartsSection() {
       {/* Chart Controls */}
       <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
         <div>
-          <h3 className="text-lg font-semibold text-blue-800">Microplastic Intake Trend</h3>
-          <p className="text-sm text-blue-600">{getChartDescription()}</p>
+          <h3 className="text-xl font-semibold text-blue-800">Microplastic Intake Trend</h3>
+          <p className="text-base text-blue-600">{getChartDescription()}</p>
         </div>
         <div className="flex items-center space-x-2">
           <Select value={granularity} onValueChange={(value: 'Week' | 'Month' | 'Year') => setGranularity(value)}>
@@ -192,7 +192,7 @@ export default function ChartsSection() {
           </div>
         </CardHeader>
         <CardContent>
-          <div className="h-80 w-full min-w-[300px]">
+          <div className="h-64 w-full min-w-[300px]">
             {chartData.length > 0 ? (
               <ResponsiveContainer width="100%" height="100%">
                 <LineChart 
