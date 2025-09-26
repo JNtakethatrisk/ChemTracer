@@ -143,8 +143,11 @@ export function useTrackerData(type: 'microplastic' | 'pfa') {
     stats: statsQuery.data,
     isLoading: entriesQuery.isLoading || statsQuery.isLoading,
     error: entriesQuery.error || statsQuery.error,
-    createEntry: (data: any, options?: { onSuccess?: () => void; onError?: (error: Error) => void }) => {
-      createEntry.mutate(data, options);
+    createEntry: (data: any, options?: { onSuccess?: (entry?: any) => void; onError?: (error: Error) => void }) => {
+      createEntry.mutate(data, {
+        onSuccess: (result) => options?.onSuccess?.(result),
+        onError: (error) => options?.onError?.(error as Error),
+      });
     },
     isCreating: createEntry.isPending,
     isGuest: !isAuthenticated,
