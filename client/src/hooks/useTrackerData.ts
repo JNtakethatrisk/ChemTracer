@@ -133,10 +133,12 @@ export function useTrackerData(type: 'microplastic' | 'pfa') {
 
       return response.json();
     },
-    onSuccess: () => {
+    onSuccess: (data) => {
       // Invalidate queries to refresh data
       queryClient.invalidateQueries({ queryKey: [endpoint.entries] });
       queryClient.invalidateQueries({ queryKey: [endpoint.stats] });
+      // Return the data for the onSuccess callback
+      return data;
     },
   });
 

@@ -61,6 +61,8 @@ export function WeeklyInputForm({}: WeeklyInputFormProps) {
 
     createEntry(entryData, {
       onSuccess: (entry: any) => {
+        console.log('Microplastic entry created:', entry);
+        
         // Auto-scroll to results on mobile
         if (window.innerWidth < 640) {
           const resultsSection = document.querySelector('[data-results-section]');
@@ -71,11 +73,15 @@ export function WeeklyInputForm({}: WeeklyInputFormProps) {
 
         // Check if we should show the modal
         const modalHidden = localStorage.getItem('microplastic-result-modal-hidden');
+        console.log('Modal hidden?', modalHidden);
+        
         if (!modalHidden) {
-          setLastResult({
+          const resultData = {
             value: entry.totalParticles || 0,
             risk: entry.riskLevel || 'Unknown'
-          });
+          };
+          console.log('Setting result data:', resultData);
+          setLastResult(resultData);
           setShowResultModal(true);
         }
 
