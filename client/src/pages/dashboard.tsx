@@ -9,6 +9,7 @@ import InsightsSection from "../components/dashboard/insights-section";
 import { useTrackerData } from "../hooks/useTrackerData";
 import { GuestBanner } from "../components/GuestBanner";
 import { SaveDataPrompt } from "../components/SaveDataPrompt";
+import { SafariTestButton } from "../components/dashboard/safari-test-button";
 
 export default function Dashboard() {
   const { entries, isLoading, error, isGuest } = useTrackerData('microplastic');
@@ -63,7 +64,8 @@ export default function Dashboard() {
               <h1 className="text-2xl sm:text-3xl font-bold text-blue-800">MicroPlastic Tracker™</h1>
               <p className="text-sm sm:text-base text-blue-600">Monitor your microplastic intake based on peer reviewed studies</p>
             </div>
-            <div className="flex justify-center sm:justify-end">
+            <div className="flex justify-center sm:justify-end gap-2">
+              <SafariTestButton />
               <Button 
                 onClick={handleExportData}
                 data-testid="button-export-data"

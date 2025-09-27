@@ -76,7 +76,10 @@ export function WeeklyInputForm({}: WeeklyInputFormProps) {
             value: entry.totalParticles || 0,
             risk: entry.riskLevel || 'Unknown'
           });
-          setShowResultModal(true);
+          // Use setTimeout to ensure state updates properly in Safari
+          setTimeout(() => {
+            setShowResultModal(true);
+          }, 100);
         }
 
         toast({
