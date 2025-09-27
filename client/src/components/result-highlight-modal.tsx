@@ -41,7 +41,6 @@ export function ResultHighlightModal({
   };
 
   const isGreen = trackerType === "pfas";
-  const primaryColor = isGreen ? "green" : "blue";
   const bgColor = isGreen ? "bg-green-50" : "bg-blue-50";
   const borderColor = isGreen ? "border-green-200" : "border-blue-200";
   const textColor = isGreen ? "text-green-800" : "text-blue-800";
