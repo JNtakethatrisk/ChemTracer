@@ -18,7 +18,7 @@ export function Navigation() {
   const { user, isAuthenticated, isLoading, login, logout } = useAuth();
 
   return (
-    <nav className="bg-white shadow-sm border-b border-gray-200 sticky top-0 z-50">
+    <nav className="bg-white shadow-sm border-b border-gray-200 sticky top-0 z-50 hidden sm:block">
       <div className="container mx-auto px-3 sm:px-4 py-2 sm:py-3">
         <div className="flex items-center justify-between">
           {/* Logo and Title */}

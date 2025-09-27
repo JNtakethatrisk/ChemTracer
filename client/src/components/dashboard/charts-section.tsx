@@ -192,20 +192,23 @@ export default function ChartsSection() {
           </div>
         </CardHeader>
         <CardContent>
-          <div className="h-64 w-full min-w-[300px]">
+          <div className="h-48 sm:h-64 w-full min-w-[280px]">
             {chartData.length > 0 ? (
               <ResponsiveContainer width="100%" height="100%">
                 <LineChart 
                   data={chartDataWithRegression}
-                  margin={{ top: 5, right: 5, bottom: 5, left: 5 }}
+                  margin={{ top: 10, right: 10, bottom: 20, left: 0 }}
                 >
                   <CartesianGrid strokeDasharray="3 3" stroke="#bfdbfe" opacity={0.7} />
                   <XAxis 
                     dataKey="label" 
                     stroke="#1e40af"
-                    fontSize={12}
+                    fontSize={11}
                     tickLine={false}
                     axisLine={false}
+                    angle={-20}
+                    textAnchor="end"
+                    height={60}
                   />
                   <YAxis 
                     domain={yAxisDomain}

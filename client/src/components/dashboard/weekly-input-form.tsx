@@ -122,8 +122,8 @@ export function WeeklyInputForm({}: WeeklyInputFormProps) {
       <CardContent>
         <Form {...form}>
           <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-6">
-            {/* Scrollable container for all sources */}
-            <div className="max-h-96 overflow-y-auto scrollbar-thin space-y-4 pr-2">
+            {/* Scrollable container for all sources - responsive height */}
+            <div className="max-h-[50vh] sm:max-h-96 overflow-y-auto scrollbar-thin space-y-4 sm:space-y-4 pr-1 sm:pr-2">
               {MICROPLASTIC_SOURCES.map((source) => (
                 <FormField
                   key={source.key}
@@ -131,8 +131,8 @@ export function WeeklyInputForm({}: WeeklyInputFormProps) {
                   name={source.key as keyof z.infer<typeof formSchema>}
                   render={({ field }) => (
                     <FormItem>
-                      <FormLabel className="flex items-center gap-2">
-                        <span className="text-lg">{source.icon}</span>
+                      <FormLabel className="flex items-center gap-2 text-base sm:text-sm">
+                        <span className="text-xl sm:text-lg">{source.icon}</span>
                         <span className="font-medium text-blue-800">{source.label}</span>
                         <span className="text-sm text-blue-600">({source.unit})</span>
                       </FormLabel>
@@ -147,7 +147,9 @@ export function WeeklyInputForm({}: WeeklyInputFormProps) {
                           onChange={(e) => handleInputChange(e, field)}
                           onKeyDown={handleKeyDown}
                           onBlur={(e) => handleBlur(e, field)}
-                          className="w-full border-blue-300 focus:border-blue-500 focus:ring-blue-500"
+                          className="w-full border-blue-300 focus:border-blue-500 focus:ring-blue-500 h-12 sm:h-10 text-lg sm:text-base px-4"
+                          inputMode="numeric"
+                          pattern="[0-9]*"
                         />
                       </FormControl>
                       <FormMessage />

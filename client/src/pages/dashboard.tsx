@@ -1,6 +1,6 @@
 import { Download } from "lucide-react";
 import { Button } from "../components/ui/button";
-import Navigation from "../components/navigation";
+import { Layout } from "../components/layout";
 import OverviewCards from "../components/dashboard/overview-cards";
 import WeeklyInputForm from "../components/dashboard/weekly-input-form";
 import ChartsSection from "../components/dashboard/charts-section";
@@ -51,9 +51,8 @@ export default function Dashboard() {
   };
 
   return (
-    <div className="min-h-screen bg-blue-50 no-pull-refresh">
-      {/* Navigation */}
-      <Navigation />
+    <Layout>
+      <div className="bg-blue-50 min-h-screen">
       <GuestBanner />
       
       <div className="container mx-auto px-3 sm:px-4 py-4 sm:py-8">
@@ -113,6 +112,7 @@ export default function Dashboard() {
           </p>
         </div>
       </div>
-    </div>
+      </div>
+    </Layout>
   );
 }
