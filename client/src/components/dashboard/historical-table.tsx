@@ -176,7 +176,59 @@ export default function HistoricalTable() {
           </div>
         ) : (
           <>
-            <div className="overflow-x-auto">
+            {/* Mobile Card View */}
+            <div className="sm:hidden space-y-4">
+              {paginatedEntries.map((entry: any, index: number) => {
+                const globalIndex = startIndex + index;
+                const change = getChangeFromPrevious(entry, globalIndex);
+                const topSource = getTopSource(entry);
+                
+                return (
+                  <div key={entry.id} className="bg-gray-50 rounded-lg p-4 space-y-3">
+                    <div className="flex justify-between items-start">
+                      <div>
+                        <p className="text-sm font-medium text-gray-600">Week of</p>
+                        <p className="text-base font-semibold text-gray-900">{getWeekLabel(entry.weekStart)}</p>
+                      </div>
+                      <Badge 
+                        variant={getRiskLevelBadgeVariant(entry.riskLevel)}
+                        data-testid={`badge-risk-${entry.id}`}
+                      >
+                        {entry.riskLevel}
+                      </Badge>
+                    </div>
+                    
+                    <div className="grid grid-cols-2 gap-4">
+                      <div>
+                        <p className="text-sm text-gray-600">Total Intake</p>
+                        <p className="text-lg font-semibold text-gray-900">{entry.totalParticles.toFixed(1)} p/mL</p>
+                      </div>
+                      <div>
+                        <p className="text-sm text-gray-600">Change</p>
+                        <p className={`text-lg font-semibold ${
+                          change === null ? 'text-gray-500' :
+                          change > 0 ? 'text-red-600' : 
+                          change < 0 ? 'text-green-600' : 
+                          'text-gray-600'
+                        }`}>
+                          {change === null ? '—' : 
+                           change === 0 ? 'No change' :
+                           `${change >= 0 ? '+' : ''}${change.toFixed(1)}%`}
+                        </p>
+                      </div>
+                    </div>
+                    
+                    <div>
+                      <p className="text-sm text-gray-600">Top Source</p>
+                      <p className="text-base text-gray-900">{topSource || 'No data'}</p>
+                    </div>
+                  </div>
+                );
+              })}
+            </div>
+            
+            {/* Desktop Table View */}
+            <div className="hidden sm:block overflow-x-auto">
               <Table>
                 <TableHeader>
                   <TableRow>

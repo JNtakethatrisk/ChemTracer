@@ -1,4 +1,4 @@
-import Navigation from "../components/navigation";
+import { Layout } from "../components/layout";
 import { PfaWeeklyInputForm } from "../components/dashboard/pfa-weekly-input-form";
 import { PfaOverviewCards } from "../components/dashboard/pfa-overview-cards";
 import { PfaChartsSection } from "../components/dashboard/pfa-charts-section";
@@ -64,9 +64,8 @@ export function PfaDashboard() {
   }
 
   return (
-    <div className="min-h-screen bg-green-50 no-pull-refresh">
-      {/* Navigation */}
-      <Navigation />
+    <Layout>
+      <div className="bg-green-50 min-h-screen">
       <GuestBanner />
       
       <div className="container mx-auto px-3 sm:px-4 py-4 sm:py-8">
@@ -127,7 +126,8 @@ export function PfaDashboard() {
           </div>
         </div>
       </div>
-    </div>
+      </div>
+    </Layout>
   );
 }
 
