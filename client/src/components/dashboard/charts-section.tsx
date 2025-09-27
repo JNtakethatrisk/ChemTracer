@@ -20,7 +20,7 @@ import { useTrackerData } from "../../hooks/useTrackerData";
 
 export default function ChartsSection() {
   const [granularity, setGranularity] = useState<ChartGranularity>('Week');
-  const [showIndividualEntries, setShowIndividualEntries] = useState(false);
+  const [showIndividualEntries, setShowIndividualEntries] = useState(true);
   const { entries, stats: dashboardStats, isLoading } = useTrackerData('microplastic');
 
   // Memoize chart calculations to prevent unnecessary recalculations

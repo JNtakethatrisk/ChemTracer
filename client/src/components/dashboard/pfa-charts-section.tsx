@@ -24,7 +24,7 @@ interface PfaChartsSectionProps {
 
 export function PfaChartsSection({ entries }: PfaChartsSectionProps) {
   const [granularity, setGranularity] = useState<'Day' | 'Week' | 'Month'>('Day');
-  const [showIndividualEntries, setShowIndividualEntries] = useState(false);
+  const [showIndividualEntries, setShowIndividualEntries] = useState(true);
 
   const { stats } = useTrackerData('pfa');
 

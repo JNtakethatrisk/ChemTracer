@@ -1,4 +1,4 @@
-import { useCallback } from "react";
+import { useCallback, useState } from "react";
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { Button } from "../ui/button";
@@ -11,6 +11,7 @@ import { z } from "zod";
 import { MICROPLASTIC_SOURCES } from "../../lib/microplastic-sources";
 import { useTrackerData } from "../../hooks/useTrackerData";
 import { SaveDataPrompt } from "../SaveDataPrompt";
+import { ResultHighlightModal } from "../result-highlight-modal";
 
 interface WeeklyInputFormProps {}
 
@@ -32,6 +33,8 @@ const formSchema = z.object({
 export function WeeklyInputForm({}: WeeklyInputFormProps) {
   const { toast } = useToast();
   const { createEntry, isCreating, isGuest } = useTrackerData('microplastic');
+  const [showResultModal, setShowResultModal] = useState(false);
+  const [lastResult, setLastResult] = useState<{value: number, risk: string} | null>(null);
 
   const form = useForm<z.infer<typeof formSchema>>({
     resolver: zodResolver(formSchema),
@@ -57,7 +60,25 @@ export function WeeklyInputForm({}: WeeklyInputFormProps) {
     };
 
     createEntry(entryData, {
-      onSuccess: () => {
+      onSuccess: (entry: any) => {
+        // Auto-scroll to results on mobile
+        if (window.innerWidth < 640) {
+          const resultsSection = document.querySelector('[data-results-section]');
+          if (resultsSection) {
+            resultsSection.scrollIntoView({ behavior: 'smooth', block: 'start' });
+          }
+        }
+
+        // Check if we should show the modal
+        const modalHidden = localStorage.getItem('microplastic-result-modal-hidden');
+        if (!modalHidden) {
+          setLastResult({
+            value: entry.totalParticles || 0,
+            risk: entry.riskLevel || 'Unknown'
+          });
+          setShowResultModal(true);
+        }
+
         toast({
           title: "Entry created successfully",
           description: `Week of ${getWeekLabel(new Date().toISOString())} recorded`,
@@ -111,7 +132,8 @@ export function WeeklyInputForm({}: WeeklyInputFormProps) {
   }, []);
 
   return (
-    <Card className="border-blue-200 bg-blue-50">
+    <>
+      <Card className="border-blue-200 bg-blue-50">
       <CardHeader>
         <CardTitle className="text-lg font-semibold text-blue-800">Weekly Microplastic Input</CardTitle>
         <p className="text-sm text-blue-600">
@@ -177,6 +199,18 @@ export function WeeklyInputForm({}: WeeklyInputFormProps) {
         </Form>
       </CardContent>
     </Card>
+    
+    {lastResult && (
+      <ResultHighlightModal
+        isOpen={showResultModal}
+        onClose={() => setShowResultModal(false)}
+        totalValue={lastResult.value}
+        riskLevel={lastResult.risk}
+        unit="particles/week"
+        trackerType="microplastic"
+      />
+    )}
+    </>
   );
 }
 

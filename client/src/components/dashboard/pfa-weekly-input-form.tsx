@@ -1,4 +1,4 @@
-import { useCallback } from "react";
+import { useCallback, useState } from "react";
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { Button } from "../ui/button";
@@ -11,6 +11,7 @@ import { z } from "zod";
 import { PFA_SOURCES } from "../../lib/pfa-sources";
 import { useTrackerData } from "../../hooks/useTrackerData";
 import { SaveDataPrompt } from "../SaveDataPrompt";
+import { ResultHighlightModal } from "../result-highlight-modal";
 
 interface PfaWeeklyInputFormProps {
   onSuccess?: (entry: any) => void;
@@ -28,6 +29,8 @@ const formSchema = z.object({
 export function PfaWeeklyInputForm({ onSuccess }: PfaWeeklyInputFormProps) {
   const { toast } = useToast();
   const { createEntry, isCreating, isGuest } = useTrackerData('pfa');
+  const [showResultModal, setShowResultModal] = useState(false);
+  const [lastResult, setLastResult] = useState<{value: number, risk: string} | null>(null);
 
   const form = useForm<z.infer<typeof formSchema>>({
     resolver: zodResolver(formSchema),
@@ -48,6 +51,24 @@ export function PfaWeeklyInputForm({ onSuccess }: PfaWeeklyInputFormProps) {
 
     createEntry(entryData, {
       onSuccess: (entry: any) => {
+        // Auto-scroll to results on mobile
+        if (window.innerWidth < 640) {
+          const resultsSection = document.querySelector('[data-pfa-results-section]');
+          if (resultsSection) {
+            resultsSection.scrollIntoView({ behavior: 'smooth', block: 'start' });
+          }
+        }
+
+        // Check if we should show the modal
+        const modalHidden = localStorage.getItem('pfas-result-modal-hidden');
+        if (!modalHidden) {
+          setLastResult({
+            value: entry.totalPfas || 0,
+            risk: entry.riskLevel || 'Unknown'
+          });
+          setShowResultModal(true);
+        }
+
         toast({
           title: "PFAS entry created successfully",
           description: `Week of ${getPfaWeekLabel(new Date().toISOString())} recorded`,
@@ -102,7 +123,8 @@ export function PfaWeeklyInputForm({ onSuccess }: PfaWeeklyInputFormProps) {
   }, []);
 
   return (
-    <Card className="border-green-200 bg-green-50">
+    <>
+      <Card className="border-green-200 bg-green-50">
       <CardHeader>
         <CardTitle className="text-lg font-semibold text-green-800">Weekly PFAS Input</CardTitle>
         <p className="text-sm text-green-600">
@@ -166,6 +188,18 @@ export function PfaWeeklyInputForm({ onSuccess }: PfaWeeklyInputFormProps) {
         </Form>
       </CardContent>
     </Card>
+    
+    {lastResult && (
+      <ResultHighlightModal
+        isOpen={showResultModal}
+        onClose={() => setShowResultModal(false)}
+        totalValue={lastResult.value}
+        riskLevel={lastResult.risk}
+        unit="ppt"
+        trackerType="pfas"
+      />
+    )}
+    </>
   );
 }
 
