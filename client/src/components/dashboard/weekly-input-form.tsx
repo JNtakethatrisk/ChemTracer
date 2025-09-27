@@ -206,7 +206,7 @@ export function WeeklyInputForm({}: WeeklyInputFormProps) {
         onClose={() => setShowResultModal(false)}
         totalValue={lastResult.value}
         riskLevel={lastResult.risk}
-        unit="particles/week"
+        unit="particles/mL"
         trackerType="microplastic"
       />
     )}
