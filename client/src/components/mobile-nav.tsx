@@ -80,12 +80,13 @@ export function MobileNav() {
               <span className="text-xs font-medium text-gray-600">Profile</span>
             </div>
           ) : (
-            <Link href="/auth/google">
-              <a className="flex flex-col items-center text-gray-600 hover:text-gray-900">
-                <User className="h-6 w-6 mb-1" />
-                <span className="text-xs font-medium">Sign In</span>
-              </a>
-            </Link>
+            <button 
+              onClick={() => window.location.href = '/auth/google'}
+              className="flex flex-col items-center text-gray-600 hover:text-gray-900"
+            >
+              <User className="h-6 w-6 mb-1" />
+              <span className="text-xs font-medium">Sign In</span>
+            </button>
           )}
         </div>
       </div>
