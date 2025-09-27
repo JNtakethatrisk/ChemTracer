@@ -37,9 +37,9 @@ export default function About() {
 
             {/* Mobile-Optimized: Key Points */}
             <div className="sm:hidden space-y-3">
-              {/* Free Forever */}
+              {/* Free Access */}
               <div className="bg-emerald-50 p-4 rounded-lg border-l-4 border-emerald-500">
-                <h3 className="font-semibold text-emerald-800 mb-2">100% Free, Always</h3>
+                <h3 className="font-semibold text-emerald-800 mb-2">100% Free</h3>
                 <p className="text-sm text-gray-700">
                   No hidden fees. No premium plans. Everyone deserves to know what's in their body.
                 </p>
@@ -121,7 +121,7 @@ export default function About() {
                   onClick={() => toggleSection('free')}
                   className="flex items-center justify-between w-full text-left"
                 >
-                  <h2 className="text-2xl font-semibold text-emerald-800">Free for Everyone, Forever</h2>
+                  <h2 className="text-2xl font-semibold text-emerald-800">Free for Everyone</h2>
                   {expandedSections.free ? <ChevronUp className="w-5 h-5 text-emerald-600" /> : <ChevronDown className="w-5 h-5 text-emerald-600" />}
                 </button>
                 {expandedSections.free && (
@@ -159,10 +159,10 @@ export default function About() {
               <p className="text-sm sm:text-base text-gray-700">
                 <strong>Questions?</strong> Email us at{" "}
                 <a 
-                  href="mailto:jake@thechemtracer.com" 
+                  href="mailto:info@thechemtracer.com" 
                   className="text-green-600 hover:text-green-800 underline"
                 >
-                  jake@thechemtracer.com
+                  info@thechemtracer.com
                 </a>
               </p>
             </div>

@@ -6,6 +6,7 @@ import { Card, CardContent } from "../components/ui/card";
 import Navigation from "../components/navigation";
 import Logo from "../components/logo";
 import PlasticLogo from "../components/plastic-logo";
+import { FooterDisclaimer } from "../components/footer-disclaimer";
 
 export default function Landing() {
   const [, setLocation] = useLocation();
@@ -122,6 +123,7 @@ export default function Landing() {
           </div>
         </div>
       </div>
+      <FooterDisclaimer />
     </div>
   );
 }

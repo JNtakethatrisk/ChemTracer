@@ -2,6 +2,7 @@ import { useEffect, useState } from "react";
 import { Card, CardContent, CardHeader, CardTitle } from "../components/ui/card";
 import { Alert, AlertDescription } from "../components/ui/alert";
 import { Users, TrendingUp, Activity, BarChart } from "lucide-react";
+import { FooterDisclaimer } from "../components/footer-disclaimer";
 
 interface AnalyticsData {
   users: {
@@ -128,6 +129,7 @@ export function Analytics() {
           </CardContent>
         </Card>
       </div>
+      <FooterDisclaimer />
     </div>
   );
 }

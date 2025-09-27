@@ -3,6 +3,7 @@ import { Navigation } from "./navigation";
 import { MobileNav } from "./mobile-nav";
 import { cn } from "../lib/utils";
 import { useSwipeGesture } from "../hooks/useSwipeGesture";
+import { FooterDisclaimer } from "./footer-disclaimer";
 
 interface LayoutProps {
   children: React.ReactNode;
@@ -58,6 +59,7 @@ export function Layout({ children, className }: LayoutProps) {
         </div>
         {children}
       </main>
+      <FooterDisclaimer />
       <MobileNav />
     </div>
   );

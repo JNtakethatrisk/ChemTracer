@@ -2,6 +2,7 @@ import { Button } from "../components/ui/button";
 import { ArrowLeft } from "lucide-react";
 import { Link } from "wouter";
 import Navigation from "../components/navigation";
+import { FooterDisclaimer } from "../components/footer-disclaimer";
 
 export default function FurtherReading() {
   return (
@@ -84,6 +85,7 @@ export default function FurtherReading() {
           </div>
         </div>
       </div>
+      <FooterDisclaimer />
     </div>
   );
 }
