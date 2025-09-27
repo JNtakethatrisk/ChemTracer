@@ -1,8 +1,9 @@
 import { useState } from "react";
-import { Dialog, DialogContent } from "./ui/dialog";
+import { Dialog, DialogContent, DialogTitle } from "./ui/dialog";
 import { Button } from "./ui/button";
 import { Checkbox } from "./ui/checkbox";
 import { CheckCircle } from "lucide-react";
+import { VisuallyHidden } from "./ui/visually-hidden";
 
 interface ResultHighlightModalProps {
   isOpen: boolean;
@@ -49,6 +50,9 @@ export function ResultHighlightModal({
   return (
     <Dialog open={isOpen} onOpenChange={onClose}>
       <DialogContent className={`sm:max-w-md border ${borderColor}`}>
+        <VisuallyHidden>
+          <DialogTitle>Your Results Are Ready</DialogTitle>
+        </VisuallyHidden>
         <div className={`p-6 ${bgColor} rounded-lg`}>
           {/* Success Icon */}
           <div className="flex justify-center mb-4">
