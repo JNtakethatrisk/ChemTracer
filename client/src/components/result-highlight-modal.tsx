@@ -1,8 +1,8 @@
 import { useState } from "react";
-import { Dialog, DialogContent, DialogHeader, DialogTitle } from "./ui/dialog";
+import { Dialog, DialogContent } from "./ui/dialog";
 import { Button } from "./ui/button";
 import { Checkbox } from "./ui/checkbox";
-import { TrendingUp, AlertCircle } from "lucide-react";
+import { CheckCircle } from "lucide-react";
 
 interface ResultHighlightModalProps {
   isOpen: boolean;
@@ -32,73 +32,79 @@ export function ResultHighlightModal({
 
   const getRiskColor = (level: string) => {
     switch (level.toLowerCase()) {
-      case "low": return "text-green-600";
-      case "normal": return "text-yellow-600";
-      case "high": return "text-orange-600";
-      case "extreme": return "text-red-600";
-      default: return "text-gray-600";
+      case "low": return "text-green-600 bg-green-50";
+      case "normal": return "text-yellow-600 bg-yellow-50";
+      case "high": return "text-orange-600 bg-orange-50";
+      case "extreme": return "text-red-600 bg-red-50";
+      default: return "text-gray-600 bg-gray-50";
     }
   };
 
-  const getEmoji = (level: string) => {
-    switch (level.toLowerCase()) {
-      case "low": return "✅";
-      case "normal": return "⚠️";
-      case "high": return "🔶";
-      case "extreme": return "🚨";
-      default: return "ℹ️";
-    }
-  };
+  const isGreen = trackerType === "pfas";
+  const primaryColor = isGreen ? "green" : "blue";
+  const bgColor = isGreen ? "bg-green-50" : "bg-blue-50";
+  const borderColor = isGreen ? "border-green-200" : "border-blue-200";
+  const textColor = isGreen ? "text-green-800" : "text-blue-800";
+  const buttonBg = isGreen ? "bg-green-600 hover:bg-green-700" : "bg-blue-600 hover:bg-blue-700";
 
   return (
     <Dialog open={isOpen} onOpenChange={onClose}>
-      <DialogContent className="sm:max-w-md">
-        <DialogHeader>
-          <DialogTitle className="text-2xl flex items-center gap-2">
-            <TrendingUp className="w-6 h-6 text-blue-600" />
+      <DialogContent className={`sm:max-w-md border ${borderColor}`}>
+        <div className={`p-6 ${bgColor} rounded-lg`}>
+          {/* Success Icon */}
+          <div className="flex justify-center mb-4">
+            <div className={`rounded-full p-3 bg-white shadow-sm`}>
+              <CheckCircle className={`w-8 h-8 ${isGreen ? 'text-green-600' : 'text-blue-600'}`} />
+            </div>
+          </div>
+          
+          {/* Title */}
+          <h2 className={`text-xl font-semibold ${textColor} text-center mb-6`}>
             Your Results Are Ready!
-          </DialogTitle>
-        </DialogHeader>
-        
-        <div className="space-y-4 py-4">
-          <div className="text-center p-6 bg-gray-50 rounded-lg">
-            <p className="text-sm text-gray-600 mb-2">This Week's {trackerType === "microplastic" ? "Microplastic" : "PFAS"} Intake</p>
-            <p className="text-4xl font-bold text-gray-900 mb-2">
-              {totalValue} <span className="text-xl font-normal">{unit}</span>
+          </h2>
+          
+          {/* Results Box */}
+          <div className="bg-white rounded-lg p-4 mb-6 shadow-sm">
+            <p className={`text-sm ${textColor} text-center mb-2`}>
+              This Week's {trackerType === "microplastic" ? "Microplastic" : "PFAS"} Intake
             </p>
-            <p className={`text-lg font-semibold ${getRiskColor(riskLevel)}`}>
-              {getEmoji(riskLevel)} {riskLevel} Risk Level
+            <p className={`text-3xl font-bold ${textColor} text-center mb-2`}>
+              {totalValue} <span className="text-lg font-normal">{unit}</span>
             </p>
-          </div>
-
-          <div className="bg-blue-50 p-4 rounded-lg">
-            <p className="text-sm text-blue-800 flex items-start gap-2">
-              <AlertCircle className="w-4 h-4 mt-0.5 flex-shrink-0" />
-              <span>
-                Your results have been calculated and are displayed at the top of your dashboard. 
-                Scroll up to see detailed insights and track your progress over time.
+            <div className={`text-center`}>
+              <span className={`inline-block px-3 py-1 rounded-full text-sm font-medium ${getRiskColor(riskLevel)}`}>
+                {riskLevel} Risk
               </span>
-            </p>
+            </div>
           </div>
 
-          <div className="flex items-center space-x-2 pt-2">
+          {/* Info Text */}
+          <p className={`text-sm ${textColor} text-center mb-6`}>
+            View your detailed insights and recommendations in the dashboard above.
+          </p>
+
+          {/* Checkbox */}
+          <div className="flex items-center justify-center space-x-2 mb-6">
             <Checkbox 
               id="dontShow" 
               checked={dontShowAgain}
               onCheckedChange={(checked) => setDontShowAgain(checked as boolean)}
+              className={isGreen ? 'border-green-300 data-[state=checked]:bg-green-600' : 'border-blue-300 data-[state=checked]:bg-blue-600'}
             />
             <label 
               htmlFor="dontShow" 
-              className="text-sm font-medium leading-none peer-disabled:cursor-not-allowed peer-disabled:opacity-70"
+              className={`text-sm ${textColor} cursor-pointer`}
             >
               Don't show this again
             </label>
           </div>
-        </div>
 
-        <div className="flex justify-end">
-          <Button onClick={handleClose} className="bg-blue-600 hover:bg-blue-700">
-            Got it!
+          {/* Button */}
+          <Button 
+            onClick={handleClose} 
+            className={`w-full ${buttonBg} text-white font-medium`}
+          >
+            View Dashboard
           </Button>
         </div>
       </DialogContent>
